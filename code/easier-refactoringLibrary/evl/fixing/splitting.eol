@@ -1,0 +1,203 @@
+operation Operation splitting(numberOfSplitting : Integer, percentage : Integer) : Boolean{
+	var turnback : Boolean = false;
+	
+	var message = "fai la scelta: 0- splitto il componente con l'operazione critica; 1- splitto l'operazione critica";
+	var caseValue = UserInput.promptInteger(message, 0);
+	
+	switch (caseValue) {
+		case "1" : 
+			turnback = self.splittingOperation(numberOfSplitting, percentage);
+		case "2" : "2".println();
+		case "3" : "3".println(); 
+		default:
+			turnback = self.splittingComponent(numberOfSplitting, percentage);
+	}
+	
+	return turnback;
+}
+
+operation Operation splittingComponent( numberOfSplitting : Integer, percentage : Integer ) : Boolean {	
+	//static
+	var sourceComponent : Component = self.class;
+	var splittedComponent = self.splitComponent(percentage.asReal());
+	
+	//dynamic
+	var interaction = self.getAllInteractions()->first();
+	var sourceLifeline = sourceComponent.getLifeline(interaction);
+	var lifeline = interaction.createLifeline(splittedComponent.name+"lifeline"); //L2
+	
+	//deploy
+	var listNodesOfSplittedComponent = splittedComponent.getNodes();
+
+	var spProp = interaction.createOwnedAttribute(splittedComponent.name, splittedComponent);
+	lifeline.setRepresents(spProp);
+	
+	splittedComponent.moveOperation(self); //sposta l'operazione sul componente appena creato
+	
+	var newMessage = interaction.createMessage(self.name+"_message");
+	
+	lifeline.cloneAppliedStereotypesFrom(sourceLifeline);
+	lifeline.setVisibility(sourceLifeline.getVisibility());
+		
+	var sendMOS : MessageOccurrenceSpecification = new MessageOccurrenceSpecification;
+	var receiveMOS : MessageOccurrenceSpecification = new MessageOccurrenceSpecification;
+	
+	interaction.getFragments().add(sendMOS);
+	interaction.getFragments().add(receiveMOS);
+	
+	newMessage.setSendEvent(sendMOS);
+	newMessage.setReceiveEvent(receiveMOS);
+	
+	var besL2 : BehaviorExecutionSpecification = new BehaviorExecutionSpecification;
+	interaction.getFragments().add(besL2);
+	
+	var messageEnd : ExecutionOccurrenceSpecification = new ExecutionOccurrenceSpecification;
+	interaction.getFragments().add(messageEnd);
+	
+	besL2.start = receiveMOS ;
+	besL2.finish = messageEnd;
+	
+	lifeline.getCoveredBys().add(besL2);
+	lifeline.getCoveredBys().add(receiveMOS);
+	
+	//return 
+	return true;
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 									PAPER												 *
+ *																							 *
+ *********************************************************************************************/
+operation Operation moveToNewComponentDeployedOnNewNode() : Boolean {	
+	//static
+	var sourceComponent : Component = self.getOwner();
+	var splittedComponent = self.splitComponent();
+	
+	//deploy
+	splittedComponent.deployOnNewNodes(sourceComponent);
+	splittedComponent.moveOperation(self); //sposta l'operazione sul componente appena creato
+	
+	//dynamic
+	self.dynamicFixing(sourceComponent);
+	
+	return true;
+}
+
+operation Operation moveToNewClassDeployedOnNewNode() : Boolean {	
+	//static
+	var sourceClass : Class = self.getOwner();
+	var splittedClass = self.splitComponent();
+	
+	//deploy
+	splittedComponent.deployOnNewNodes(sourceComponent);
+	splittedComponent.moveOperation(self); //sposta l'operazione sul componente appena creato
+	
+	//dynamic
+	self.dynamicFixing(sourceComponent);
+	
+	return true;
+}
+
+operation Operation moveToNewComponentDeployedOnNearLessUsedNode() : Boolean {
+	//static
+	var sourceComponent : Component = self.class;
+	var splittedComponent : Component = self.splitComponent();
+	
+	//deploy
+	var listOfNearLessUsedNode = sourceComponent.getNearLessUsedNodes();
+	
+	//lista dei nodi critici che manifestano il componente con l'op critica
+	var listOfCriticSourceNode = self.PaF_F_maxHwUtil(); 
+	var listOfNearLessUsed : List(Node) = new List(Node);
+		
+	splittedComponent.moveOperation(self);
+	//self.reductionServDemand(percentage);
+		
+	for(node in listOfCriticSourceNode){
+		var listOfNeighbours = node.getDirectlyLinkedNode(); //lista dei nodi vicini
+		if(listOfNeighbours.isUndefined() or listOfNeighbours.size() == 0){
+			//non esistono vicini al nodo
+			return false;
+			//break;
+		}
+		
+		var lessNode : Node = listOfNeighbours->selectOne(
+			node : Node | node.hasStereotype("GaExecHost") and
+				node.getValue(node.getStereotype("GaExecHost"), "utilization").isDefined()
+		);
+		
+		if(lessNode.isUndefined()) return false;
+		var utilization : Real = lessNode.getValue(lessNode.getStereotype("GaExecHost"), "utilization")->first().asReal();
+		
+		for(neighbour in listOfNeighbours){
+			if(neighbour.hasStereotype("GaExecHost")){
+				var nearNodeUtilization = neighbour.getValue(lessNode.getStereotype("GaExecHost"), "utilization")->first();
+				if(nearNodeUtilization.isDefined() and nearNodeUtilization.asReal() < utilization){
+					lessNode = nearNode;	
+					utilization = nearNodeUtilization;
+				}
+			}
+		}
+		listOfNearLessUsed.add(lessNode);
+	}
+	//deploy il componente splittato sul primo nodo della lista dei vicini meno utilizzati
+	if(listOfNearLessUsed.isUndefined() or listOfNearLessUsed.size() == 0) return false;
+	splittedComponent.deployOn(listOfNearLessUsed->first());
+	
+	//dynamic
+	self.dynamicFixing(splittedComponent);
+	
+	return true;
+}
+
+
+operation Operation redeployOnNearLessUsedNode() : Boolean {
+	var sourceComponent = self.class;
+	var listOfSourceNode = sourceComponent.getNodes();
+	
+	return self.redeployOnNearLessUsedNode();
+}
+
+
+operation Operation moveToLessCriticalComponent() : Boolean{
+	var lessUsedComponent : Component = Component.allInstances->first();
+	var sourceComponent : Component = self.class;
+	
+	for(component in Component.allInstances){
+		if( component.calculateUtilization() < lessUsedComponent.calculateUtilization() ){
+			lessUsedComponent = component;
+		}
+	}
+	
+	if(lessUsedComponent <> self.class){
+		lessUsedComponent.println();
+		self.moveIntoComponent(lessUsedComponent);
+	}
+	
+	//dynamic
+	var listOfLifeline = sourceComponent.getLifelines();
+	var interaction = listOfLifeline->first().getInteraction();
+	var sourceLifeline = interaction.getComponentLifeline(sourceComponent);
+	
+	var lifeline = lessUsedComponent.createLifelineInto(interaction);
+	
+	var message = self.getMessageIn(interaction);
+	var indexOfMesMOS_R : Integer = interaction.getIndexOf(message.getReceiveEvent());
+	
+	var besL2 : BehaviorExecutionSpecification = new BehaviorExecutionSpecification;
+	interaction.addFragmentAt(besL2,indexOfMesMOS_R+1);
+	
+	var sourceBES = sourceLifeline.getBESStartedBy(message.getReceiveEvent());
+	besL2.start = self.getMessageIn(interaction).getReceiveEvent();
+	besL2.finish = sourceBES.getFinish();
+	
+	lifeline.getCoveredBys().add(message.getReceiveEvent());
+	lifeline.getCoveredBys().add(besL2);
+	lifeline.getCoveredBys().add(sourceBES.getFinish());
+	
+	sourceLifeline.removeCovered(message.getReceiveEvent());
+	//sourceLifeline.removeCovered(sourceBES);
+	sourceLifeline.removeCovered(sourceBES.getFinish());
+}
+

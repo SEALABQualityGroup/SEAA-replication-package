@@ -1,0 +1,958 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="logicalSpecification" nsURI="http://it.univaq.disim.seagroup/logicalSpecification"
+    nsPrefix="logicalSpecification">
+  <eClassifiers xsi:type="ecore:EClass" name="NamedElement" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Refactoring" eSuperTypes="#//NamedElement">
+    <eOperations name="cloneRefactoring" eType="#//Refactoring"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actions" upperBound="-1"
+        eType="#//Action" containment="true" eOpposite="#//Action/refactoring"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pre" eType="#//PreCondition"
+        containment="true" eOpposite="#//PreCondition/refactoring"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="post" eType="#//PostCondition"
+        containment="true" eOpposite="#//PostCondition/refactoring"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lola4rapsRoot" eType="#//LoLa4RAPSRoot"
+        eOpposite="#//LoLa4RAPSRoot/refactorings"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="cost" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"
+        defaultValueLiteral="0.0" derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="numOfChanges" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble" defaultValueLiteral="0.0"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Action" eSuperTypes="#//NamedElement">
+    <eOperations name="execute" lowerBound="1"/>
+    <eOperations name="log" lowerBound="1">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="Controller.logger_.info(this.getClass().getName());"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="setParameters" lowerBound="1"/>
+    <eOperations name="createPreCondition" lowerBound="1"/>
+    <eOperations name="createPostCondition" lowerBound="1"/>
+    <eOperations name="cloneAction" eType="#//Action"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="numOfChanges" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble" defaultValueLiteral="0.0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="cost" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"
+        defaultValueLiteral="0.0"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refactoring" eType="#//Refactoring"
+        eOpposite="#//Refactoring/actions"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+        eType="#//Parameter" containment="true" eOpposite="#//Parameter/action"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pre" eType="#//PreCondition"
+        containment="true" eOpposite="#//PreCondition/action"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="post" eType="#//PostCondition"
+        containment="true" eOpposite="#//PostCondition/action"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="model" eType="#//model"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SingleValuedParameter" eSuperTypes="#//Parameter">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="existsOperator" upperBound="-1"
+        eType="#//ExistsOperator" eOpposite="#//ExistsOperator/element"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MultipleValuedParameter" eSuperTypes="#//Parameter">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="forAllOperator" upperBound="-1"
+        eType="#//ForAllOperator" eOpposite="#//ForAllOperator/collection"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="existsOperator" upperBound="-1"
+        eType="#//ExistsOperator" eOpposite="#//ExistsOperator/collection"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Parameter" abstract="true" eSuperTypes="#//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="#//TypesEnum"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" eType="#//Action"
+        eOpposite="#//Action/parameters"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="resolvingExpr" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lhsRelationalOperator"
+        upperBound="-1" eType="#//RelationalOperator" eOpposite="#//RelationalOperator/lhs"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rhsRelationalOperator"
+        upperBound="-1" eType="#//RelationalOperator" eOpposite="#//RelationalOperator/rhs"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="antipattern" eType="#//Antipattern"
+        eOpposite="#//Antipattern/parameters"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="TypesEnum">
+    <eLiterals name="UML_OPERATION"/>
+    <eLiterals name="UML_COMPONENT" value="1"/>
+    <eLiterals name="UML_NODE" value="2"/>
+    <eLiterals name="REAL" value="3"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Condition" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionFormula" lowerBound="1"
+        eType="#//FOLSpecification" containment="true" eOpposite="#//FOLSpecification/condition"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PreCondition" eSuperTypes="#//Condition">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" eType="#//Action"
+        eOpposite="#//Action/pre"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refactoring" eType="#//Refactoring"
+        eOpposite="#//Refactoring/pre"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PostCondition" eSuperTypes="#//Condition">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" eType="#//Action"
+        eOpposite="#//Action/post"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refactoring" eType="#//Refactoring"
+        eOpposite="#//Refactoring/post"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FOLSpecification" eSuperTypes="#//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" eType="#//Condition"
+        eOpposite="#//Condition/conditionFormula"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rootOperator" lowerBound="1"
+        eType="#//Operator" containment="true" eOpposite="#//Operator/folspecification"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="antipattern" eType="#//Antipattern"
+        eOpposite="#//Antipattern/formula"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LogicalOperator" abstract="true" eSuperTypes="#//Operator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="VoidOperator" eSuperTypes="#//LogicalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ForAllOperator" eSuperTypes="#//LogicalOperator">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="collection" lowerBound="1"
+        eType="#//MultipleValuedParameter" eOpposite="#//MultipleValuedParameter/forAllOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="argument" lowerBound="1"
+        eType="#//Operator" containment="true" eOpposite="#//Operator/forAlloperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExistsOperator" eSuperTypes="#//LogicalOperator">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="element" eType="#//SingleValuedParameter"
+        eOpposite="#//SingleValuedParameter/existsOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="collection" lowerBound="1"
+        eType="#//MultipleValuedParameter" eOpposite="#//MultipleValuedParameter/existsOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="argument" eType="#//Operator"
+        containment="true" eOpposite="#//Operator/existsOperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OrOperator" eSuperTypes="#//LogicalOperator">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="arguments" lowerBound="2"
+        upperBound="-1" eType="#//Operator" containment="true" eOpposite="#//Operator/orOperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NotOperator" eSuperTypes="#//LogicalOperator">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="argument" lowerBound="1"
+        eType="#//Operator" containment="true" eOpposite="#//Operator/notOperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AndOperator" eSuperTypes="#//LogicalOperator">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="arguments" lowerBound="2"
+        upperBound="-1" eType="#//Operator" containment="true" eOpposite="#//Operator/andOperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RelationalOperator" abstract="true"
+      eSuperTypes="#//Operator">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="factor" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble" defaultValueLiteral="1.0"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lhs" lowerBound="1" eType="#//Parameter"
+        eOpposite="#//Parameter/lhsRelationalOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rhs" lowerBound="1" eType="#//Parameter"
+        eOpposite="#//Parameter/rhsRelationalOperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EqualOperator" eSuperTypes="#//RelationalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GreaterOperator" eSuperTypes="#//RelationalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GreaterEqualOperator" eSuperTypes="#//RelationalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LessEqualOperator" eSuperTypes="#//RelationalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LessOperator" eSuperTypes="#//RelationalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Operator" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="folspecification" eType="#//FOLSpecification"
+        eOpposite="#//FOLSpecification/rootOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="forAlloperator" eType="#//ForAllOperator"
+        eOpposite="#//ForAllOperator/argument"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="notOperator" eType="#//NotOperator"
+        eOpposite="#//NotOperator/argument"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="andOperator" eType="#//AndOperator"
+        eOpposite="#//AndOperator/arguments"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="orOperator" eType="#//OrOperator"
+        eOpposite="#//OrOperator/arguments"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="existsOperator" eType="#//ExistsOperator"
+        eOpposite="#//ExistsOperator/argument"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Antipattern" eSuperTypes="#//NamedElement">
+    <eOperations name="setParametersForPartialDetection" lowerBound="1"/>
+    <eOperations name="partialDetection" lowerBound="1"/>
+    <eOperations name="setParametersForFullDetection" lowerBound="1"/>
+    <eOperations name="fullDetection" lowerBound="1"/>
+    <eOperations name="log" lowerBound="1">
+      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+        <details key="body" value="Controller.logger_.info(this.getClass().getName());"/>
+      </eAnnotations>
+    </eOperations>
+    <eOperations name="createFormula" lowerBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lola4rapsRoot" eType="#//LoLa4RAPSRoot"
+        eOpposite="#//LoLa4RAPSRoot/antipatterns"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+        eType="#//Parameter" containment="true" eOpposite="#//Parameter/antipattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="formula" lowerBound="1"
+        eType="#//FOLSpecification" containment="true" eOpposite="#//FOLSpecification/antipattern"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LoLa4RAPSRoot" eSuperTypes="#//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refactorings" upperBound="-1"
+        eType="#//Refactoring" containment="true" eOpposite="#//Refactoring/lola4rapsRoot"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="antipatterns" upperBound="-1"
+        eType="#//Antipattern" containment="true" eOpposite="#//Antipattern/lola4rapsRoot"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AddAction" eSuperTypes="#//Action"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DeleteAction" eSuperTypes="#//Action"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MoveAction" eSuperTypes="#//Action"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ChangeAction" eSuperTypes="#//Action"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="model" instanceTypeName="EObject"/>
+  <eSubpackages name="actions" nsURI="http://it.univaq.disim.seagroup/logicalSpecification/actions"
+      nsPrefix="logicalSpecificationActions">
+    <eSubpackages name="UML" nsURI="http://it.univaq.disim.seagroup/logicalSpecification/actions/uml"
+        nsPrefix="logicalSpecificationUMLActions">
+      <eClassifiers xsi:type="ecore:EClass" name="UMLAddAction" abstract="true" eSuperTypes="#//AddAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLDeleteAction" abstract="true"
+          eSuperTypes="#//DeleteAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLMoveAction" abstract="true" eSuperTypes="#//MoveAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLAddNodeAction" eSuperTypes="#//actions/UML/UMLAddAction">
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log();&#xA;&#x9;&#x9;if (getUmlNodeToAdd() != null) {&#xA;&#x9;&#x9;&#x9;Controller.logger_.info(getUmlNodeToAdd().getName());&#xA;&#x9;&#x9;&#x9;Controller.logger_.info(&quot;--------Deployment----------&quot;);&#xA;&#x9;&#x9;&#x9;for (Deployment depl : this.umlNodeToAdd.getDeployments())&#xA;&#x9;&#x9;&#x9;&#x9;Controller.logger_.info(depl.toString());&#xA;&#x9;&#x9;&#x9;Controller.logger_.info(&quot;--------CommunicationPath----------&quot;);&#xA;&#x9;&#x9;&#x9;for (CommunicationPath cp : umlNodeToAdd.getCommunicationPaths())&#xA;&#x9;&#x9;&#x9;&#x9;Controller.logger_.info(cp.toString());&#xA;&#x9;&#x9;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="umlNodeToAdd = UMLFactory.eINSTANCE.createNode();&#xA;&#x9;&#x9;umlNodeToAdd.setName(&quot;newNode&quot; + Math.random());&#xA;&#x9;&#x9;umlNodeToAdd.setPackage(umlSourcePackage);&#xA;&#xA;&#x9;&#x9;addCommunicationPaths();&#xA;&#xA;&#x9;&#x9;addDeployedComps();"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="addDeployedComps">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="Artifact art;&#xA;&#x9;&#x9;for (Component comp : getUmlCompsToDeploy()) {&#xA;&#x9;&#x9;&#x9;art = UMLFactory.eINSTANCE.createArtifact();&#xA;&#x9;&#x9;&#x9;art.setName(comp.getName() + &quot;_Artifact&quot;);&#xA;&#x9;&#x9;&#x9;art.createManifestation(comp.getName() + &quot;_Manifestation&quot;, comp);&#xA;&#x9;&#x9;&#x9;Deployment deploy = umlNodeToAdd.createDeployment(comp.getName() + &quot;_Deployment&quot;);&#xA;&#x9;&#x9;&#x9;deploy.getDeployedArtifacts().add(art);&#xA;&#x9;&#x9;&#x9;umlNodeToAdd.getDeployments().add(deploy);&#xA;&#x9;&#x9;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="addCommunicationPaths">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="for (Node node : umlNeighbors) {&#xA;&#x9;&#x9;&#x9;/**&#xA;&#x9;&#x9;&#x9; * createCommunicationPath(boolean end1IsNavigable, AggregationKind&#xA;&#x9;&#x9;&#x9; * end1Aggregation, String end1Name, int end1Lower,int end1Upper,&#xA;&#x9;&#x9;&#x9; * Node end1Node, boolean end2IsNavigable,AggregationKind&#xA;&#x9;&#x9;&#x9; * end2Aggregation, String end2Name, int end2Lower,int end2Upper);&#xA;&#x9;&#x9;&#x9; */&#xA;&#x9;&#x9;&#x9;umlNodeToAdd&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;.createCommunicationPath(true, AggregationKind.COMPOSITE_LITERAL, node.getName(), 1, 1, node, true,&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;AggregationKind.COMPOSITE_LITERAL, umlNodeToAdd.getName(), 1, 1)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;.setName(umlNodeToAdd.getName() + &quot;_cp_&quot; + node.getName());&#xA;&#x9;&#x9;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="setParameters">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> addParams = new ArrayList&lt;>();&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;if (umlNodeToAdd != null) {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// FIXME le add non dovrebbero avere come attributo l'oggetto da&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// creare&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;setNodeToAddSVP(Manager.getInstance(UMLManager.getInstance()).createSingleValueParameter(((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager())).getNodeQuery(umlNodeToAdd)));&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;addParams.add(getNodeToAddSVP());&#xA;&#x9;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;setNeighborsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager())).getNodesQuery(this.umlNeighbors)));&#xA;&#x9;&#x9;&#x9;&#x9;addParams.add(getNeighborsMVP());&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;setCompsToDeployMVP(&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager())).getComponentsQuery(this.umlCompsToDeploy)));&#xA;&#x9;&#x9;&#x9;&#x9;addParams.add(getCompsToDeployMVP());&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;setAllNodesMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager())).getAllNodesQuery()));&#xA;&#x9;&#x9;&#x9;&#x9;addParams.add(getAllNodesMVP());&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;setAllCompsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager())).getAllComponentsQuery()));&#xA;&#x9;&#x9;&#x9;&#x9;addParams.add(getAllCompsMVP());&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;if (getUmlNodeToAdd() != null) {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;ArrayList&lt;Node> nList = new ArrayList&lt;Node>();&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// FIXME qui facciamo la query dei componenti deploiati sul nodo&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// appena creato ma e' vuota&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;nList.add(getUmlNodeToAdd());&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;setAllDeployedElemsMVP(&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager())).getAllDeployedElementsQuery(nList)));&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;addParams.add(getAllDeployedElemsMVP());&#xA;&#x9;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;getParameters().addAll(addParams);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPreCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PreCondition preCondition = Manager.getInstance(UMLManager.getInstance()).createPreCondition();&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;FOLSpecification addPreSpec = Manager.getInstance(UMLManager.getInstance()).createFOLSpectification(&quot;AddNodePrecondition&quot;);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;AndOperator addPreAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;// ExistsOperator addPreAndNotExists =&#xA;&#x9;&#x9;&#x9;&#x9;// Manager.createExistsOperator(getNodeToAddSVP(), getAllNodesMVP());&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;// NotOperator addPreAndNot =&#xA;&#x9;&#x9;&#x9;&#x9;// Manager.createNotOperator(addPreAndNotExists);&#xA;&#x9;&#x9;&#x9;&#x9;// addPreAnd.getArguments().add(addPreAndNot);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;ForAllOperator addPreAndForall = Manager.getInstance(UMLManager.getInstance()).createForAllOperator(getNeighborsMVP());&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;ExistsOperator addPreAndForallExists = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getAllNodesMVP());&#xA;&#x9;&#x9;&#x9;&#x9;addPreAndForall.setArgument(addPreAndForallExists);&#xA;&#x9;&#x9;&#x9;&#x9;addPreAnd.getArguments().add(addPreAndForall);&#xA;&#x9;&#x9;&#x9;&#x9;addPreSpec.setRootOperator(addPreAnd);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;preCondition.setConditionFormula(addPreSpec);&#xA;&#x9;&#x9;&#x9;&#x9;setPre(preCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPostCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PostCondition postCondition = Manager.getInstance(UMLManager.getInstance()).createPostCondition();&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;FOLSpecification addPostSpec = Manager.getInstance(UMLManager.getInstance()).createFOLSpectification(&quot;AddNodePostcondition&quot;);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;AndOperator addPostAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;ExistsOperator addPostAndExists = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getNodeToAddSVP(), getAllNodesMVP());&#xA;&#x9;&#x9;&#x9;&#x9;addPostAnd.getArguments().add(addPostAndExists);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;ForAllOperator addPostAndForallNeighs = Manager.getInstance(UMLManager.getInstance()).createForAllOperator(getNeighborsMVP());&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;AndOperator addPostAndForallNeighsAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;ExistsOperator addPostAndForallNeighsAndExistsAllNodes = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getAllNodesMVP());&#xA;&#x9;&#x9;&#x9;&#x9;addPostAndForallNeighsAnd.getArguments().add(addPostAndForallNeighsAndExistsAllNodes);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;ExistsOperator addPostAndForallNeighsAndExistsNeighs = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getNeighborsMVP());&#xA;&#x9;&#x9;&#x9;&#x9;addPostAndForallNeighsAnd.getArguments().add(addPostAndForallNeighsAndExistsNeighs);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;addPostAndForallNeighs.setArgument(addPostAndForallNeighsAnd);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;addPostAnd.getArguments().add(addPostAndForallNeighs);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;ForAllOperator addPostAndForallDeplComps = Manager.getInstance(UMLManager.getInstance()).createForAllOperator(getCompsToDeployMVP());&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;AndOperator addPostAndForallDeplCompsAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;ExistsOperator addPostAndForallDeplCompsAndExistsAllNodes = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getAllCompsMVP());&#xA;&#x9;&#x9;&#x9;&#x9;addPostAndForallDeplCompsAnd.getArguments().add(addPostAndForallDeplCompsAndExistsAllNodes);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;ExistsOperator addPostAndForallDeplCompsAndExistsNeighs = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getAllDeployedElemsMVP());&#xA;&#x9;&#x9;&#x9;&#x9;addPostAndForallDeplCompsAnd.getArguments().add(addPostAndForallDeplCompsAndExistsNeighs);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;addPostAndForallDeplComps.setArgument(addPostAndForallDeplCompsAnd);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;addPostAnd.getArguments().add(addPostAndForallDeplComps);&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;&#x9;addPostSpec.setRootOperator(addPostAnd);&#xA;&#x9;&#x9;&#x9;&#x9;postCondition.setConditionFormula(addPostSpec);&#xA;&#x9;&#x9;&#x9;&#x9;setPost(postCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="nodeToAddSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="neighborsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="compsToDeployMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allDeployedElemsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlNodeToAdd" lowerBound="1"
+            eType="#//actions/UML/Node"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlNeighbors" upperBound="-1"
+            eType="#//actions/UML/Node"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlCompsToDeploy" upperBound="-1"
+            eType="#//actions/UML/Component"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlSourcePackage" lowerBound="1"
+            eType="#//actions/UML/Package"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLAddComponentAction" eSuperTypes="#//actions/UML/UMLAddAction">
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log(); &#xA;if(getUmlCompToAdd() != null)&#xA;&#x9;Controller.logger_.info(getUmlCompToAdd().toString());"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="setUmlCompToAdd(UMLFactory.eINSTANCE.createComponent());&#xA;&#x9;&#x9;getUmlCompToAdd().setName(&quot;newComp&quot; + Math.random());&#xA;&#x9;&#x9;getUmlCompToAdd().setPackage(getUmlSourcePackage());&#xA;&#x9;&#x9;setParameters();&#xA;&#x9;&#x9;deployOn(getUmlTargetNodes());"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="deployOn">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="Artifact art;&#xA;&#x9;&#x9;for (Node target : targets) {&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;Package targetPackage = target.getPackage();&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;art = UMLFactory.eINSTANCE.createArtifact();&#xA;&#x9;&#x9;&#x9;targetPackage.getPackagedElements().add(art);&#xA;&#x9;&#x9;&#x9;art.setName(getUmlCompToAdd().getName() + &quot;_Artifact&quot;);&#xA;&#x9;&#x9;&#x9;art.createManifestation(getUmlCompToAdd().getName() + &quot;_Manifestation&quot;, getUmlCompToAdd());&#xA;&#x9;&#x9;&#x9;art.setPackage(targetPackage);&#xA;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;&#x9;Deployment deploy = target.createDeployment(getUmlCompToAdd().getName() + &quot;_Deployment&quot;);&#xA;&#x9;&#x9;&#x9;deploy.getDeployedArtifacts().add(art);&#xA;&#x9;&#x9;&#x9;target.getDeployments().add(deploy);&#xA;&#x9;&#x9;}"/>
+          </eAnnotations>
+          <eParameters name="targets" upperBound="-1" eType="#//actions/UML/Node"/>
+        </eOperations>
+        <eOperations name="setParameters">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="// ACTION add PARAMETERS&#xA;&#x9;&#x9;List&lt;Parameter> addParams = new ArrayList&lt;>();&#xA;&#x9;&#x9;// FIXME le add non dovrebbero avere come attributo l'oggetto da creare&#xA;&#xA;&#x9;&#x9;// setCompToAddSVP(Manager.createSingleValueParameter(&quot;Component.allInstances()->select(c&#xA;&#x9;&#x9;// | c.name = 'Pippo Node')&quot;));&#xA;&#x9;&#x9;// addParams.add(getCompToAddSVP());&#xA;&#xA;&#x9;&#x9;if (umlCompToAdd != null) {&#xA;&#x9;&#x9;&#x9;setComponentToAddSVP(Manager.getInstance(UMLManager.getInstance()).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getComponentQuery(umlCompToAdd)));&#xA;&#x9;&#x9;&#x9;addParams.add(getComponentToAddSVP());&#xA;&#x9;&#x9;}&#xA;&#xA;&#x9;&#x9;setTargetNodesMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getNodesQuery(umlTargetNodes)));&#xA;&#x9;&#x9;addParams.add(getTargetNodesMVP());&#xA;&#xA;&#x9;&#x9;// List&lt;Component> list_of_random_components = new&#xA;&#x9;&#x9;// ArrayList&lt;Component>();&#xA;&#x9;&#x9;// list_of_random_components = OclManager.getRandomComponents();&#xA;&#x9;&#x9;// setDeployedCompsMVP(Manager.createMultipleValuedParameter(OclStringManager.getComponentsQuery(list_of_random_components)));&#xA;&#x9;&#x9;// addParams.add(getDeployedCompsMVP());&#xA;&#xA;&#x9;&#x9;setDeployedCompsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getAllDeployedElementsQuery(getUmlTargetNodes())));&#xA;&#x9;&#x9;addParams.add(getDeployedCompsMVP());&#xA;&#xA;&#x9;&#x9;setAllNodesMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager())).getAllNodesQuery()));&#xA;&#x9;&#x9;addParams.add(getAllNodesMVP());&#xA;&#xA;&#x9;&#x9;setAllCompsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getAllComponentsQuery()));&#xA;&#x9;&#x9;addParams.add(getAllCompsMVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(addParams);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPreCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="&#x9;PreCondition preCondition = LogicalSpecificationFactory.eINSTANCE.createPreCondition();&#xA;&#xA;&#x9;&#x9;FOLSpecification addPreSpecification = Manager.getInstance(UMLManager.getInstance()).createFOLSpectification(&quot;AddComponentPreCondition&quot;);&#xA;&#xA;&#x9;&#x9;AndOperator addPreAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#xA;&#x9;&#x9;// NotOperator addPreAndNot = Manager.createNotOperator();&#xA;&#x9;&#x9;// ExistsOperator addPreAndNotExists =&#xA;&#x9;&#x9;// Manager.createExistsOperator(getCompToAddSVP(), getAllCompsMVP());&#xA;&#x9;&#x9;//&#xA;&#x9;&#x9;// addPreAndNot.setArgument(addPreAndNotExists);&#xA;&#x9;&#x9;// addPreAnd.getArguments().add(addPreAndNot);&#xA;&#xA;&#x9;&#x9;ForAllOperator addPreAndForall = Manager.getInstance(UMLManager.getInstance()).createForAllOperator(getTargetNodesMVP());&#xA;&#x9;&#x9;ExistsOperator addPreAndForallExists = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getAllNodesMVP());&#xA;&#x9;&#x9;addPreAndForall.setArgument(addPreAndForallExists);&#xA;&#x9;&#x9;addPreAnd.getArguments().add(addPreAndForall);&#xA;&#xA;&#x9;&#x9;addPreSpecification.setRootOperator(addPreAnd);&#xA;&#x9;&#x9;preCondition.setConditionFormula(addPreSpecification);&#xA;&#x9;&#x9;setPre(preCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPostCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PostCondition addPost = LogicalSpecificationFactory.eINSTANCE.createPostCondition();&#xA;&#xA;&#x9;&#x9;FOLSpecification addPostSpec = Manager.getInstance(UMLManager.getInstance()).createFOLSpectification(&quot;AddNodePostcondition&quot;);&#xA;&#xA;&#x9;&#x9;AndOperator addPostAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#xA;&#x9;&#x9;ExistsOperator addPostAndExistsInC = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getComponentToAddSVP(), getAllCompsMVP());&#xA;&#xA;&#x9;&#x9;addPostAnd.getArguments().add(addPostAndExistsInC);&#xA;&#xA;&#x9;&#x9;ForAllOperator addPostAndForallTargets = Manager.getInstance(UMLManager.getInstance()).createForAllOperator(getTargetNodesMVP());&#xA;&#x9;&#x9;AndOperator addPostAndForallTargetsAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;ExistsOperator addPostAndForallTargetsExists = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getAllNodesMVP());&#xA;&#x9;&#x9;addPostAndForallTargetsAnd.getArguments().add(addPostAndForallTargetsExists);&#xA;&#xA;&#x9;&#x9;// TODO getDeployedComps è l'insieme delle Component deployate sui&#xA;&#x9;&#x9;// target Nodes. Non va bene: la condition dice che&#xA;&#x9;&#x9;// su ogni target Node ci deve stare la Component aggiunta. Con l'unione&#xA;&#x9;&#x9;// basta che stia su uno dei target...&#xA;&#x9;&#x9;ExistsOperator addPostAndExistsInD = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getComponentToAddSVP(),&#xA;&#x9;&#x9;&#x9;&#x9;getDeployedCompsMVP());&#xA;&#xA;&#x9;&#x9;addPostAndForallTargetsAnd.getArguments().add(addPostAndExistsInD);&#xA;&#x9;&#x9;addPostAndForallTargets.setArgument(addPostAndForallTargetsAnd);&#xA;&#x9;&#x9;addPostAnd.getArguments().add(addPostAndForallTargets);&#xA;&#xA;&#x9;&#x9;addPostSpec.setRootOperator(addPostAnd);&#xA;&#x9;&#x9;addPost.setConditionFormula(addPostSpec);&#xA;&#x9;&#x9;setPost(addPost);"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="componentToAddSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="targetNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="deployedCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlCompToAdd" lowerBound="1"
+            eType="#//actions/UML/Component"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlSourcePackage" lowerBound="1"
+            eType="#//actions/UML/Package"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlTargetNodes" lowerBound="1"
+            upperBound="-1" eType="#//actions/UML/Node"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLAddOperationAction" eSuperTypes="#//actions/UML/UMLAddAction">
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log();&#xA;&#x9;&#x9;if (umlOpToAdd != null)&#xA;&#x9;&#x9;&#x9;Controller.logger_.info(umlOpToAdd.toString());&#xA;&#xA;&#x9;&#x9;for (Operation op : umlTargetComp.getOperations()) {&#xA;&#x9;&#x9;&#x9;Controller.logger_.info(op.getName());&#xA;&#x9;&#x9;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="&#xA;&#x9;&#x9;/**&#xA;&#x9;&#x9; * Operation createOwnedOperation(String name, EList&lt;String>&#xA;&#x9;&#x9; * parameterNames, EList&lt;Type> parameterTypes, Type returnType);&#xA;&#x9;&#x9; * &#xA;&#x9;&#x9; */&#xA;&#x9;&#x9;umlOpToAdd = umlTargetComp.createOwnedOperation(&quot;newOp&quot; + Math.random(), null, null);&#xA;"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="setParameters">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="// ACTION add PARAMETERS&#xA;&#x9;&#x9;List&lt;Parameter> addParams = new ArrayList&lt;>();&#xA;&#x9;&#x9;// FIXME le add non dovrebbero avere come attributo l'oggetto da creare&#xA;&#xA;&#x9;&#x9;if (umlOpToAdd != null) {&#xA;&#x9;&#x9;&#x9;setOpToAddSVP(Manager.getInstance(UMLManager.getInstance()).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getOperationQuery(umlOpToAdd)));&#xA;&#x9;&#x9;&#x9;addParams.add(getOpToAddSVP());&#xA;&#x9;&#x9;}&#xA;&#xA;&#x9;&#x9;setTargetCompSVP(Manager.getInstance(UMLManager.getInstance()).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getComponentQuery(getUmlTargetComp())));&#xA;&#x9;&#x9;addParams.add(getTargetCompSVP());&#xA;&#xA;&#x9;&#x9;setAllCompsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getAllComponentsQuery()));&#xA;&#x9;&#x9;addParams.add(getAllCompsMVP());&#xA;&#xA;&#x9;&#x9;setTargetCompOpsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getOperationsOfQuery(getUmlTargetComp())));&#xA;&#x9;&#x9;addParams.add(getTargetCompOpsMVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(addParams);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPreCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PreCondition preCondition = LogicalSpecificationFactory.eINSTANCE.createPreCondition();&#xA;&#x9;&#x9;FOLSpecification addPreSpecification = Manager.getInstance(UMLManager.getInstance()).createFOLSpectification(&quot;AddOperationPreCondition&quot;);&#xA;&#x9;&#x9;AndOperator addPreAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#xA;&#x9;&#x9;ExistsOperator addPreAndExists = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getTargetCompSVP(), getAllCompsMVP());&#xA;&#x9;&#x9;addPreAnd.getArguments().add(addPreAndExists);&#xA;&#xA;&#x9;&#x9;// NotOperator addPreAndNot = Manager.createNotOperator();&#xA;&#x9;&#x9;// ExistsOperator addPreAndNotExists =&#xA;&#x9;&#x9;// Manager.createExistsOperator(getNewOpSVP(), getTargetCompOps());&#xA;&#x9;&#x9;// addPreAndNot.setArgument(addPreAndNotExists);&#xA;&#x9;&#x9;// addPreAnd.getArguments().add(addPreAndNot);&#xA;&#xA;&#x9;&#x9;addPreSpecification.setRootOperator(addPreAnd);&#xA;&#x9;&#x9;preCondition.setConditionFormula(addPreSpecification);&#xA;&#x9;&#x9;setPre(preCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPostCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PostCondition postCondition = LogicalSpecificationFactory.eINSTANCE.createPostCondition();&#xA;&#x9;&#x9;FOLSpecification addPreSpecification = Manager.getInstance(UMLManager.getInstance()).createFOLSpectification(&quot;AddOperationPostCondition&quot;);&#xA;&#x9;&#x9;AndOperator addPreAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#xA;&#x9;&#x9;ExistsOperator addPreAndExists1 = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getTargetCompSVP(), getAllCompsMVP());&#xA;&#x9;&#x9;addPreAnd.getArguments().add(addPreAndExists1);&#xA;&#xA;&#x9;&#x9;ExistsOperator addPreAndExists2 = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getOpToAddSVP(), getTargetCompOpsMVP());&#xA;&#x9;&#x9;addPreAnd.getArguments().add(addPreAndExists2);&#xA;&#xA;&#x9;&#x9;addPreSpecification.setRootOperator(addPreAnd);&#xA;&#x9;&#x9;postCondition.setConditionFormula(addPreSpecification);&#xA;&#x9;&#x9;setPost(postCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="opToAddSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="targetCompSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="targetCompOpsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlOpToAdd" lowerBound="1"
+            eType="#//actions/UML/Operation"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlTargetComp" lowerBound="1"
+            eType="#//actions/UML/Component"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLDeleteNodeAction" eSuperTypes="#//actions/UML/UMLDeleteAction">
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log(); &#xA;&#x9;&#x9;Controller.logger_.info(getUmlNodeToDel().getName());"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="umlNodeToDel.destroy();"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="setParameters">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> delNodeParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setNodeToDelSVP(Manager.getInstance(UMLManager.getInstance()).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getNodeQuery(getUmlNodeToDel())));&#xA;&#x9;&#x9;delNodeParams.add(getNodeToDelSVP());&#xA;&#xA;&#x9;&#x9;setAllNodesMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager())).getAllNodesQuery()));&#xA;&#x9;&#x9;delNodeParams.add(getAllNodesMVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(delNodeParams);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPreCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PreCondition preCondition = Manager.getInstance(UMLManager.getInstance()).createPreCondition();&#xA;&#xA;&#x9;&#x9;FOLSpecification specification = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createFOLSpectification(&quot;DeleteNodePreCondition&quot;);&#xA;&#xA;&#x9;&#x9;AndOperator preAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#xA;&#x9;&#x9;ExistsOperator existsOperator = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getNodeToDelSVP(), getAllNodesMVP());&#xA;&#xA;&#x9;&#x9;preAnd.getArguments().add(existsOperator);&#xA;&#xA;&#x9;&#x9;specification.setRootOperator(preAnd);&#xA;&#x9;&#x9;preCondition.setConditionFormula(specification);&#xA;&#x9;&#x9;setPre(preCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPostCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PostCondition postCondition = Manager.getInstance(UMLManager.getInstance()).createPostCondition();&#xA;&#x9;&#x9;FOLSpecification specification = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createFOLSpectification(&quot;DeleteNodePostCondition&quot;);&#xA;&#xA;&#x9;&#x9;AndOperator preAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#xA;&#x9;&#x9;NotOperator notOperator = Manager.getInstance(UMLManager.getInstance()).createNotOperator();&#xA;&#x9;&#x9;ExistsOperator existsOperator = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getNodeToDelSVP(), getAllNodesMVP());&#xA;&#xA;&#x9;&#x9;notOperator.setArgument(existsOperator);&#xA;&#x9;&#x9;preAnd.getArguments().add(notOperator);&#xA;&#xA;&#x9;&#x9;specification.setRootOperator(preAnd);&#xA;&#x9;&#x9;postCondition.setConditionFormula(specification);&#xA;&#x9;&#x9;setPost(postCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="nodeToDelSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlNodeToDel" lowerBound="1"
+            eType="#//actions/UML/Node"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLDeleteComponentAction" eSuperTypes="#//actions/UML/UMLDeleteAction">
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log();&#xA;&#x9;&#x9;Controller.logger_.info(this.toString());"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Manifestation> list_of_manifestations = ((UMLManager) Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.getMetamodelManager()).getAllManifestationsOf(getUmlCompToDel());&#xA;&#x9;&#x9;for (Manifestation man : list_of_manifestations) {&#xA;&#x9;&#x9;&#x9;if (man.getUtilizedElement().getNamespace() == getUmlCompToDel().getNamespace()) {&#xA;&#x9;&#x9;&#x9;&#x9;man.destroy();&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#x9;&#x9;umlCompToDel.destroy();"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="setParameters">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> delCompParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setCompToDelSVP(Manager.getInstance(UMLManager.getInstance()).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getComponentQuery(getUmlCompToDel())));&#xA;&#x9;&#x9;delCompParams.add(getCompToDelSVP());&#xA;&#xA;&#x9;&#x9;setAllCompsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getAllComponentsQuery()));&#xA;&#x9;&#x9;delCompParams.add(getAllCompsMVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(delCompParams);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPreCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PreCondition preCondition = Manager.getInstance(UMLManager.getInstance()).createPreCondition();&#xA;&#x9;&#x9;FOLSpecification specification = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createFOLSpectification(&quot;DeleteComponentPreCondition&quot;);&#xA;&#x9;&#x9;AndOperator preAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;ExistsOperator exists = Manager.getInstance(UMLManager.getInstance()).createExistsOperator(getCompToDelSVP(),&#xA;&#x9;&#x9;&#x9;&#x9;getAllCompsMVP());&#xA;&#x9;&#x9;preAnd.getArguments().add(exists);&#xA;&#x9;&#x9;specification.setRootOperator(preAnd);&#xA;&#x9;&#x9;preCondition.setConditionFormula(specification);&#xA;&#x9;&#x9;setPre(preCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPostCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PostCondition postCondition = Manager.getInstance(UMLManager.getInstance()).createPostCondition();&#xA;&#xA;&#x9;&#x9;FOLSpecification specification = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createFOLSpectification(&quot;DeleteComponentPostCondition&quot;);&#xA;&#x9;&#x9;AndOperator preAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;NotOperator notOperator = Manager.getInstance(UMLManager.getInstance()).createNotOperator();&#xA;&#x9;&#x9;ExistsOperator existsOperator = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getCompToDelSVP(), getAllCompsMVP());&#xA;&#x9;&#x9;notOperator.setArgument(existsOperator);&#xA;&#x9;&#x9;preAnd.getArguments().add(notOperator);&#xA;&#x9;&#x9;specification.setRootOperator(preAnd);&#xA;&#x9;&#x9;postCondition.setConditionFormula(specification);&#xA;&#x9;&#x9;setPost(postCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="compToDelSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlCompToDel" lowerBound="1"
+            eType="#//actions/UML/Component"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLDeleteOperationAction" eSuperTypes="#//actions/UML/UMLDeleteAction">
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log(); &#xA;&#x9;&#x9;Controller.logger_.info(getUmlOpToDel().toString());"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="getUmlOpToDel().destroy();"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="setParameters">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> delOpParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setOpToDelSVP(Manager.getInstance(UMLManager.getInstance()).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getOperationQuery(getUmlOpToDel())));&#xA;&#x9;&#x9;delOpParams.add(getOpToDelSVP());&#xA;&#xA;&#x9;&#x9;setAllOpsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getAllOperationsQuery()));&#xA;&#x9;&#x9;delOpParams.add(getAllOpsMVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(delOpParams);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPreCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PreCondition preCondition = Manager.getInstance(UMLManager.getInstance()).createPreCondition();&#xA;&#x9;&#x9;FOLSpecification specification = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createFOLSpectification(&quot;DeleteOperationPreCondition&quot;);&#xA;&#xA;&#x9;&#x9;AndOperator preAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#xA;&#x9;&#x9;ExistsOperator existsOperator = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getOpToDelSVP(), getAllOpsMVP());&#xA;&#xA;&#x9;&#x9;preAnd.getArguments().add(existsOperator);&#xA;&#xA;&#x9;&#x9;specification.setRootOperator(preAnd);&#xA;&#x9;&#x9;preCondition.setConditionFormula(specification);&#xA;&#xA;&#x9;&#x9;setPre(preCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPostCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PostCondition postCondition = Manager.getInstance(UMLManager.getInstance()).createPostCondition();&#xA;&#x9;&#x9;FOLSpecification specification = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createFOLSpectification(&quot;DeleteOperationPostCondition&quot;);&#xA;&#xA;&#x9;&#x9;AndOperator preAnd = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#xA;&#x9;&#x9;NotOperator notOperator = Manager.getInstance(UMLManager.getInstance()).createNotOperator();&#xA;&#x9;&#x9;ExistsOperator existsOperator = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getOpToDelSVP(), getAllOpsMVP());&#xA;&#x9;&#x9;notOperator.setArgument(existsOperator);&#xA;&#xA;&#x9;&#x9;preAnd.getArguments().add(notOperator);&#xA;&#xA;&#x9;&#x9;specification.setRootOperator(preAnd);&#xA;&#xA;&#x9;&#x9;postCondition.setConditionFormula(specification);&#xA;&#xA;&#x9;&#x9;setPost(postCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="opToDelSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allOpsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlOpToDel" lowerBound="1"
+            eType="#//actions/UML/Operation"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLMoveComponentAction" eSuperTypes="#//actions/UML/UMLMoveAction">
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="Controller.logger_.info(umlCompToMove.toString());&#xA;&#x9;&#x9;for (Node target : umlTargetNodes) {&#xA;&#x9;&#x9;&#x9;for (Deployment dep : target.getDeployments()) {&#xA;&#x9;&#x9;&#x9;&#x9;Controller.logger_.info(dep.toString());&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#x9;&#x9;for (Artifact art : getUmlArtifacts()) {&#xA;&#x9;&#x9;&#x9;Controller.logger_.info(art.toString());&#xA;&#x9;&#x9;&#x9;Controller.logger_.info(Integer.toString(art.getManifestations().size()));&#xA;&#x9;&#x9;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="moveDeployments();"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="moveDeployments">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Manifestation> manifestations = new ArrayList&lt;Manifestation>();&#xA;&#xA;&#x9;&#x9;manifestations = ((UMLManager) Manager.getInstance(UMLManager.getInstance()).getMetamodelManager())&#xA;&#x9;&#x9;&#x9;&#x9;.getAllManifestations();&#xA;&#xA;&#x9;&#x9;for (Manifestation man : manifestations) {&#xA;&#x9;&#x9;&#x9;if (man.getUtilizedElement().getQualifiedName().equals(umlCompToMove.getQualifiedName())) {&#xA;&#x9;&#x9;&#x9;&#x9;man.destroy();&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#xA;&#x9;&#x9;umlArtifacts = ((UMLManager) Manager.getInstance(UMLManager.getInstance()).getMetamodelManager())&#xA;&#x9;&#x9;&#x9;&#x9;.getAllArtifacts();&#xA;&#xA;&#x9;&#x9;for (Artifact art : umlArtifacts) {&#xA;&#x9;&#x9;&#x9;if (art.getManifestations().isEmpty()) {&#xA;&#x9;&#x9;&#x9;&#x9;art.destroy();&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#xA;&#x9;&#x9;deployOn();"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="deployOn">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="Artifact art;&#xA;&#x9;&#x9;for (Node target : umlTargetNodes) {&#xA;&#x9;&#x9;&#x9;art = UMLFactory.eINSTANCE.createArtifact();&#xA;&#x9;&#x9;&#x9;art.setName(umlCompToMove.getName() + &quot;_Artifact&quot;);&#xA;&#x9;&#x9;&#x9;art.createManifestation(umlCompToMove.getName() + &quot;_Manifestation&quot;, umlCompToMove);&#xA;&#x9;&#x9;&#x9;Deployment deploy = target.createDeployment(umlCompToMove.getName() + &quot;_Deployment&quot;);&#xA;&#x9;&#x9;&#x9;deploy.getDeployedArtifacts().add(art);&#xA;&#x9;&#x9;&#x9;target.getDeployments().add(deploy);&#xA;&#x9;&#x9;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="setParameters">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> moveCompParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setCompToMoveSVP(Manager.getInstance(UMLManager.getInstance()).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getComponentQuery(getUmlCompToMove())));&#xA;&#x9;&#x9;moveCompParams.add(getCompToMoveSVP());&#xA;&#xA;&#x9;&#x9;setTargetNodesMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getNodesQuery(getUmlTargetNodes())));&#xA;&#x9;&#x9;moveCompParams.add(getTargetNodesMVP());&#xA;&#xA;&#x9;&#x9;setAllArtifactsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getAllArtifactsQuery()));&#xA;&#x9;&#x9;moveCompParams.add(getAllArtifactsMVP());&#xA;&#xA;&#x9;&#x9;setAllCompsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getAllComponentsQuery()));&#xA;&#x9;&#x9;moveCompParams.add(getAllCompsMVP());&#xA;&#xA;&#x9;&#x9;setAllTargetsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getNodesQuery(getUmlTargetNodes())));&#xA;&#x9;&#x9;moveCompParams.add(getAllTargetsMVP());&#xA;&#xA;&#x9;&#x9;setAllNodesMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager())).getAllNodesQuery()));&#xA;&#x9;&#x9;moveCompParams.add(getAllNodesMVP());&#xA;&#xA;&#x9;&#x9;setAllDeployedElemsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getAllDeployedElementsQuery(getUmlTargetNodes())));&#xA;&#x9;&#x9;moveCompParams.add(getAllDeployedElemsMVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(moveCompParams);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPreCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PreCondition preCondition = Manager.getInstance(UMLManager.getInstance()).createPreCondition();&#xA;&#xA;&#x9;&#x9;FOLSpecification specification = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createFOLSpectification(&quot;MoveComponentPreCondition&quot;);&#xA;&#xA;&#x9;&#x9;ExistsOperator existsComponentInComponents = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getCompToMoveSVP(), getAllCompsMVP());&#xA;&#xA;&#x9;&#x9;ForAllOperator forAllNode = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createForAllOperator(getTargetNodesMVP());&#xA;&#x9;&#x9;ExistsOperator existsTargetInNodes = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getAllNodesMVP());&#xA;&#x9;&#x9;NotOperator componentNotOperator = Manager.getInstance(UMLManager.getInstance()).createNotOperator();&#xA;&#xA;&#x9;&#x9;// TODO getAllDeployedElems è l'insieme delle Component deployate sui target&#xA;&#x9;&#x9;// Nodes. Non va bene: la condition dice che&#xA;&#x9;&#x9;// su ogni target Node ci deve stare la Component spostata. Con l'unione basta&#xA;&#x9;&#x9;// che stia su uno dei target...&#xA;&#x9;&#x9;ExistsOperator componentExists = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getCompToMoveSVP(), getAllDeployedElemsMVP());&#xA;&#xA;&#x9;&#x9;componentNotOperator.setArgument(componentExists);&#xA;&#x9;&#x9;AndOperator andOperator = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;andOperator.getArguments().add(existsTargetInNodes);&#xA;&#x9;&#x9;andOperator.getArguments().add(componentNotOperator);&#xA;&#x9;&#x9;forAllNode.setArgument(andOperator);&#xA;&#xA;&#x9;&#x9;AndOperator andRoot = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;andRoot.getArguments().add(existsComponentInComponents);&#xA;&#x9;&#x9;andRoot.getArguments().add(forAllNode);&#xA;&#xA;&#x9;&#x9;specification.setRootOperator(andRoot);&#xA;&#x9;&#x9;preCondition.setConditionFormula(specification);&#xA;&#x9;&#x9;setPre(preCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPostCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PostCondition postCondition = Manager.getInstance(UMLManager.getInstance()).createPostCondition();&#xA;&#xA;&#x9;&#x9;FOLSpecification specification = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createFOLSpectification(&quot;MoveComponentPostCondition&quot;);&#xA;&#xA;&#x9;&#x9;ExistsOperator existsComponentInComponents = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getCompToMoveSVP(), getAllCompsMVP());&#xA;&#xA;&#x9;&#x9;ForAllOperator forAllNode = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createForAllOperator(getTargetNodesMVP());&#xA;&#x9;&#x9;ExistsOperator existsTargetInNodes = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getAllNodesMVP());&#xA;&#x9;&#x9;ExistsOperator componentExists = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getCompToMoveSVP(), getAllDeployedElemsMVP());&#xA;&#x9;&#x9;AndOperator andOperator = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;andOperator.getArguments().add(existsTargetInNodes);&#xA;&#x9;&#x9;andOperator.getArguments().add(componentExists);&#xA;&#x9;&#x9;forAllNode.setArgument(andOperator);&#xA;&#xA;&#x9;&#x9;AndOperator andRoot = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;andRoot.getArguments().add(existsComponentInComponents);&#xA;&#x9;&#x9;andRoot.getArguments().add(forAllNode);&#xA;&#xA;&#x9;&#x9;specification.setRootOperator(andRoot);&#xA;&#x9;&#x9;postCondition.setConditionFormula(specification);&#xA;&#x9;&#x9;setPost(postCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="compToMoveSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="targetNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allArtifactsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allTargetsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allDeployedElemsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlCompToMove" lowerBound="1"
+            eType="#//actions/UML/Component"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlTargetNodes" lowerBound="1"
+            upperBound="-1" eType="#//actions/UML/Node"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlArtifacts" upperBound="-1"
+            eType="#//actions/UML/Artifact"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLMoveOperationAction" eSuperTypes="#//actions/UML/UMLMoveAction">
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log();&#xA;&#x9;&#x9;Controller.logger_.info(getUmlTargetComp().toString());&#xA;&#x9;&#x9;for (Operation op : getUmlTargetComp().getOperations()) {&#xA;&#x9;&#x9;&#x9;Controller.logger_.info(op.toString());&#xA;&#x9;&#x9;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="getUmlOpToMove().setClass_(getUmlTargetComp());"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="setParameters">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> moveOpParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setOpToMoveSVP(Manager.getInstance(UMLManager.getInstance()).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getOperationQuery(getUmlOpToMove())));&#xA;&#x9;&#x9;moveOpParams.add(getOpToMoveSVP());&#xA;&#xA;&#x9;&#x9;setTargetCompSVP(Manager.getInstance(UMLManager.getInstance()).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getComponentQuery(getUmlTargetComp())));&#xA;&#x9;&#x9;moveOpParams.add(getTargetCompSVP());&#xA;&#xA;&#x9;&#x9;setAllOpsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getAllOperationsQuery()));&#xA;&#x9;&#x9;moveOpParams.add(getAllOpsMVP());&#xA;&#xA;&#x9;&#x9;setAllCompsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getAllComponentsQuery()));&#xA;&#x9;&#x9;moveOpParams.add(getAllCompsMVP());&#xA;&#xA;&#x9;&#x9;setAllTargetCompOpsMVP(Manager.getInstance(UMLManager.getInstance()).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;((OclUMLStringManager) OclStringManager.getInstance(new OclUMLStringManager()))&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.getOperationsOfQuery(getUmlTargetComp())));&#xA;&#x9;&#x9;moveOpParams.add(getAllTargetCompOpsMVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(moveOpParams);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPreCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PreCondition preCondition = Manager.getInstance(UMLManager.getInstance()).createPreCondition();&#xA;&#x9;&#x9;FOLSpecification specification = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createFOLSpectification(&quot;MoveOperationPreCondition&quot;);&#xA;&#xA;&#x9;&#x9;ExistsOperator existsOpInOperations = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getOpToMoveSVP(), getAllOpsMVP());&#xA;&#x9;&#x9;ExistsOperator existsTargetInComponents = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getTargetCompSVP(), getAllCompsMVP());&#xA;&#x9;&#x9;ExistsOperator existsOpInOpsOfTarget = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getOpToMoveSVP(), getAllTargetCompOpsMVP());&#xA;&#x9;&#x9;NotOperator notExistsOpInOpsOfTarget = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createNotOperator(existsOpInOpsOfTarget);&#xA;&#xA;&#x9;&#x9;AndOperator andRoot = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;andRoot.getArguments().add(existsOpInOperations);&#xA;&#x9;&#x9;andRoot.getArguments().add(existsTargetInComponents);&#xA;&#x9;&#x9;andRoot.getArguments().add(notExistsOpInOpsOfTarget);&#xA;&#xA;&#x9;&#x9;specification.setRootOperator(andRoot);&#xA;&#x9;&#x9;preCondition.setConditionFormula(specification);&#xA;&#x9;&#x9;setPre(preCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="createPostCondition">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="PostCondition postCondition = Manager.getInstance(UMLManager.getInstance()).createPostCondition();&#xA;&#x9;&#x9;FOLSpecification specification = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createFOLSpectification(&quot;MoveOperationPostCondition&quot;);&#xA;&#xA;&#x9;&#x9;ExistsOperator existsOpInOperations = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getOpToMoveSVP(), getAllOpsMVP());&#xA;&#x9;&#x9;ExistsOperator existsTargetInComponents = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getTargetCompSVP(), getAllCompsMVP());&#xA;&#x9;&#x9;ExistsOperator existsOpInOpsOfTarget = Manager.getInstance(UMLManager.getInstance())&#xA;&#x9;&#x9;&#x9;&#x9;.createExistsOperator(getOpToMoveSVP(), getAllTargetCompOpsMVP());&#xA;&#xA;&#x9;&#x9;AndOperator andRoot = Manager.getInstance(UMLManager.getInstance()).createAndOperator();&#xA;&#x9;&#x9;andRoot.getArguments().add(existsOpInOperations);&#xA;&#x9;&#x9;andRoot.getArguments().add(existsTargetInComponents);&#xA;&#x9;&#x9;andRoot.getArguments().add(existsOpInOpsOfTarget);&#xA;&#xA;&#x9;&#x9;specification.setRootOperator(andRoot);&#xA;&#x9;&#x9;postCondition.setConditionFormula(specification);&#xA;&#x9;&#x9;setPost(postCondition);"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="opToMoveSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="targetCompSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allOpsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allTargetCompOpsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlOpToMove" lowerBound="1"
+            eType="#//actions/UML/Operation"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlTargetComp" lowerBound="1"
+            eType="#//actions/UML/Component"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EDataType" name="Component" instanceClassName="org.eclipse.uml2.uml.Component"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="Node" instanceClassName="org.eclipse.uml2.uml.Node"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="Package" instanceClassName="org.eclipse.uml2.uml.Package"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="Operation" instanceClassName="org.eclipse.uml2.uml.Operation"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="Artifact" instanceClassName="org.eclipse.uml2.uml.Artifact"/>
+    </eSubpackages>
+    <eSubpackages name="AEmilia" nsURI="http://it.univaq.disim.seagroup/logicalSpecification/actions/aemilia"
+        nsPrefix="logicalSpecificationAEmiliaActions">
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaAddAction" abstract="true"
+          eSuperTypes="#//AddAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaDeleteAction" abstract="true"
+          eSuperTypes="#//DeleteAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaMoveAction" abstract="true"
+          eSuperTypes="#//MoveAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaMoveInputInteractionAction"
+          eSuperTypes="#//actions/AEmilia/AEmiliaMoveAction">
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log();"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value=""/>
+          </eAnnotations>
+        </eOperations>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaMoveOutputInteractionAction"
+          eSuperTypes="#//actions/AEmilia/AEmiliaMoveAction">
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log();"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value=""/>
+          </eAnnotations>
+        </eOperations>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EDataType" name="ElemType" instanceClassName="metamodel.mmaemilia.ElemType"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="InputInteraction" instanceClassName="metamodel.mmaemilia.InputInteraction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaCloneAEIAction" eSuperTypes="#//actions/AEmilia/AEmiliaAddAction">
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="clonedAEI = (ArchiElemInstance) EcoreUtil.copy(sourceAEI);&#xA;&#xA;Random random = new Random();&#xA;&#xA;if (sourceAEI.getSelector() != null) {&#xA;&#x9;setSelector();&#xA;} else {&#xA;&#x9;clonedAEI.setInstanceName(clonedAEI.getInstanceName() + &quot;_cloned_&quot; + random.nextInt(100));&#xA;}&#xA;&#xA;clonedAEI.setTypeOf(sourceAEI.getTypeOf());&#xA;aemiliaModel.getArchiTypeDecl().getAtDeclaration().getAeiDecl().add(clonedAEI);&#xA;&#xA;cloningOutputInteractions();&#xA;cloningInputInteractions();&#xA;cloningArchitecturalInteraction();"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="Controller.logger_.info(this.getClass().getName());"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="cloningInputInteractions">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="EList&lt;Attachment> listOfAtts = getAttachmentsOfAEI(sourceAEI);&#xA;EList&lt;InputInteraction> listOFII = sourceAEI.getTypeOf().getIiDecl();&#xA;&#xA;for (Attachment att : listOfAtts) {&#xA;&#x9;if (listOFII.contains(att.getEnd().getIsInput())) {&#xA;&#x9;&#x9;att.getStart().getIsOutput().setType(metamodel.mmaemilia.InteractionType.OR);&#xA;&#xA;&#x9;&#x9;Attachment newAtt = mmaemiliaFactory.eINSTANCE.createAttachment();&#xA;&#xA;&#x9;&#x9;From from = mmaemiliaFactory.eINSTANCE.createFrom();&#xA;&#x9;&#x9;from.setFromInstance(att.getStart().getFromInstance());&#xA;&#x9;&#x9;from.setIsOutput(att.getStart().getIsOutput());&#xA;&#xA;&#x9;&#x9;To to = mmaemiliaFactory.eINSTANCE.createTo();&#xA;&#x9;&#x9;to.setToInstance(clonedAEI);&#xA;&#x9;&#x9;to.setIsInput(att.getEnd().getIsInput());&#xA;&#xA;&#x9;&#x9;newAtt.setStart(from);&#xA;&#x9;&#x9;newAtt.setEnd(to);&#xA;&#xA;&#x9;&#x9;aemiliaModel.getArchiTypeDecl().getAtDeclaration().getAttDecl().add(newAtt);&#xA;&#xA;&#x9;}&#xA;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="cloningOutputInteractions">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="EList&lt;Attachment> listOfAtts = getAttachmentsOfAEI(sourceAEI);&#xA;EList&lt;OutputInteraction> listOfOI = sourceAEI.getTypeOf().getOiDecl();&#xA;// EList&lt;Attachment> clonedAtts = new BasicEList&lt;Attachment>();&#xA;for (Attachment att : listOfAtts) {&#xA;&#x9;if (listOfOI.contains(att.getStart().getIsOutput())) {&#xA;&#x9;&#x9;att.getEnd().getIsInput().setType(metamodel.mmaemilia.InteractionType.OR);&#xA;&#xA;&#x9;&#x9;Attachment newAtt = mmaemiliaFactory.eINSTANCE.createAttachment();&#xA;&#xA;&#x9;&#x9;From from = mmaemiliaFactory.eINSTANCE.createFrom();&#xA;&#x9;&#x9;from.setFromInstance(clonedAEI);&#xA;&#x9;&#x9;from.setIsOutput(att.getStart().getIsOutput());&#xA;&#xA;&#x9;&#x9;To to = mmaemiliaFactory.eINSTANCE.createTo();&#xA;&#x9;&#x9;to.setToInstance(att.getEnd().getToInstance());&#xA;&#x9;&#x9;to.setIsInput(att.getEnd().getIsInput());&#xA;&#xA;&#x9;&#x9;newAtt.setStart(from);&#xA;&#x9;&#x9;newAtt.setEnd(to);&#xA;&#xA;&#x9;&#x9;aemiliaModel.getArchiTypeDecl().getAtDeclaration().getAttDecl().add(newAtt);&#xA;&#xA;&#x9;}&#xA;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="cloningArchitecturalInteraction">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="EList&lt;ArchitecturalInteraction> listOfArchitecturalInteraction = aemiliaModel.getArchiTypeDecl()&#xA;&#x9;&#x9;.getAtDeclaration().getAiDecl();&#xA;EList&lt;ArchitecturalInteraction> listOfClonedArchitecturalInteraction = new BasicEList&lt;>();&#xA;&#xA;for (ArchitecturalInteraction architecturalInteraction : listOfArchitecturalInteraction) {&#xA;&#x9;if (architecturalInteraction.getFromInstance().equals(sourceAEI)) {&#xA;&#x9;&#x9;ArchitecturalInteraction ai = EcoreUtil.copy(architecturalInteraction);&#xA;&#x9;&#x9;ai.setFromInstance(clonedAEI);&#xA;&#x9;&#x9;listOfClonedArchitecturalInteraction.add(ai);&#xA;&#x9;}&#xA;}&#xA;if (!listOfClonedArchitecturalInteraction.isEmpty()) {&#xA;&#x9;listOfArchitecturalInteraction.addAll(listOfClonedArchitecturalInteraction);&#xA;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="setSelector">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;ArchiElemInstance> listOfAEIes = aemiliaModel.getArchiTypeDecl().getAtDeclaration().getAeiDecl();&#xA;int selector = 0;&#xA;for (ArchiElemInstance aei : listOfAEIes) {&#xA;&#x9;if (aei.getTypeOf() == sourceAEI.getTypeOf()) {&#xA;&#x9;&#x9;int aeiSelector = Integer.valueOf(((IdentExpr) aei.getSelector()).getName());&#xA;&#x9;&#x9;if (aeiSelector > selector) {&#xA;&#x9;&#x9;&#x9;selector = aeiSelector;&#xA;&#x9;&#x9;}&#xA;&#x9;}&#xA;}&#xA;((IdentExpr) clonedAEI.getSelector()).setName(String.valueOf(selector + 1));"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="isClonable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="EList&lt;Attachment> listOfAttachment = getAttachmentsOfAEI(aei);&#xA;for (Attachment att : listOfAttachment) {&#xA;&#x9;if (!att.getEnd().getIsInput().getType().equals(metamodel.mmaemilia.InteractionType.UNI)&#xA;&#x9;&#x9;&#x9;|| !att.getStart().getIsOutput().getType().equals(metamodel.mmaemilia.InteractionType.UNI)) {&#xA;&#x9;&#x9;return false;&#xA;&#x9;}&#xA;}&#xA;return true;"/>
+          </eAnnotations>
+          <eParameters name="aei" eType="#//actions/AEmilia/ArchiElemInstance"/>
+        </eOperations>
+        <eOperations name="getAttachmentsOfAEI">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="EList&lt;Attachment> listOfAttachment = getAttachmentsOfAEI(aei);&#xA;for (Attachment att : listOfAttachment) {&#xA;&#x9;if (!att.getEnd().getIsInput().getType().equals(metamodel.mmaemilia.InteractionType.UNI)&#xA;&#x9;&#x9;&#x9;|| !att.getStart().getIsOutput().getType().equals(metamodel.mmaemilia.InteractionType.UNI)) {&#xA;&#x9;&#x9;return false;&#xA;&#x9;}&#xA;}&#xA;return true;"/>
+          </eAnnotations>
+          <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EEList">
+            <eTypeArguments/>
+          </eGenericType>
+          <eParameters name="aei" eType="#//actions/AEmilia/ArchiElemInstance"/>
+        </eOperations>
+        <eOperations name="isApplicable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="return !getListOfClonableInstances().isEmpty();"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="getListOfClonableInstances">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="EList&lt;ArchiElemInstance> listOfClonableInstances = new BasicEList&lt;>();&#xA;for (ArchiElemInstance aei : aemiliaModel.getArchiTypeDecl().getAtDeclaration().getAeiDecl()) {&#xA;&#x9;if (isClonable(aei))&#xA;&#x9;&#x9;listOfClonableInstances.add(aei);&#xA;}&#xA;return listOfClonableInstances;"/>
+          </eAnnotations>
+          <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EEList">
+            <eTypeArguments/>
+          </eGenericType>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourceAEI" eType="#//actions/AEmilia/ArchiElemInstance"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="clonedAEI" eType="#//actions/AEmilia/ArchiElemInstance"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="listOfInputInteractions"
+            upperBound="-1" eType="#//actions/AEmilia/InputInteraction"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="listOfOutputInteractions"
+            upperBound="-1" eType="#//actions/AEmilia/OutputInteraction"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="aemiliaModel" eType="#//actions/AEmilia/AEmiliaSpecification"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="listOfNewAttachments"
+            upperBound="-1" eType="#//actions/AEmilia/Attachment"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EDataType" name="ArchiElemInstance" instanceClassName="metamodel.mmaemilia.ArchiElemInstance"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="OutputInteraction" instanceClassName="metamodel.mmaemilia.OutputInteraction"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="Attachment" instanceClassName="metamodel.mmaemilia.Attachment"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="AEmiliaSpecification" instanceClassName="metamodel.mmaemilia.AEmiliaSpecification"/>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaConstChangesAction" eSuperTypes="#//actions/AEmilia/AEmiliaChangeAction">
+        <eOperations name="execute">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="if (sourceConstInit.getInitConstData() instanceof Integer &amp;&amp; sourceConstInit.getName().contains(&quot;_size&quot;)) {&#xA;&#x9;System.out.println(&quot;size&quot;);&#xA;&#x9;int val = java.lang.Integer.parseInt(((IdentExpr) sourceConstInit.getInitConstExpr()).getName());&#xA;&#x9;((IdentExpr) sourceConstInit.getInitConstExpr()).setName(String.valueOf(((Double)(val * getFactorOfChange_impl())).intValue())&#x9;);&#xA;} else if (sourceConstInit.getInitConstData() instanceof Special&#xA;&#x9;&#x9;&amp;&amp; ((Special) sourceConstInit.getInitConstData()).getType() == SpecialType.RATE) {&#xA;&#x9;System.out.println(&quot;rate&quot;);&#xA;&#x9;double val = java.lang.Double.parseDouble(((IdentExpr) sourceConstInit.getInitConstExpr()).getName());&#xA;&#x9;((IdentExpr) sourceConstInit.getInitConstExpr()).setName(String.format(&quot;%.12f&quot;, ((val * getFactorOfChange_impl()))));&#xA;} else if (sourceConstInit.getInitConstData() instanceof Special&#xA;&#x9;&#x9;&amp;&amp; ((Special) sourceConstInit).getType() == SpecialType.WEIGHT) {&#xA;&#x9;System.out.println(&quot;weight&quot;);&#xA;&#x9;double val = java.lang.Double.parseDouble(((IdentExpr) sourceConstInit.getInitConstExpr()).getName());&#xA;&#x9;((IdentExpr) sourceConstInit.getInitConstExpr()).setName(String.format(&quot;%.12f&quot;, ((val * getFactorOfChange_impl()))));&#xA;} else {&#xA;&#x9;System.out.println(&quot;Not supported type: &quot; + sourceConstInit.getInitConstData().toString());&#xA;}"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="log">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="Controller.logger_.info(this.getClass().getName());"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="getFactorOfChange_impl" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="double rangeMin = 0.5;&#xA;double rangeMax = 2;&#xA;&#xA;Random r = new Random();&#xA;factorOfChange = rangeMin + (rangeMax - rangeMin) * r.nextDouble();&#xA;return factorOfChange;"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourceConstInit" eType="#//actions/AEmilia/ConstInit"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="aemiliaModel" eType="#//actions/AEmilia/AEmiliaSpecification"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="factorOfChange" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaChangeAction" eSuperTypes="#//ChangeAction"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="ConstInit" instanceClassName="metamodel.mmaemilia.Headers.ConstInit"/>
+    </eSubpackages>
+  </eSubpackages>
+  <eSubpackages name="antipatterns" nsURI="http://it.univaq.disim.seagroup/logicalSpecification/antipatterns"
+      nsPrefix="logicalSpecificationAntipatterns">
+    <eSubpackages name="performance" nsURI="http://it.univaq.disim.seagroup/logicalSpecification/antipatterns/performance"
+        nsPrefix="logicalSpecificationPerformanceAntipatterns">
+      <eClassifiers xsi:type="ecore:EClass" name="PerformanceAntipattern" abstract="true"
+          eSuperTypes="#//Antipattern"/>
+      <eClassifiers xsi:type="ecore:EClass" name="BlobPA" eSuperTypes="#//antipatterns/performance/PerformanceAntipattern">
+        <eOperations name="setParametersForPartialDetection" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> blobParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setF_numClientConnectsSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;(OclStringManager.getInstance(null)).getClientConnectsQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_numClientConnectsSVP());&#xA;&#xA;&#x9;&#x9;setT_maxClientConnectsSVP(&#xA;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxClientConnects)));&#xA;&#x9;&#x9;blobParams.add(getT_maxClientConnectsSVP());&#xA;&#xA;&#x9;&#x9;setF_numSupplierConnectsSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;(OclStringManager.getInstance(null)).getSupplierConnectsQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_numSupplierConnectsSVP());&#xA;&#xA;&#x9;&#x9;setT_maxSupplierConnectsSVP(&#xA;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxSupplierConnects)));&#xA;&#x9;&#x9;blobParams.add(getT_maxSupplierConnectsSVP());&#xA;&#xA;&#x9;&#x9;setF_numSentMsgsSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;(OclStringManager.getInstance(null)).getNumSentMsgsQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_numSentMsgsSVP());&#xA;&#xA;&#x9;&#x9;setT_maxSentMsgsSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxSentMsgs)));&#xA;&#x9;&#x9;blobParams.add(getT_maxSentMsgsSVP());&#xA;&#xA;&#x9;&#x9;setF_numReceivedMsgsSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;(OclStringManager.getInstance(null)).getNumReceivedMsgsQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_numReceivedMsgsSVP());&#xA;&#xA;&#x9;&#x9;setT_maxReceivedMsgsSVP(&#xA;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxReceivedMsgs)));&#xA;&#x9;&#x9;blobParams.add(getT_maxReceivedMsgsSVP());&#xA;&#xA;&#x9;&#x9;if (getF_hwUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getF_hwUtilSVP().getResolvingExpr() != null || !getF_hwUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getF_hwUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getT_maxHwUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getT_maxHwUtilSVP().getResolvingExpr() != null || !getT_maxHwUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getT_maxHwUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getF_netUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getF_netUtilSVP().getResolvingExpr() != null || !getF_netUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getF_netUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getT_minNetUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getT_minNetUtilSVP().getResolvingExpr() != null || !getT_minNetUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getT_minNetUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;getParameters().addAll(blobParams);"/>
+          </eAnnotations>
+          <eParameters name="T_maxClientConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSupplierConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSentMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxReceivedMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="setParametersForFullDetection" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> blobParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setF_numClientConnectsSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getClientConnectsQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_numClientConnectsSVP());&#xA;&#xA;&#x9;&#x9;setT_maxClientConnectsSVP(&#xA;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxClientConnects)));&#xA;&#x9;&#x9;blobParams.add(getT_maxClientConnectsSVP());&#xA;&#xA;&#x9;&#x9;setF_numSupplierConnectsSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getSupplierConnectsQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_numSupplierConnectsSVP());&#xA;&#xA;&#x9;&#x9;setT_maxSupplierConnectsSVP(&#xA;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxSupplierConnects)));&#xA;&#x9;&#x9;blobParams.add(getT_maxSupplierConnectsSVP());&#xA;&#xA;&#x9;&#x9;setF_numSentMsgsSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getNumSentMsgsQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_numSentMsgsSVP());&#xA;&#xA;&#x9;&#x9;setT_maxSentMsgsSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxSentMsgs)));&#xA;&#x9;&#x9;blobParams.add(getT_maxSentMsgsSVP());&#xA;&#xA;&#x9;&#x9;setF_numReceivedMsgsSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getNumReceivedMsgsQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_numReceivedMsgsSVP());&#xA;&#xA;&#x9;&#x9;setT_maxReceivedMsgsSVP(&#xA;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxReceivedMsgs)));&#xA;&#x9;&#x9;blobParams.add(getT_maxReceivedMsgsSVP());&#xA;&#xA;&#x9;&#x9;setF_hwUtilSVP(Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;.createSingleValueParameter(OclStringManager.getInstance(null).getHwUtilQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_hwUtilSVP());&#xA;&#xA;&#x9;&#x9;setT_maxHwUtilSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxHwUtil)));&#xA;&#x9;&#x9;blobParams.add(getT_maxHwUtilSVP());&#xA;&#xA;&#x9;&#x9;setF_netUtilSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getNetUtilQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_netUtilSVP());&#xA;&#xA;&#x9;&#x9;setT_minNetUtilSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_minNetUtil)));&#xA;&#x9;&#x9;blobParams.add(getT_minNetUtilSVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(blobParams);"/>
+          </eAnnotations>
+          <eParameters name="T_maxClientConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSupplierConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSentMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxReceivedMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minNetUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="createFormula" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="FOLSpecification blobCF = LogicalSpecificationFactory.eINSTANCE.createFOLSpecification();&#xA;&#x9;&#x9;blobCF.setName(&quot;BlobFormula&quot;);&#xA;&#xA;&#x9;&#x9;AndOperator blobCFAnd = LogicalSpecificationFactory.eINSTANCE.createAndOperator();&#xA;&#xA;&#x9;&#x9;OrOperator blobCFAndOr1 = LogicalSpecificationFactory.eINSTANCE.createOrOperator();&#xA;&#x9;&#x9;GreaterEqualOperator blobCFAndOr1Geq1 = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;blobCFAndOr1Geq1.setLhs(getF_numClientConnectsSVP());&#xA;&#x9;&#x9;blobCFAndOr1Geq1.setRhs(getT_maxClientConnectsSVP());&#xA;&#x9;&#x9;GreaterEqualOperator blobCFAndOr1Geq2 = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;blobCFAndOr1Geq2.setLhs(getF_numSupplierConnectsSVP());&#xA;&#x9;&#x9;blobCFAndOr1Geq2.setRhs(getT_maxSupplierConnectsSVP());&#xA;&#x9;&#x9;blobCFAndOr1.getArguments().add(blobCFAndOr1Geq1);&#xA;&#x9;&#x9;blobCFAndOr1.getArguments().add(blobCFAndOr1Geq2);&#xA;&#xA;&#x9;&#x9;OrOperator blobCFAndOr2 = LogicalSpecificationFactory.eINSTANCE.createOrOperator();&#xA;&#x9;&#x9;GreaterEqualOperator blobCFAndOr2Geq1 = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;blobCFAndOr2Geq1.setLhs(getF_numSentMsgsSVP());&#xA;&#x9;&#x9;blobCFAndOr2Geq1.setRhs(getT_maxSentMsgsSVP());&#xA;&#x9;&#x9;GreaterEqualOperator blobCFAndOr2Geq2 = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;blobCFAndOr2Geq2.setLhs(getF_numReceivedMsgsSVP());&#xA;&#x9;&#x9;blobCFAndOr2Geq2.setRhs(getT_maxReceivedMsgsSVP());&#xA;&#x9;&#x9;blobCFAndOr2.getArguments().add(blobCFAndOr2Geq1);&#xA;&#x9;&#x9;blobCFAndOr2.getArguments().add(blobCFAndOr2Geq2);&#xA;&#xA;&#x9;&#x9;OrOperator blobCFAndOr3 = LogicalSpecificationFactory.eINSTANCE.createOrOperator();&#xA;&#x9;&#x9;GreaterEqualOperator blobCFAndOr3Geq1 = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;blobCFAndOr3Geq1.setLhs(getF_hwUtilSVP());&#xA;&#x9;&#x9;blobCFAndOr3Geq1.setRhs(getT_maxHwUtilSVP());&#xA;&#x9;&#x9;LessEqualOperator blobCFAndOr3Geq2 = LogicalSpecificationFactory.eINSTANCE.createLessEqualOperator();&#xA;&#x9;&#x9;blobCFAndOr3Geq2.setLhs(getF_netUtilSVP());&#xA;&#x9;&#x9;blobCFAndOr3Geq2.setRhs(getT_minNetUtilSVP());&#xA;&#x9;&#x9;blobCFAndOr3.getArguments().add(blobCFAndOr3Geq1);&#xA;&#x9;&#x9;blobCFAndOr3.getArguments().add(blobCFAndOr3Geq2);&#xA;&#xA;&#x9;&#x9;blobCFAnd.getArguments().add(blobCFAndOr1);&#xA;&#x9;&#x9;blobCFAnd.getArguments().add(blobCFAndOr2);&#xA;&#x9;&#x9;blobCFAnd.getArguments().add(blobCFAndOr3);&#xA;&#x9;&#x9;blobCF.setRootOperator(blobCFAnd);&#xA;&#x9;&#x9;setFormula(blobCF);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="partialDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="int occurrences = 0;&#xA;&#x9;&#x9;setParametersForPartialDetection(T_maxClientConnects, T_maxSupplierConnects, T_maxSentMsgs, T_maxReceivedMsgs);&#xA;&#x9;&#x9;createFormula();&#xA;&#x9;&#x9;List&lt;Element> components = ((Model) Manager.getInstance(UMLManager.getInstance()).getModel())&#xA;&#x9;&#x9;&#x9;&#x9;.getNestedPackages().get(0).getNestedPackages().get(0).allOwnedElements();&#xA;&#x9;&#x9;for (Element c : components) {&#xA;&#x9;&#x9;&#x9;if (c instanceof Component &amp;&amp; c.getAppliedStereotype(&quot;PaRunTInstance&quot;) != null) {&#xA;&#x9;&#x9;&#x9;&#x9;try {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;boolean app = Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.evaluateOperator((AndOperator) getFormula().getRootOperator(), (Component) c);&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;if (app)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;occurrences++;&#xA;&#x9;&#x9;&#x9;&#x9;} catch (ParserException e) {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// TODO Auto-generated catch block&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;e.printStackTrace();&#xA;&#x9;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#x9;&#x9;return occurrences;"/>
+          </eAnnotations>
+          <eParameters name="T_maxClientConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSupplierConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSentMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxReceivedMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="fullDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="int occurrences = 0;&#xA;&#x9;&#x9;setParametersForFullDetection(T_maxClientConnects, T_maxSupplierConnects, T_maxSentMsgs, T_maxReceivedMsgs,&#xA;&#x9;&#x9;&#x9;&#x9;T_maxHwUtil, T_minNetUtil);&#xA;&#x9;&#x9;createFormula();&#xA;&#x9;&#x9;List&lt;Element> components = ((Model) Manager.getInstance(UMLManager.getInstance()).getModel())&#xA;&#x9;&#x9;&#x9;&#x9;.getNestedPackages().get(0).getNestedPackages().get(0).allOwnedElements();&#xA;&#x9;&#x9;for (Element c : components) {&#xA;&#x9;&#x9;&#x9;if (c instanceof Component &amp;&amp; c.getAppliedStereotype(&quot;PaRunTInstance&quot;) != null) {&#xA;&#x9;&#x9;&#x9;&#x9;try {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;boolean app = Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.evaluateOperator((AndOperator) getFormula().getRootOperator(), (Component) c);&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;if (app)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;occurrences++;&#xA;&#x9;&#x9;&#x9;&#x9;} catch (ParserException e) {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// TODO Auto-generated catch block&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;e.printStackTrace();&#xA;&#x9;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#x9;&#x9;return occurrences;"/>
+          </eAnnotations>
+          <eParameters name="T_maxClientConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSupplierConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSentMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxReceivedMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minNetUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="log" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log();"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_numClientConnectsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_numSupplierConnectsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_numSentMsgsSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_numReceivedMsgsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_hwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_netUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxClientConnectsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxSupplierConnectsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxSentMsgsSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxReceivedMsgsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxHwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_minNetUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="contextualElement"
+            lowerBound="1" eType="#//actions/UML/Component"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="CpsPA" eSuperTypes="#//antipatterns/performance/PerformanceAntipattern">
+        <eOperations name="setParametersForPartialDetection" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> blobParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;if (getF_queueLengthSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getF_queueLengthSVP().getResolvingExpr() != null&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;|| !getF_queueLengthSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getF_queueLengthSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getT_maxQueueLengthSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getT_maxQueueLengthSVP().getResolvingExpr() != null&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;|| !getT_maxQueueLengthSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getT_maxQueueLengthSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getF_overUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getF_overUtilSVP().getResolvingExpr() != null || !getF_overUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getF_overUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getT_maxOverUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getT_maxOverUtilSVP().getResolvingExpr() != null&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;|| !getT_maxOverUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getT_maxOverUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getF_underUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getF_underUtilSVP().getResolvingExpr() != null || !getF_underUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getF_underUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getT_minUnderUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getT_minUnderUtilSVP().getResolvingExpr() != null&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;|| !getT_minUnderUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getT_minUnderUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;// if(getF_opDemandMVP() != null)&#xA;&#x9;&#x9;// if(getF_opDemandMVP().getResolvingExpr() != null ||&#xA;&#x9;&#x9;// !getF_opDemandMVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;// getF_opDemandMVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;setF_opDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getOpDemandQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_opDemandMVP());&#xA;&#xA;&#x9;&#x9;// if(getT_maxOpDemandMVP() != null)&#xA;&#x9;&#x9;// if(getT_maxOpDemandMVP().getResolvingExpr() != null ||&#xA;&#x9;&#x9;// !getT_maxOpDemandMVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;// getT_maxOpDemandMVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;setT_maxOpDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(String.valueOf(T_maxOpDemand)));&#xA;&#x9;&#x9;blobParams.add(getT_maxOpDemandMVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(blobParams);"/>
+          </eAnnotations>
+          <eParameters name="T_maxOpDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="setParametersForFullDetection" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> blobParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setF_queueLengthSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getQueueLengthQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_queueLengthSVP());&#xA;&#xA;&#x9;&#x9;setT_maxQueueLengthSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxQueueLength)));&#xA;&#x9;&#x9;blobParams.add(getT_maxQueueLengthSVP());&#xA;&#xA;&#x9;&#x9;setF_overUtilSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getOverUtilQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_overUtilSVP());&#xA;&#xA;&#x9;&#x9;setT_maxOverUtilSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxOverUtil)));&#xA;&#x9;&#x9;blobParams.add(getT_maxOverUtilSVP());&#xA;&#xA;&#x9;&#x9;setF_underUtilSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getUnderUtilQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_underUtilSVP());&#xA;&#xA;&#x9;&#x9;setT_minUnderUtilSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_minUnderUtil)));&#xA;&#x9;&#x9;blobParams.add(getT_minUnderUtilSVP());&#xA;&#xA;&#x9;&#x9;setF_opDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getOpDemandQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_opDemandMVP());&#xA;&#xA;&#x9;&#x9;setT_maxOpDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(String.valueOf(T_maxOpDemand)));&#xA;&#x9;&#x9;blobParams.add(getT_maxOpDemandMVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(blobParams);"/>
+          </eAnnotations>
+          <eParameters name="T_maxQueueLength" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxOverUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxOpDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="createFormula" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="FOLSpecification cpsCF = LogicalSpecificationFactory.eINSTANCE.createFOLSpecification();&#xA;&#x9;&#x9;cpsCF.setName(&quot;CpsFormula&quot;);&#xA;&#xA;&#x9;&#x9;AndOperator cpsCFAnd = LogicalSpecificationFactory.eINSTANCE.createAndOperator();&#xA;&#xA;&#x9;&#x9;GreaterEqualOperator cpsCFAndGeq1 = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;cpsCFAndGeq1.setLhs(getF_queueLengthSVP());&#xA;&#x9;&#x9;cpsCFAndGeq1.setRhs(getT_maxQueueLengthSVP());&#xA;&#x9;&#x9;cpsCFAnd.getArguments().add(cpsCFAndGeq1);&#xA;&#xA;&#x9;&#x9;AndOperator cpsCFAndAnd = LogicalSpecificationFactory.eINSTANCE.createAndOperator();&#xA;&#x9;&#x9;GreaterEqualOperator cpsCFAndAndGeq = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;cpsCFAndAndGeq.setLhs(getF_overUtilSVP());&#xA;&#x9;&#x9;cpsCFAndAndGeq.setRhs(getT_maxOverUtilSVP());&#xA;&#x9;&#x9;cpsCFAndAnd.getArguments().add(cpsCFAndAndGeq);&#xA;&#x9;&#x9;LessOperator cpsCFAndAndLe = LogicalSpecificationFactory.eINSTANCE.createLessOperator();&#xA;&#x9;&#x9;cpsCFAndAndLe.setLhs(getF_underUtilSVP());&#xA;&#x9;&#x9;cpsCFAndAndLe.setRhs(getT_minUnderUtilSVP());&#xA;&#x9;&#x9;cpsCFAndAnd.getArguments().add(cpsCFAndAndLe);&#xA;&#x9;&#x9;cpsCFAnd.getArguments().add(cpsCFAndAnd);&#xA;&#xA;&#x9;&#x9;GreaterEqualOperator cpsCFAndGeq2 = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;cpsCFAndGeq2.setLhs(getF_opDemandMVP());&#xA;&#x9;&#x9;cpsCFAndGeq2.setRhs(getT_maxOpDemandMVP());&#xA;&#x9;&#x9;cpsCFAnd.getArguments().add(cpsCFAndGeq2);&#xA;&#xA;&#x9;&#x9;cpsCF.setRootOperator(cpsCFAnd);&#xA;&#x9;&#x9;setFormula(cpsCF);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="partialDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="int occurrences = 0;&#xA;&#x9;&#x9;setParametersForPartialDetection(T_maxOpDemand);&#xA;&#x9;&#x9;createFormula();&#xA;&#x9;&#x9;List&lt;Element> nodes = ((Model)Manager.getInstance(UMLManager.getInstance())).getModel().getNestedPackages().get(0).getNestedPackages().get(0)&#xA;&#x9;&#x9;&#x9;&#x9;.allOwnedElements();&#xA;&#x9;&#x9;for (Element n : nodes) {&#xA;&#x9;&#x9;&#x9;if (n instanceof Component &amp;&amp; n.getAppliedStereotype(&quot;GaExecHost&quot;) != null) {&#xA;&#x9;&#x9;&#x9;&#x9;try {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;boolean app = Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.evaluateOperator((AndOperator) getFormula().getRootOperator(), (Node) n);&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;if (app)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;occurrences++;&#xA;&#x9;&#x9;&#x9;&#x9;} catch (ParserException e) {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// TODO Auto-generated catch block&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;e.printStackTrace();&#xA;&#x9;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#x9;&#x9;return occurrences;"/>
+          </eAnnotations>
+          <eParameters name="T_maxOpDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="fullDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="int occurrences = 0;&#xA;&#x9;&#x9;setParametersForFullDetection(T_maxQueueLength, T_maxOverUtil, T_minUnderUtil, T_maxOpDemand);&#xA;&#x9;&#x9;createFormula();&#xA;&#x9;&#x9;List&lt;Element> nodes = ((Model)Manager.getInstance(UMLManager.getInstance())).getModel().getNestedPackages().get(0).getNestedPackages().get(0)&#xA;&#x9;&#x9;&#x9;&#x9;.allOwnedElements();&#xA;&#x9;&#x9;for (Element n : nodes) {&#xA;&#x9;&#x9;&#x9;if (n instanceof Node &amp;&amp; n.getAppliedStereotype(&quot;GaExecHost&quot;) != null) {&#xA;&#x9;&#x9;&#x9;&#x9;try {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;boolean app = Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.evaluateOperator((AndOperator) getFormula().getRootOperator(), (Node) n);&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;if (app)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;occurrences++;&#xA;&#x9;&#x9;&#x9;&#x9;} catch (ParserException e) {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// TODO Auto-generated catch block&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;e.printStackTrace();&#xA;&#x9;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#x9;&#x9;return occurrences;"/>
+          </eAnnotations>
+          <eParameters name="T_maxQueueLength" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxOverUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxOpDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="log" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log();"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_queueLengthSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_overUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_underUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_opDemandMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxQueueLengthSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxOverUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_minUnderUtilSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxOpDemandMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="contextualElement"
+            lowerBound="1" eType="#//actions/UML/Node"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="PafPA" eSuperTypes="#//antipatterns/performance/PerformanceAntipattern">
+        <eOperations name="setParametersForPartialDetection" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> blobParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setF_resDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getResDemandQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_resDemandMVP());&#xA;&#xA;&#x9;&#x9;setT_maxResDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(String.valueOf(T_maxResDemand)));&#xA;&#x9;&#x9;blobParams.add(getT_maxResDemandMVP());&#xA;&#xA;&#x9;&#x9;setF_opProbExecSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getOpProbExecQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_opProbExecSVP());&#xA;&#xA;&#x9;&#x9;setT_opProbExecSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_opProbExec)));&#xA;&#x9;&#x9;blobParams.add(getT_opProbExecSVP());&#xA;&#xA;&#x9;&#x9;if (getF_hwUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getF_hwUtilSVP().getResolvingExpr() != null || !getF_hwUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getF_hwUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getT_maxHwUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getT_maxHwUtilSVP().getResolvingExpr() != null || !getT_maxHwUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getT_maxHwUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getF_serviceThroughputSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getF_serviceThroughputSVP().getResolvingExpr() != null&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;|| !getF_serviceThroughputSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getF_serviceThroughputSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getT_minServiceThroughputSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getT_minServiceThroughputSVP().getResolvingExpr() != null&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;|| !getT_minServiceThroughputSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getT_minServiceThroughputSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;getParameters().addAll(blobParams);"/>
+          </eAnnotations>
+          <eParameters name="T_maxResDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_opProbExec" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="setParametersForFullDetection" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> blobParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setF_resDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getResDemandQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_resDemandMVP());&#xA;&#xA;&#x9;&#x9;setT_maxResDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(String.valueOf(T_maxResDemand)));&#xA;&#x9;&#x9;blobParams.add(getT_maxResDemandMVP());&#xA;&#xA;&#x9;&#x9;setF_opProbExecSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getOpProbExecQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_opProbExecSVP());&#xA;&#xA;&#x9;&#x9;setT_opProbExecSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_opProbExec)));&#xA;&#x9;&#x9;blobParams.add(getT_opProbExecSVP());&#xA;&#xA;&#x9;&#x9;setF_hwUtilSVP(Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;.createSingleValueParameter(OclStringManager.getInstance(null).getHwUtilQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_hwUtilSVP());&#xA;&#xA;&#x9;&#x9;setT_maxHwUtilSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxHwUtil)));&#xA;&#x9;&#x9;blobParams.add(getT_maxHwUtilSVP());&#xA;&#xA;&#x9;&#x9;setF_serviceThroughputSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getServiceThroughputQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_serviceThroughputSVP());&#xA;&#xA;&#x9;&#x9;setT_minServiceThroughputSVP(&#xA;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_minServiceThroughput)));&#xA;&#x9;&#x9;blobParams.add(getT_minServiceThroughputSVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(blobParams);"/>
+          </eAnnotations>
+          <eParameters name="T_maxResDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_opProbExec" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minServiceThroughput" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="createFormula" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="FOLSpecification pafCF = LogicalSpecificationFactory.eINSTANCE.createFOLSpecification();&#xA;&#x9;&#x9;pafCF.setName(&quot;PafFormula&quot;);&#xA;&#xA;&#x9;&#x9;AndOperator pafCFAnd = LogicalSpecificationFactory.eINSTANCE.createAndOperator();&#xA;&#xA;&#x9;&#x9;GreaterEqualOperator pafCFAndGeq = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;pafCFAndGeq.setLhs(getF_resDemandMVP());&#xA;&#x9;&#x9;pafCFAndGeq.setRhs(getT_maxResDemandMVP());&#xA;&#x9;&#x9;pafCFAnd.getArguments().add(pafCFAndGeq);&#xA;&#xA;&#x9;&#x9;EqualOperator pafCFAndEq = LogicalSpecificationFactory.eINSTANCE.createEqualOperator();&#xA;&#x9;&#x9;pafCFAndEq.setLhs(getF_opProbExecSVP());&#xA;&#x9;&#x9;pafCFAndEq.setRhs(getT_opProbExecSVP());&#xA;&#x9;&#x9;pafCFAnd.getArguments().add(pafCFAndEq);&#xA;&#xA;&#x9;&#x9;OrOperator pafCFAndOr = LogicalSpecificationFactory.eINSTANCE.createOrOperator();&#xA;&#x9;&#x9;GreaterEqualOperator pafCFAndOrGeq = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;pafCFAndOrGeq.setLhs(getF_hwUtilSVP());&#xA;&#x9;&#x9;pafCFAndOrGeq.setRhs(getT_maxHwUtilSVP());&#xA;&#x9;&#x9;LessOperator pafCFAndOrLe = LogicalSpecificationFactory.eINSTANCE.createLessOperator();&#xA;&#x9;&#x9;pafCFAndOrLe.setLhs(getF_serviceThroughputSVP());&#xA;&#x9;&#x9;pafCFAndOrLe.setRhs(getT_minServiceThroughputSVP());&#xA;&#x9;&#x9;pafCFAndOr.getArguments().add(pafCFAndOrGeq);&#xA;&#x9;&#x9;pafCFAndOr.getArguments().add(pafCFAndOrLe);&#xA;&#x9;&#x9;pafCFAnd.getArguments().add(pafCFAndOr);&#xA;&#xA;&#x9;&#x9;pafCF.setRootOperator(pafCFAnd);&#xA;&#x9;&#x9;setFormula(pafCF);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="partialDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="int occurrences = 0;&#xA;&#x9;&#x9;setParametersForPartialDetection(T_maxResDemand, T_opProbExec);&#xA;&#x9;&#x9;createFormula();&#xA;&#x9;&#x9;List&lt;Element> operations = ((Model)Manager.getInstance(UMLManager.getInstance())).getModel().getNestedPackages().get(0).getNestedPackages()&#xA;&#x9;&#x9;&#x9;&#x9;.get(0).allOwnedElements();&#xA;&#x9;&#x9;for (Element o : operations) {&#xA;&#x9;&#x9;&#x9;if (o instanceof Operation &amp;&amp; o.getAppliedStereotype(&quot;GaAcqStep&quot;) != null) {&#xA;&#x9;&#x9;&#x9;&#x9;try {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;boolean app = Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.evaluateOperator((AndOperator) getFormula().getRootOperator(), (Operation) o);&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;if (app)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;occurrences++;&#xA;&#x9;&#x9;&#x9;&#x9;} catch (ParserException e) {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// TODO Auto-generated catch block&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;e.printStackTrace();&#xA;&#x9;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#x9;&#x9;return occurrences;"/>
+          </eAnnotations>
+          <eParameters name="T_maxResDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_opProbExec" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="fullDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="int occurrences = 0;&#xA;&#x9;&#x9;setParametersForFullDetection(T_maxResDemand, T_opProbExec, T_maxHwUtil, T_minServiceThroughput);&#xA;&#x9;&#x9;createFormula();&#xA;&#x9;&#x9;List&lt;Element> operations = ((Model) Manager.getInstance(UMLManager.getInstance())).getModel()&#xA;&#x9;&#x9;&#x9;&#x9;.getNestedPackages().get(0).getNestedPackages().get(0).allOwnedElements();&#xA;&#x9;&#x9;for (Element o : operations) {&#xA;&#x9;&#x9;&#x9;if (o instanceof Operation &amp;&amp; o.getAppliedStereotype(&quot;GaAcqStep&quot;) != null) {&#xA;&#x9;&#x9;&#x9;&#x9;try {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;boolean app = Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.evaluateOperator((AndOperator) getFormula().getRootOperator(), (Operation) o);&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;if (app)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;occurrences++;&#xA;&#x9;&#x9;&#x9;&#x9;} catch (ParserException e) {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// TODO Auto-generated catch block&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;e.printStackTrace();&#xA;&#x9;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#x9;&#x9;return occurrences;"/>
+          </eAnnotations>
+          <eParameters name="T_maxResDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_opProbExec" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minServiceThroughput" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="log" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log();"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_resDemandMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_opProbExecSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_hwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_serviceThroughputSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxResDemandMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_opProbExecSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxHwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_minServiceThroughputSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="contextualElement"
+            lowerBound="1" eType="#//actions/UML/Operation"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="EpPA" eSuperTypes="#//antipatterns/performance/PerformanceAntipattern">
+        <eOperations name="setParametersForPartialDetection" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> blobParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setF_overDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getOverDemandQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_overDemandMVP());&#xA;&#xA;&#x9;&#x9;setT_maxOverDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(String.valueOf(T_maxOverDemand)));&#xA;&#x9;&#x9;blobParams.add(getT_maxOverDemandMVP());&#xA;&#xA;&#x9;&#x9;setF_underDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getUnderDemandQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_underDemandMVP());&#xA;&#xA;&#x9;&#x9;setT_minUnderDemandMVP(&#xA;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(null).createMultipleValuedParameter(String.valueOf(T_minUnderDemand)));&#xA;&#x9;&#x9;blobParams.add(getT_minUnderDemandMVP());&#xA;&#xA;&#x9;&#x9;setF_overDemandProbSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getOverDemandProbQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_overDemandProbSVP());&#xA;&#xA;&#x9;&#x9;setF_underDemandProbSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getUnderDemandProbQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_underDemandProbSVP());&#xA;&#xA;&#x9;&#x9;setT_demandsProbSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_demandsProb)));&#xA;&#x9;&#x9;blobParams.add(getT_demandsProbSVP());&#xA;&#xA;&#x9;&#x9;if (getF_hwUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getF_hwUtilSVP().getResolvingExpr() != null || !getF_hwUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getF_hwUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getT_maxHwUtilSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getT_maxHwUtilSVP().getResolvingExpr() != null || !getT_maxHwUtilSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getT_maxHwUtilSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getF_serviceResponseTimeSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getF_serviceResponseTimeSVP().getResolvingExpr() != null&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;|| !getF_serviceResponseTimeSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getF_serviceResponseTimeSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;if (getT_maxServiceResponseTimeSVP() != null)&#xA;&#x9;&#x9;&#x9;if (getT_maxServiceResponseTimeSVP().getResolvingExpr() != null&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;|| !getT_maxServiceResponseTimeSVP().getResolvingExpr().equals(&quot;&quot;))&#xA;&#x9;&#x9;&#x9;&#x9;getT_maxServiceResponseTimeSVP().setResolvingExpr(null);&#xA;&#xA;&#x9;&#x9;getParameters().addAll(blobParams);"/>
+          </eAnnotations>
+          <eParameters name="T_maxOverDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_demandsProb" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="setParametersForFullDetection" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="List&lt;Parameter> blobParams = new ArrayList&lt;>();&#xA;&#xA;&#x9;&#x9;setF_overDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getOverDemandQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_overDemandMVP());&#xA;&#xA;&#x9;&#x9;setT_maxOverDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(String.valueOf(T_maxOverDemand)));&#xA;&#x9;&#x9;blobParams.add(getT_maxOverDemandMVP());&#xA;&#xA;&#x9;&#x9;setF_underDemandMVP(Manager.getInstance(null).createMultipleValuedParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getUnderDemandQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_underDemandMVP());&#xA;&#xA;&#x9;&#x9;setT_minUnderDemandMVP(&#xA;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(null).createMultipleValuedParameter(String.valueOf(T_minUnderDemand)));&#xA;&#x9;&#x9;blobParams.add(getT_minUnderDemandMVP());&#xA;&#xA;&#x9;&#x9;setF_overDemandProbSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getOverDemandProbQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_overDemandProbSVP());&#xA;&#xA;&#x9;&#x9;setF_underDemandProbSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getUnderDemandProbQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_underDemandProbSVP());&#xA;&#xA;&#x9;&#x9;setT_demandsProbSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_demandsProb)));&#xA;&#x9;&#x9;blobParams.add(getT_demandsProbSVP());&#xA;&#xA;&#x9;&#x9;setF_hwUtilSVP(Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;.createSingleValueParameter(OclStringManager.getInstance(null).getHwUtilQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_hwUtilSVP());&#xA;&#xA;&#x9;&#x9;setT_maxHwUtilSVP(Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxHwUtil)));&#xA;&#x9;&#x9;blobParams.add(getT_maxHwUtilSVP());&#xA;&#xA;&#x9;&#x9;setF_serviceResponseTimeSVP(Manager.getInstance(null).createSingleValueParameter(&#xA;&#x9;&#x9;&#x9;&#x9;OclStringManager.getInstance(null).getServiceResponseTimeQuery(getContextualElement())));&#xA;&#x9;&#x9;blobParams.add(getF_serviceResponseTimeSVP());&#xA;&#xA;&#x9;&#x9;setT_maxServiceResponseTimeSVP(&#xA;&#x9;&#x9;&#x9;&#x9;Manager.getInstance(null).createSingleValueParameter(String.valueOf(T_maxServiceResponseTime)));&#xA;&#x9;&#x9;blobParams.add(getT_maxServiceResponseTimeSVP());&#xA;&#xA;&#x9;&#x9;getParameters().addAll(blobParams);"/>
+          </eAnnotations>
+          <eParameters name="T_maxOverDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_demandsProb" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxServiceResponseTime" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="createFormula" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="FOLSpecification epCF = LogicalSpecificationFactory.eINSTANCE.createFOLSpecification();&#xA;&#x9;&#x9;epCF.setName(&quot;EpFormula&quot;);&#xA;&#xA;&#x9;&#x9;AndOperator epCFAnd = LogicalSpecificationFactory.eINSTANCE.createAndOperator();&#xA;&#xA;&#x9;&#x9;GreaterEqualOperator epAndGeq = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;epAndGeq.setLhs(getF_overDemandMVP());&#xA;&#x9;&#x9;epAndGeq.setRhs(getT_maxOverDemandMVP());&#xA;&#x9;&#x9;epCFAnd.getArguments().add(epAndGeq);&#xA;&#xA;&#x9;&#x9;LessOperator blobCFAndLe = LogicalSpecificationFactory.eINSTANCE.createLessOperator();&#xA;&#x9;&#x9;blobCFAndLe.setLhs(getF_underDemandMVP());&#xA;&#x9;&#x9;blobCFAndLe.setRhs(getT_minUnderDemandMVP());&#xA;&#x9;&#x9;epCFAnd.getArguments().add(blobCFAndLe);&#xA;&#xA;&#x9;&#x9;EqualOperator epCFAndEq = LogicalSpecificationFactory.eINSTANCE.createEqualOperator();&#xA;&#x9;&#x9;epCFAndEq.setLhs(getF_demandSumProbSVP());&#xA;&#x9;&#x9;epCFAndEq.setRhs(getT_demandsProbSVP());&#xA;&#x9;&#x9;epCFAnd.getArguments().add(epCFAndEq);&#xA;&#xA;&#x9;&#x9;OrOperator epCFAndOr = LogicalSpecificationFactory.eINSTANCE.createOrOperator();&#xA;&#x9;&#x9;GreaterEqualOperator epCFAndOrGeq = LogicalSpecificationFactory.eINSTANCE.createGreaterEqualOperator();&#xA;&#x9;&#x9;epCFAndOrGeq.setLhs(getF_hwUtilSVP());&#xA;&#x9;&#x9;epCFAndOrGeq.setRhs(getT_maxHwUtilSVP());&#xA;&#x9;&#x9;GreaterOperator epCFAndOrGr = LogicalSpecificationFactory.eINSTANCE.createGreaterOperator();&#xA;&#x9;&#x9;epCFAndOrGr.setLhs(getF_serviceResponseTimeSVP());&#xA;&#x9;&#x9;epCFAndOrGr.setRhs(getT_maxServiceResponseTimeSVP());&#xA;&#x9;&#x9;epCFAndOr.getArguments().add(epCFAndOrGeq);&#xA;&#x9;&#x9;epCFAndOr.getArguments().add(epCFAndOrGr);&#xA;&#x9;&#x9;epCFAnd.getArguments().add(epCFAndOr);&#xA;&#xA;&#x9;&#x9;epCF.setRootOperator(epCFAnd);&#xA;&#x9;&#x9;setFormula(epCF);"/>
+          </eAnnotations>
+        </eOperations>
+        <eOperations name="partialDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="int occurrences = 0;&#xA;&#x9;&#x9;setParametersForPartialDetection(T_maxOverDemand, T_minUnderDemand, T_demandsProb);&#xA;&#x9;&#x9;createFormula();&#xA;&#x9;&#x9;List&lt;Element> operations = ((Model)Manager.getInstance(UMLManager.getInstance())).getModel().getNestedPackages().get(0).getNestedPackages()&#xA;&#x9;&#x9;&#x9;&#x9;.get(0).allOwnedElements();&#xA;&#x9;&#x9;for (Element o : operations) {&#xA;&#x9;&#x9;&#x9;if (o instanceof Operation &amp;&amp; o.getAppliedStereotype(&quot;GaAcqStep&quot;) != null) {&#xA;&#x9;&#x9;&#x9;&#x9;try {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;boolean app = Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.evaluateOperator((AndOperator) getFormula().getRootOperator(), (Operation) o);&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;if (app)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;occurrences++;&#xA;&#x9;&#x9;&#x9;&#x9;} catch (ParserException e) {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// TODO Auto-generated catch block&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;e.printStackTrace();&#xA;&#x9;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#x9;&#x9;return occurrences;"/>
+          </eAnnotations>
+          <eParameters name="T_maxOverDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_demandsProb" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="fullDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="int occurrences = 0;&#xA;&#x9;&#x9;setParametersForFullDetection(T_maxOverDemand, T_minUnderDemand, T_demandsProb, T_maxHwUtil,&#xA;&#x9;&#x9;&#x9;&#x9;T_maxServiceResponseTime);&#xA;&#x9;&#x9;createFormula();&#xA;&#x9;&#x9;List&lt;Element> operations =((Model)Manager.getInstance(UMLManager.getInstance())).getModel().getNestedPackages().get(0).getNestedPackages()&#xA;&#x9;&#x9;&#x9;&#x9;.get(0).allOwnedElements();&#xA;&#x9;&#x9;for (Element o : operations) {&#xA;&#x9;&#x9;&#x9;if (o instanceof Operation &amp;&amp; o.getAppliedStereotype(&quot;GaAcqStep&quot;) != null) {&#xA;&#x9;&#x9;&#x9;&#x9;try {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;boolean app = Manager.getInstance(null)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;.evaluateOperator((AndOperator) getFormula().getRootOperator(), (Operation) o);&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;if (app)&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;occurrences++;&#xA;&#x9;&#x9;&#x9;&#x9;} catch (ParserException e) {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;// TODO Auto-generated catch block&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;e.printStackTrace();&#xA;&#x9;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;&#x9;}&#xA;&#x9;&#x9;}&#xA;&#x9;&#x9;return occurrences;"/>
+          </eAnnotations>
+          <eParameters name="T_maxOverDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_demandsProb" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxServiceResponseTime" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="log" lowerBound="1">
+          <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
+            <details key="body" value="super.log();"/>
+          </eAnnotations>
+        </eOperations>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_overDemandMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_underDemandMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_overDemandProbSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_demandSumProbSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_underDemandProbSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_hwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_serviceResponseTimeSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxOverDemandMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_minUnderDemandMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_demandsProbSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxHwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxServiceResponseTimeSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="contextualElement"
+            lowerBound="1" eType="#//actions/UML/Operation"/>
+      </eClassifiers>
+    </eSubpackages>
+  </eSubpackages>
+</ecore:EPackage>

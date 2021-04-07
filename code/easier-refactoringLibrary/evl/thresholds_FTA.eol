@@ -1,0 +1,127 @@
+/******** DESIGN **************/
+operation th_maxMsgs() : Real{
+	var th_maxMsgs : Real = 3;
+	return th_maxMsgs;
+}
+
+operation th_numReceivedMsgs() : Real{
+	var th_numReceivedMsgs : Real = 1.67;
+	return th_numReceivedMsgs;
+}
+
+operation th_numSentMsgs() : Real{
+	var th_numSentMsgs : Real = 2.41;
+	return th_numSentMsgs;
+}
+
+operation th_maxRemMsgs() : Real{
+	var th_maxRemMsgs : Real = 2.56;
+	return th_maxRemMsgs;
+}
+
+operation th_maxRemInst() : Real{
+	var th_maxRemInst : Real = 1; 
+	return th_maxRemInst;
+}
+
+operation th_maxClientConnects() : Real{
+	var th_maxConnects : Real = 5.4;
+	return th_maxConnects;
+}
+
+operation th_maxSupplierConnects() : Real{
+	var th_maxConnects : Real = 2.3380;
+	return th_maxConnects;
+}
+
+operation th_maxExF() : Real{
+	var th_maxExF : Real = 2;
+	return th_maxExF;
+}
+	
+/******** PERFORMANCE **************/
+
+/*operation th_maxResDemand() : List(Real){
+	var th_maxResDemand : List( Real ) = new List( Real );
+	th_maxResDemand.add(99.18); //CPU
+	th_maxResDemand.add(17.06); // MEMORY
+	th_maxResDemand.add(16.04); // LAN
+	th_maxResDemand.add(5.56); // WWAN
+	th_maxResDemand.add(2.89); // HD
+	return th_maxResDemand;
+}*/
+
+operation th_maxResDemand() : List(Real){
+	var th_maxResDemand : List( Real ) = new List( Real );
+	th_maxResDemand.add(495.89); //CPU
+	th_maxResDemand.add(85.28); // MEMORY
+	th_maxResDemand.add(80.22); // LAN
+	th_maxResDemand.add(27.78); // WWAN
+	th_maxResDemand.add(14.44); // HD
+	return th_maxResDemand;
+}
+
+operation th_maxOpResDemand() : List(Real){
+	var th_maxOpResDemand : List( Real ) = new List( Real );
+	th_maxOpResDemand.add(148.77); //CPU
+	th_maxOpResDemand.add(25.58); // MEMORY
+	th_maxOpResDemand.add(24.07); // LAN
+	th_maxOpResDemand.add(8.33); // WWAN
+	th_maxOpResDemand.add(4.33); // HD
+	return th_maxOpResDemand;
+}
+
+operation th_minOpResDemand() : List(Real){	
+	var th_minOpResDemand : List( Real ) = new List( Real );
+	th_minOpResDemand.add(66.12); //CPU
+	th_minOpResDemand.add(11.37); // MEMORY
+	th_minOpResDemand.add(10.70); // LAN
+	th_minOpResDemand.add(3.70); // WWAN
+	th_minOpResDemand.add(1.93); // HD
+	return th_minOpResDemand;
+}
+
+/*operation th_maxHwUtil() : Real{
+	//Hw Utilization
+	var th_maxHwUtil : Real = 0.85;
+	return th_maxHwUtil;
+}*/
+
+operation th_maxHwUtil() : Sequence(Real){
+	//Hw Utilization
+	var th_maxHwUtil : Sequence(Real);
+	
+	th_maxHwUtil.add(0.0421); //all
+	th_maxHwUtil.add(0.0331); //maxCPU
+	th_maxHwUtil.add(0.0318); //minCPU
+	th_maxHwUtil.add(0.0169); //maxDISK
+	th_maxHwUtil.add(0.0162); //minDISK
+	
+	return th_maxHwUtil;
+}
+
+operation th_maxNetUtil() : Real{	
+	//Network utilization
+	var th_maxNetUtil : Real = 0.74;
+	return th_maxNetUtil;
+}
+
+operation th_minNetUtil() : Real{
+	var th_minNetUtil : Real = 0.61;
+	return th_minNetUtil;
+}
+
+operation th_SrtReq() : Real{	
+	var th_SrtReq : Real = 0.0560; //response time
+	return th_SrtReq;
+}
+
+operation th_SthReq() : Real{	
+	var th_SthReq = 231.2430; //throughput
+	return th_SthReq;
+}
+
+operation th_maxQL() : Real {
+	var th_maxQL : Real = 4.7937; //queue lenght
+	return th_maxQL;
+}

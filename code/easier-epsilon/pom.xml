@@ -1,0 +1,165 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>it.univaq.disim.sealab</groupId>
+		<artifactId>easier</artifactId>
+		<version>0.6.3</version>
+	</parent>
+	<artifactId>easier-epsilon</artifactId>
+	<name>Easier Epsilon Module</name>
+
+	<properties>
+		<epsilon.version>2.2.0</epsilon.version>
+		<epsilon.scope>compile</epsilon.scope>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+		<!-- <dependency> -->
+		<!-- <groupId>org.eclipse.epsilon</groupId> -->
+		<!-- <artifactId>epsilon-core</artifactId> -->
+		<!-- <version>${epsilon.version}</version> -->
+		<!-- </dependency> -->
+
+		<dependency>
+			<groupId>org.eclipse.epsilon</groupId>
+			<artifactId>org.eclipse.epsilon.emc.emf</artifactId>
+			<version>${epsilon.version}</version>
+			<scope>${epsilon.scope}</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.epsilon</groupId>
+			<artifactId>org.eclipse.epsilon.emc.uml</artifactId>
+			<version>${epsilon.version}</version>
+			<scope>${epsilon.scope}</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.epsilon</groupId>
+			<artifactId>org.eclipse.epsilon.emc.plainxml</artifactId>
+			<version>${epsilon.version}</version>
+			<scope>${epsilon.scope}</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.epsilon</groupId>
+			<artifactId>org.eclipse.epsilon.egl.engine</artifactId>
+			<version>${epsilon.version}</version>
+			<scope>${epsilon.scope}</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.epsilon</groupId>
+			<artifactId>org.eclipse.epsilon.evl.engine</artifactId>
+			<version>${epsilon.version}</version>
+			<scope>${epsilon.scope}</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.epsilon</groupId>
+			<artifactId>org.eclipse.epsilon.eol.engine</artifactId>
+			<version>${epsilon.version}</version>
+			<scope>${epsilon.scope}</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.epsilon</groupId>
+			<artifactId>org.eclipse.epsilon.etl.engine</artifactId>
+			<version>${epsilon.version}</version>
+			<scope>${epsilon.scope}</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>it.univaq.disim.sealab.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+			<version>2.15.0.v20180706-1146</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>es.unizar.profiles</groupId>
+			<artifactId>com.masdes.dam.static.profile</artifactId>
+			<version>0.13.1.201801221725</version>
+		</dependency>
+
+		<!-- <dependency> -->
+		<!-- <groupId>it.univaq.disim.sealab.emf</groupId> -->
+		<!-- <artifactId>org.eclipse.emf.common</artifactId> -->
+		<!-- <version>2.15.0.v20181220-0846</version> -->
+		<!-- </dependency> -->
+
+		<dependency>
+			<groupId>it.univaq.disim.sealab.emf</groupId>
+			<artifactId>org.eclipse.emf.mapping.ecore2xml</artifactId>
+			<version>2.11.0.v20180706-1146</version>
+		</dependency>
+
+		<!-- Dependency to UML -->
+		<dependency>
+			<groupId>it.univaq.disim.sealab.uml</groupId>
+			<artifactId>org.eclipse.uml2.common</artifactId>
+			<version>2.5.0.v20181203-1331</version>
+		</dependency>
+
+		<dependency>
+			<groupId>it.univaq.disim.sealab.uml</groupId>
+			<artifactId>org.eclipse.uml2.types</artifactId>
+			<version>2.5.0.v20181203-1331</version>
+		</dependency>
+
+		<dependency>
+			<groupId>it.univaq.disim.sealab.uml</groupId>
+			<artifactId>org.eclipse.uml2.uml</artifactId>
+			<version>5.5.0.v20181203-1331</version>
+		</dependency>
+
+		<dependency>
+			<groupId>it.univaq.disim.sealab.uml</groupId>
+			<artifactId>org.eclipse.uml2.uml.profile.standard</artifactId>
+			<version>1.5.0.v20181203-1331</version>
+		</dependency>
+
+		<dependency>
+			<groupId>it.univaq.disim.sealab.uml</groupId>
+			<artifactId>org.eclipse.uml2.uml.resources</artifactId>
+			<version>5.5.0.v20181203-1331</version>
+		</dependency>
+
+		<dependency>
+			<groupId>it.univaq.disim.sealab.profiles</groupId>
+			<artifactId>marte</artifactId>
+			<version>1.2.0.201803031506</version>
+		</dependency>
+
+		<!--dependency>
+			<groupId>it.univaq.disim.sealab.profiles</groupId>
+			<artifactId>uml.standard</artifactId>
+			<version>1.0.0.v20150202-0947</version>
+		</dependency-->
+		<!--dependency>
+			<groupId>it.univaq.disim.sealab.profiles</groupId>
+			<artifactId>uml.l3</artifactId>
+			<version>1.1.0-v20130902-0826</version>
+		</dependency-->
+		<!--dependency>
+			<groupId>it.univaq.disim.sealab.profiles</groupId>
+			<artifactId>uml.l2</artifactId>
+			<version>1.1.0-v20130902-0826</version>
+		</dependency-->
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+</project>

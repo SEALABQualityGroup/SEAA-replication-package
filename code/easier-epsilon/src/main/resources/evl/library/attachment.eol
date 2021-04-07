@@ -1,0 +1,65 @@
+// Function that allows you to scan all the Attachment instances anc check if it is possible clone an attachment
+operation ArchiElemInstance scanAttachment(clone : ArchiElemInstance) : List(Attachment) {
+	var result := new List(Attachment);
+	for(attachment in Attachment.allInstances()) {
+		if(attachment.start.fromInstance.instanceName = self.instanceName or attachment.end.toInstance.instanceName = self.instanceName) {
+		// Ican clone if and only if there is an UNI-UNI interaction between the input and the output interaction 
+			if(attachment.start.isOutput.type = InteractionType#UNI and attachment.end.isInput.type = InteractionType#UNI) {
+				result.add(attachment.cloneAttachment(clone, self));
+			}		
+		}	
+	}
+	return result;
+}
+
+// Function that allows you to clone an Attachment
+operation Attachment cloneAttachment(clone : ArchiElemInstance, current : ArchiElemInstance) : Attachment {
+	var result := new Attachment;
+	
+	if(self.start.fromInstance.instanceName = current.instanceName) {
+		result.start := self.start.createFrom(result.start, clone);
+		result.end := self.end.createTo(result.end, self.end.toInstance);
+		// Put the input interaction in OR
+		self.end.isInput.type = InteractionType#OR;
+	}
+	else {
+		if(self.end.toInstance.instanceName = current.instanceName) {
+			result.start := self.start.createFrom(result.start, self.start.fromInstance);
+			result.end := self.end.createTo(result.end, clone);
+		}
+	}
+	return result;
+}
+
+// Function that allows you to clone a From element
+operation From createFrom(current : From, aei : ArchiElemInstance) : From {
+	current := new From;
+	current.fromInstance := aei;
+	current.isOutput := self.isOutput;
+	
+	return current;
+}
+
+// Function that allows you to clone a To element
+operation To createTo(current : To, aei : ArchiElemInstance) : To {
+	current := new To;
+	current.toInstance := aei;
+	current.isInput := self.isInput;
+	
+	return current;
+}
+
+// Function that selects all the attachment of an AEmilia Architectural Element Instance clone
+operation deleteAttachment(current : ArchiElemInstance) : Sequence(Attachment) {
+	return Attachment.allInstances -> 
+		select(a : Attachment|a.end.toInstance.instanceName = current.instanceName + "_Cloned"
+			or a.start.fromInstance.instanceName = current.instanceName + "_Cloned") ->
+				asSequence();
+}
+
+// Function that selects all the attachment of an AEmilia Architectural Element Instance that need to be set to UNI
+operation selectAttachment(current : ArchiElemInstance) : Sequence(Attachment) {
+	return Attachment.allInstances -> 
+		select(a : Attachment|a.start.fromInstance.instanceName = current.instanceName) ->
+			asSequence();
+}

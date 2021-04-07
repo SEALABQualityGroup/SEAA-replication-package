@@ -1,0 +1,251 @@
+import "operations.eol";
+
+pre
+{
+	var modelMessages = UML!MessageOccurrenceSpecification.all();
+	//"Begin Transformation...".println();
+}
+
+// Operations to implement the replication of tasks
+operation LQN!TaskType getActivities() : Sequence
+{
+	return self.entry.entryPhaseActivities.activity.flatten;
+}
+
+post
+{	
+	/**
+	 * The components deployed on several nodes should appear once on the final LQN.
+	 * Thus, when two nodes that are clones are identified a component is moved and 
+     * the replication is incremented by 1.
+	 * This loops is necessary to remove clones (i.e., clones) remaning empty due 
+	 * to the relocation of components
+	 */
+	var processors = LQN!ProcessorType.all().select(i | i.task.isEmpty());
+	for(processor in processors)
+		LQN.deleteElement(processor);
+
+	/*		
+	for(processor in LQN!ProcessorType)
+	{
+		var tasks = processor.task;
+		for(task in tasks)
+			task.replication = processor.replication;
+	}
+
+
+	for(task in LQN!TaskType)
+	{
+		var taskActivities = task.getActivities();
+		var taskCalls = taskActivities.synchCall.flatten;
+		var dests = taskCalls.dest;
+		
+		// var targets = LQN!TaskType.all().select(i | i.entr)
+		
+		LQN!EntryType.all().select(i | dests.includes(i.name));
+		
+		
+				
+	}
+
+	*/ 		
+	// Checks if all the call are targeting an existing entry
+	callsCorrectness();
+	
+	"Done!!".println();	
+}
+
+rule Model2Schema 
+	transform uml: UML!Model
+	to lqn: LQN!LqnModelType
+	{
+		guard: uml.name <> "PrimitiveTypes"
+		
+		lqn.name = uml.name;		
+		lqn.processor ::= UML!Node.all();
+	}
+
+rule Node2Processor
+	transform node: UML!Node
+	to proc: LQN!ProcessorType 
+	{	
+		/* 
+		 * The guard filters the nodes:
+		 * - Nodes not stereotyped with <<GaExecHost>>;
+		 * - A <<GaExecHost>> Node without deployments
+         * - A <<GaExecHost>> Node deploying elements that are not interacting
+		 */
+		guard {
+			// Gets the components deployed on this Node
+			var components = node.getDeployed();
+			// A component interacts if there is at least one lifeline involved in a sequence
+			components = components.select(i | i.isInteracting());
+			// The transformation considers nodes that are GaExecHost and interacting
+			return node.checkStereotypeApplication("GaExecHost") and components.notEmpty();
+		}
+		
+		// Gets the object representign the stereotype GaExecHost
+		var stereotype = node.checkAndGetStereotype("GaExecHost");
+		// Gets the values of the tags resMult and speedFactor
+		var resTag = node.getValue(stereotype, "resMult");
+		var speedFactor = node.getSpeedFactor();
+		
+		// The collections components contains the components deployed on the current node
+		var components = node.getDeployed();
+		components = components.select(i | i.isInteracting());		
+		
+		/*
+		 * Selects the components deployed on multiple nodes (i.e., not exclusiveDeployment);
+		 * The set of deployments includes the current node (i.e, variable node);
+		 */
+		var multideployed = components.select(i | not node.exclusiveDeployment(i));
+		
+		/*
+		 * Collects the deployments of multideployed nodes
+		 * The transformation identifies a clone when a component is deployed
+		 * on nodes with the same speed factor
+  		 */
+		var clones = multideployed.collect(i | i.getNodes()).flatten;
+		clones.select(i | i.getSpeedFactor() = speedFactor);
+				
+		// The number of clones
+		var size = clones.size();
+		size = (size == 0) ? "1" else size.asString();	
+		
+		var sources = components.collect(i | i.getSources()).flatten;
+		if(sources.notEmpty()) 
+			components.addAll(sources);
+			
+		proc.name = node.name;
+		proc.task ::= components;
+		proc.multiplicity = size.asBigInteger();
+	}
+	
+rule Actor2Task
+	transform actor: UML!Actor
+	to task: LQN!TaskType
+	{
+		guard: actor.isInteracting()
+		
+		var lifelines = actor.getLifelines();
+		var beses = lifelines.collect(i | i.getElements("BehaviorExecutionSpecification")).flatten;
+				
+		task.name = actor.name;
+		task.scheduling = LQN!TaskSchedulingType#ref;
+		task.entry ::= beses;
+	}
+
+rule Component2Task
+	transform component: UML!Component
+	to task: LQN!TaskType
+	{
+		guard {
+		
+			if(component.isInteracting() and component.getArtifacts().isEmpty())
+				throw "Component " + component.name + " is not represented by any Artifact";
+				
+			return component.isInteracting();
+		}
+
+		var lifelines = component.getLifelines();
+		lifelines = lifelines.select(i | i.isInteracting());
+		
+		var beses = lifelines.collect(i | i.getElements("BehaviorExecutionSpecification")).flatten;
+		var artifacts = component.getArtifacts();
+		var multiplicity = artifacts.size().asString();
+		
+					
+		task.name = component.name;
+		task.entry ::= beses;
+		task.multiplicity = multiplicity.asBigInteger();
+	}
+
+rule BES2Entry
+	transform bes: UML!BehaviorExecutionSpecification
+	to entry: LQN!EntryType
+	{	
+		guard {
+			
+			if(not (bes.isWellFormed()))
+				return false;
+			
+			// @Assumption: a BES has an exclusive Lifeline
+			var lifeline = bes.covered.first;
+					
+			if(lifeline.isUndefined())
+				throw "The BES: " + bes.name + " is not bound to any lifeline";
+				
+			var type = lifeline.represents.type;
+						
+			return type.isInteracting();
+		}
+			
+		var messages = bes.getMessages();
+		// Gets only the messages that are sent
+		messages = messages.select(i | i.isSend() and i.message.messageSort <> UML!MessageSort#reply);	
+		
+		// If msgs is empty, then the BES is a sink 
+		if(messages.isEmpty())
+			messages.add(bes.start);
+	
+		entry.name = bes.name;					
+		entry.entryPhaseActivities = new LQN!PhaseActivities;
+		entry.entryPhaseActivities.activity ::= messages;
+	}
+	
+
+rule Message2Activity
+	transform msgo: UML!MessageOccurrenceSpecification
+	to actv: LQN!ActivityPhasesType
+	{
+		guard {
+			var message = msgo.message;
+			return message.checkStereotypeApplication("GaStep");
+		}
+		
+		var message = msgo.message;
+		
+		// Get Stereotype Tags value
+		var stereotype = message.checkAndGetStereotype("GaStep");
+		var execTime = message.getValue(stereotype, "execTime").first;
+		var rep = message.getValue(stereotype, "rep");						
+		var hostDemandMean = execTime.asDouble() * rep.asDouble(); 
+					
+		actv.name = message.name;
+		actv.phase = "1".asBigInteger();
+		actv.hostDemandMean = hostDemandMean;
+
+		if(msgo.isSend())
+		{		
+			var call = new LQN!ActivityMakingCallType;		
+			var lifeline = message.receiveEvent.covered;
+			
+			/*"^^^^^^^^^^".println();
+			message.println("Message --> ");
+			lifeline.println("Message lifeline --> ");
+			
+			lifeline.first.name.println("Lifeline first --> ");
+			
+			for(bs in BehaviorExecutionSpecification.all){
+				bs.name.println("BES name --> ");
+				bs.getCovereds.println("List of covered --> ");
+				bs.start.name.println("BES start --> ");
+				bs.start.isTypeOf(MessageOccurrenceSpecification).println("BES start type --> ");
+				bs.finish.name.println("BES finish --> ");
+				bs.finish.isTypeOf(MessageOccurrenceSpecification).println("BES finish type --> ");
+				"-----".println();
+			}*/
+			
+			
+			// Gets the BES starting with the message
+			var bes = lifeline.first.getElements("BehaviorExecutionSpecification");
+			
+			// Gets the target BES				
+			bes = bes.selectOne(i | i.start == message.receiveEvent and
+				i.finish.isTypeOf(MessageOccurrenceSpecification));
+						
+			call.dest = bes.name;
+			call.callsMean = rep;
+			actv.synchCall = Sequence{call};
+		}
+	}

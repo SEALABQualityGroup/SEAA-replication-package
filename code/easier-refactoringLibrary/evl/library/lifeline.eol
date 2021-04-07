@@ -1,0 +1,137 @@
+operation Lifeline getIndexReceiveMOS(message : Message) : MessageOccuranceSpecification{
+	//TODO
+}
+
+operation Lifeline getBESInitializedBy(op : Operation) : BehaviorExecutionSpecification {
+
+	return BehaviorExecutionSpecification.allInstances->selectOne(
+		bes : BehaviorExecutionSpecification | 
+			bes.getCovereds()->first() == self and 
+				bes.getStart() == op.getMessageIn(self.getInteraction()).getReceiveEvent()		
+	);
+	
+}
+
+operation Lifeline removeInteractionFragment(mes : InteractionFragment){
+	self.getCoveredBys().remove(mes);
+}
+
+
+operation Lifeline getNextIncomingMessageStartingFrom() : Sequence (Message){
+	return Message.allInstances->select(
+		mes : Message | self.getCoveredBys()->exists(mes.getReceiveEvent()) 
+	);
+}
+
+operation Lifeline getBESStartedBy(mos : MessageOccurrenceSpecification) : BehaviorExecutionSpecification{
+	return self.getCoveredBys()->selectOne(
+		iterator : InteractionFragment | iterator.isTypeOf(BehaviorExecutionSpecification) and iterator.getStart() == mos
+	);
+}
+
+operation Lifeline removeCovered(fragment : InteractionFragment){
+	self.getCoveredBys().remove(fragment);
+}
+
+operation Lifeline removeMsg(msg : Message){
+
+	var mosReceive = msg.getReceiveEvent();
+	var bes = msg.getBES();
+	var eos = msg.getEOS();
+
+	self.getCoveredBys().remove(mosReceive);
+	self.getCoveredBys().remove(bes);
+	self.getCoveredBys().remove(eos);
+}
+
+// OK BUT CONSIDERS ALL MESSAGES (EVEN THE ONES WITHOUT GaAcqStep)
+operation Lifeline getIncomingMessages() : Map{
+	var messages : Sequence(Message) = new Sequence(Message); 
+	var map : Map(Interaction, Sequence(Message));
+	var interactions = self.getInteractions();
+	if(interactions.notEmpty()){
+		for(int in interactions ){
+			messages.addAll(int.getMessages());
+			map.put(int, messages->select(mes : Message | mes.getReceiveEvent().getCovereds()->first().getRepresents().getType() == self.getRepresents().getType() and mes.notReturn()));
+			//messages->select(mes : Message | mes.getReceiveEvent().getCovereds()->first().getRepresents().getType() == self.getRepresents().getType() and mes.notReturn()).asList();
+		}
+	}
+	return map;
+}
+
+operation Lifeline getInteractionUses() : Sequence(InteractionUse){
+	
+	return self.getCoveredBys()->select(iterator | iterator.isTypeOf(InteractionUse)).asSequence();
+	
+}
+
+operation Lifeline getInteractions() : Sequence(Interaction){
+	var interactions : Sequence(Interaction) = new Sequence(Interaction);
+	
+	var interUses = self.getInteractionUses();
+	
+	for(interUse in interUses){
+		interactions.add(interUse.getRefersTo());
+	}
+	
+	interactions.add(self.getInteraction());
+	
+	return interactions;
+}
+
+
+// OK BUT CONSIDERS ALL MESSAGES (EVEN THE ONES WITHOUT GaAcqStep)
+operation Lifeline getOutgoingMessages() : Map{
+	var messages : Sequence(Message) = new Sequence(Message); 
+	var map : Map(Interaction, Sequence(Message));
+	var interactions = self.getInteractions();
+	if(interactions.notEmpty()){
+		for(int in interactions ){
+			messages.addAll(int.getMessages());
+			map.put(int, messages->select(mes : Message | mes.getSendEvent().getCovereds()->first().getRepresents().getType() == self.getRepresents().getType() and mes.notReturn()));
+			//messages->select(mes : Message | mes.getReceiveEvent().getCovereds()->first().getRepresents().getType() == self.getRepresents().getType() and mes.notReturn()).asList();
+		}
+	}
+	return map;
+}
+
+/*operation Lifeline getOutgoingMessages() : Sequence(Message){
+	
+	var messages : Sequence(Message) = new Sequence(Message); 
+	
+	var interactions = self.getInteractions();
+	
+	if(interactions.notEmpty()){
+		for(int in interactions ){
+			messages.addAll(int.getMessages());
+		}
+	}
+	
+	return messages->select(mes : Message | mes.getSendEvent().getCovereds()->first().getRepresents().getType() == self.getRepresents().getType() and mes.notReturn()).asSequence();
+}*/
+
+operation Lifeline getNextIncomingMessage(mes : Message) : Message{
+
+	var incomingMes = self.getIncomingMessages();
+	
+	for (m in incomingMes){
+		if( m.receiveEvent.namespace.getIndexOf(m.receiveEvent) > mes.receiveEvent.namespace.getIndexOf(mes.receiveEvent) ){
+			return m;
+		}
+	}
+	return null;
+} 
+
+operation Lifeline getNextOutgoingMessage(mes : Message) : Message{
+	var outgoingMes = self.getOutgoingMessages();
+	
+	for (m in outgoingMes){
+		if( self.getInteraction().getIndexOf(m.sendEvent) > self.getInteraction().getIndexOf(mes.sendEvent) )
+			return m;
+	}
+	return null;
+} 
+
+operation Lifeline getBESes() : Sequence(BehaviorExecutionSpecification){
+	return self.getCoveredBys()->select(cov | cov.isTypeOf(BehaviorExecutionSpecification)).asSequence();
+}

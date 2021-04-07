@@ -1,0 +1,16 @@
+// Returns true if the calling ActionProcess ancestor is a choice process
+operation ActionProcess checkAncestorChoice() : Boolean {
+	if(self.eContainer().isTypeOf(ChoiceProcess))
+		return true;
+	if(self.eContainer().isTypeOf(BehavEquation))
+		return false;
+	if(self.eContainer().isTypeOf(ActionProcess))
+		return self.eContainer().checkAncestorChoice();
+	else
+		return false;
+}
+
+// Return a sequence of action process elements which the same action of the calling one
+operation Action getActionProcess() : Sequence(ActionProcess) {
+	return ActionProcess.allInstances() -> select(x: ActionProcess | x.act = self) -> asSequence();
+}

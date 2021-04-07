@@ -1,0 +1,253 @@
+operation getMeanValue(values : Sequence) : Real {
+	if(values.isDefined() and values.notEmpty())
+		return values.collect(v|v.asReal()).sum() / values.size();
+	else
+		return 0.0;
+}
+
+operation Model getGaScenarios() : List(UseCase){
+	return UseCase.allInstances().select(uc|uc.hasStereotype("GaScenario"));
+}
+
+operation Model getGaExecHosts() : List(Device){
+	return Device.allInstances().select(uc|uc.hasStereotype("GaExecHost"));
+}
+
+operation Message getMsgProb() : Real {
+	if(self.hasStereotype("GaAcqStep").isDefined()) {
+		if(self.getValue(self.getStereotype("GaAcqStep"), "prob").isDefined()) {
+			self.getValue(self.getStereotype("GaAcqStep"), "prob").asReal();
+		} else
+			return 1.0.asReal();
+	} else 
+		return 1.0.asReal();
+}
+
+
+operation getSystemCriticalComponent() : Component{
+	var components = Component.allInstances;//->select(iterator | iterator.hasStereotype("PaRunTInstance"));
+	return components.sortBy(c : Component | c.getAverageDemand())->last();
+}
+
+operation UseCase getMeanRT() : Real{
+	if(self.hasStereotype("GaScenario") )
+		return getMeanValue(self.getValue(self.getStereotype("GaScenario"), "respT")->collect(u|u.asReal())->asSequence());//.println("\tMEAN RT OF USECASE "+self.getName()+": ");
+	return 0.0;
+}
+
+operation UseCase getMeanThroughput() : Real{
+	if(self.hasStereotype("GaScenario") )
+		return getMeanValue(self.getValue(self.getStereotype("GaScenario"), "throughput")->collect(u|u.asReal())->asSequence());//.println("\tMEAN THROUGHPUT OF USECASE "+self.getName()+": ");
+	return 0.0;
+}
+
+
+
+// OK
+operation getDevWithMaxUtil(devs : Sequence(Device)) {
+	if(devs.isDefined() and devs.notEmpty()) {
+		var possibleDevs = devs.select(d|d.hasStereotype("GaExecHost") and d.getTag("GaExecHost", "utilization").isDefined() and d.getTag("GaExecHost", "utilization").size()>0);
+		if(possibleDevs.isDefined() and possibleDevs.notEmpty()) {
+			var devWithMaxUtil : Device = devs.first();
+			if(possibleDevs.excluding(devWithMaxUtil).notEmpty()) {
+				for(d in possibleDevs.excluding(devWithMaxUtil)) {
+					if(d.getTag("GaExecHost", "utilization").isDefined() and d.getTag("GaExecHost", "utilization").notEmtpy()) {
+						if(d.println("D:").getMaxUtilization() >= devWithMaxUtil.println("D WITH MAX UTIL:").getMaxUtilization())
+							devWithMaxUtil = d;
+					}
+				}
+			}
+			return devWithMaxUtil;
+		} else
+			return null;
+	} else
+		return null;
+}
+
+
+
+operation getOpWithMaxMeanDemand(ops : Sequence(Operation)) {
+	if(ops.isDefined() and ops.notEmpty()) {
+		var opWithMaxMeanDemand : Operation = ops.first();
+		if(ops.excluding(opWithMaxMeanDemand).notEmpty()) {
+			for(op in ops.excluding(opWithMaxMeanDemand)) {
+				if(op.getMeanDemand().isDefined() and op.getMeanDemand() > opWithMaxMeanDemand.getMeanDemand())
+					opWithMaxMeanDemand = op;
+			}
+		}
+		return opWithMaxMeanDemand;
+	} else
+		return null;
+}
+
+
+
+
+operation getLessUsedComponent() : Component{
+	var listOfSystemComponent = Component.allInstances;//->select(iterator | iterator.hasStereotype("PaRunTInstance") and iterator.notLegacy());
+	var lessUsedComp = listOfSystemComponent->selectOne(iterator | iterator.getAverageDemand() > 0.0);
+
+	var lessUsedDemand = lessUsedComp.getAverageDemand();
+	
+	for(comp in listOfSystemComponent){
+		if(comp.getAverageDemand() <> 0.0 and comp.getAverageDemand() < lessUsedDemand){
+			lessUsedDemand = comp.getAverageDemand();
+			lessUsedComp = comp;
+		}
+	}
+	return lessUsedComp;
+}
+
+operation Element getRandomName() : String {
+	var elemType = "";
+	if(elemType.isDefined())
+		elemType = self.type.name;
+	var rand = new Native("java.util.Random");
+	var n = rand.nextInt();
+	while(n <= 0) {
+		n = rand.nextInt();
+	}
+	return elemType + n;
+}
+
+operation getRandomSchedPolicy() : EnumerationLiteral {
+	var enums = Enumeration.all.select(e|e.name = "SchedPolicyKind");
+	var randSp = new Native("java.util.Random");
+	var i = randSp.nextInt(enums.size());
+	while(i<0 or i>enums.size()) {
+		i = randSp.nextInt();
+	}
+	var literals = enums.at(i).getOwnedLiterals();
+	var randLit = new Native("java.util.Random");
+	var j = randLit.nextInt();
+	while(j<0 or j>literals.size()) {
+		j = randLit.nextInt(literals.size());
+	}
+	return enums.at(i).getOwnedLiterals().at(j);
+}
+
+operation getRandomPositiveReal() : Real {
+	var randReal = new Native("java.util.Random");
+	var real : Real = randReal.nextDouble();
+	real = 0.00001 + (10000 - 0.00001) * randReal.nextDouble();
+	//real = randReal.nextDouble();
+	while(real<=0) {
+		real = 0.00001 + (10000 - 0.00001) * randReal.nextDouble();
+		//real = randReal.nextDouble();
+	}
+	//real = real.asString().substring(0, real.asString().indexOf(".") + 5).asReal();
+	return real;
+}
+
+operation getRandomPositiveInt() : Integer {
+	var int : Integer = 1;
+	var randInt = new Native("java.util.Random");
+	int = randInt.nextInt();
+	while(int<=0) {
+		int = randInt.nextInt(10001);
+	}
+	return int;
+}
+
+operation isPaF(name: String){
+	log("PaF detection rules for --> [" + name +"]" );
+	return true;
+}
+
+operation isEP(name: String){
+	log("EP detection rules for --> [" + name +"]" );
+	return true;
+}
+
+operation isBlob(name: String){
+	log("Blob detection rules for --> [" + name +"]" );
+	return true;
+}
+
+operation showError(msg : String) {
+	if(debug())
+		("[[ "+ msg +" ]]").errln("There was an error!!! ");
+}
+
+operation debug() : Boolean{
+	return false;
+}
+
+operation info(message : String){
+	if(debug())
+		message.println();
+} 
+
+operation log(string : String){
+	string.println();
+}
+
+operation utilizationThresholdMeanSTDdev() : Real{
+
+	var nodes = Node.all->select(n | n.hasStereotype("GaExecHost"));
+	
+	var utils : Sequence(Real);
+	
+	for(n in nodes){
+	
+		n.getStereotype("GaExecHost").println("Sterotype -> ");
+		n.getTag("GaExecHost", "utilization").println("utilization -> ");
+		utils.add(n.getTag("GaExecHost", "utilization")->first().asReal());
+	}
+	
+	utils.println("Sum of utils -> ");
+	utils.sum.println("Total UTILS -> ");
+	
+	var avg = utils.sum() / utils.size();
+	
+	var stddev : Real;
+	
+	for(x in utils){
+		var aux = 0.0;
+		aux = x - avg;
+		aux = aux * aux;
+				
+		stddev = stddev + aux;
+	}
+	
+	var mathTool = Native("java.lang.Math");
+	mathTool.class.println("MATH TOOL ->");
+	mathTool.sqrt(stddev/utils.size().asDouble()).println("MATH SQRT -> ");
+	
+	avg.println("Util avg -> ");
+	stddev.println("STDDEV -> ");
+	
+	return (avg + stddev); 
+
+}
+
+
+operation showThresholds() {
+	log("------ showThresholds ------");
+	log("th_maxMsgs --> " + th_maxMsgs().asString());
+	log("th_numReceivedMsgs --> " + th_numReceivedMsgs().asString());
+	log("th_numSentMsgs --> " + th_numSentMsgs().asString());
+	log("th_maxRemMsgs --> " + th_maxRemMsgs().asString());
+	log("th_maxRemInst --> " + th_maxRemInst().asString());
+	log("th_maxClientConnects --> " + th_maxClientConnects().asString());
+	log("th_maxSupplierConnects --> " + th_maxSupplierConnects().asString());
+	log("th_maxExF --> " + th_maxExF().asString());
+	log("th_maxResDemand --> " + th_maxResDemand().asString());
+	log("th_minResDemand --> " + th_minResDemand().asString());
+	log("th_maxOpResDemand --> " + th_maxOpResDemand().asString());
+	log("th_minOpResDemand --> " + th_minOpResDemand().asString());
+	log("th_maxHwUtil --> " + th_maxHwUtil().asString());
+	log("th_maxNetUtil --> " + th_maxNetUtil().asString());
+	log("th_minNetUtil --> " + th_minNetUtil().asString());
+	log("th_SrtReq --> " + th_SrtReq().asString());
+	log("th_SthReq --> " + th_SthReq().asString());
+	log("th_maxQL --> " + th_maxQL().asString());
+	log("th_probExecEp --> " + th_probExecEp().asString());
+	log("------------");
+}
+
+
+operation getHash(element : UML!Element) : String{
+	return ("_" + element.getName().split("_").get(1)).asString();
+
+}

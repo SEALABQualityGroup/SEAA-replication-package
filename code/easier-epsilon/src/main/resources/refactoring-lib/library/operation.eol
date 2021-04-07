@@ -1,0 +1,1421 @@
+//clone una operation
+operation Operation cloneOperationInto(component : Component) : Operation{
+	var newOperation = new Operation;
+	newOperation.name = self.name + "_Cloned";
+	component.ownedOperation.add(newOperation);
+	newOperation.cloneOwnedParameterFrom(self);
+	newOperation.cloneAppliedStereotypesFrom(self);
+	newOperation.cloneReturnTypeFrom(self);
+	return newOperation;
+}
+
+//clone owned parameter
+operation Operation cloneOwnedParameterFrom(op : Operation){
+	self.ownedParameter = op.ownedParameter.clone();
+}
+
+//clone i parametri di un operazione
+operation Operation cloneReturnTypeFrom(op : Operation){
+	if(op.getType().isDefined())
+		self.setType(op.getType());
+}
+
+//recupero la lista dei process node che hanno un legame con l'operazione
+operation Operation getProcessNodes() : List(Node){
+	var returnValue : List(Node) = new List(Node);
+	
+	for(node in Node.allInstances){
+		if(node.hasStereotype("GaExecHost")){
+			for(deployment in node.getDeployments()){
+				var listOfArtifacts = deployment.getDeployedArtifacts();
+				for(art in listOfArtifacts){
+					if( art.hasRepresentationOf(self.getOwner()) ){
+						returnValue.add(node);
+					}
+				}
+			}
+		}
+	}
+	return returnValue;
+}
+
+//recupero la lista dei process node che hanno un legame con l'operazione
+operation Operation getProcessNodes(stereotype : String) : List(Node){
+	var returnValue : List(Node) = new List(Node);
+	
+	for(node in Node.allInstances){
+		if(node.hasStereotype(stereotype)){
+			for(deployment in node.getDeployments()){
+				var listOfArtifacts = deployment.getDeployedArtifacts();
+				for(art in listOfArtifacts){
+					if( art.hasRepresentationOf(self.getOwner()) ){
+						returnValue.add(node);
+					}
+				}
+			}
+		}
+	}
+	return returnValue;
+}
+
+//recupero gli UseCase relativi all'operazione
+operation Operation getUseCases() : List(UseCase){
+	var returnValue : List(UseCase) = new List(UseCase);
+	for(interaction in Interaction.allInstances){
+		if( interaction.hasOperation(self) ){
+			returnValue.add(interaction.getOwner());
+		}
+	}
+	return returnValue;
+}
+
+//splitta il componente
+operation Operation splitComponent() : Component{
+	
+	var selfComponent = self.getOwner(); //recupero il componente che possiede l'operazione critica
+	var selfPackage = self.getNearestPackage(); //recupero il package contenitore dell'operazione critica
+	
+	var splittedComponent : Component = new Component(); //creo il componente splittato
+	selfPackage.addElement(splittedComponent); //aggiungo il componente splittato al package del componente sorgente
+
+	splittedComponent.name = selfComponent.getName() + " Splitted";
+	splittedComponent.cloneAppliedStereotypesFrom(selfComponent); //clono gli stessi stereotipi del componente sorgente
+	
+	splittedComponent.moveInterfacesRealizationFrom(selfComponent, self);
+	
+	var listOfUsedProvidedInterfaces : List(Interface) = selfComponent.getAllUsedIntefacesRequiredsBy(self); //TODO vedere il nuovo modello
+	
+
+	return splittedComponent;
+}
+
+operation Operation splitClass() : Class{
+	
+	var selfComponent = self.getOwner(); //recupero il componente che possiede l'operazione critica
+	var selfPackage = self.getNearestPackage(); //recupero il package contenitore dell'operazione critica
+	
+	var splittedClass : Class = new Class(); //creo il componente splittato
+	selfPackage.addElement(splittedClass); //aggiungo il componente splittato al package del componente sorgente
+
+	splittedClass.name = self.getOwner().name + " Refactored";
+	splittedClass.cloneAppliedStereotypesFrom(self.getOwner()); //clono gli stessi stereotipi del componente sorgente
+	
+	splittedClass.moveInterfacesRealizationFrom(self.getOwner(), self);
+	
+	var listOfUsedProvidedInterfaces : List(Interface) = splittedClass.getAllUsedIntefacesRequiredsBy(self); //TODO vedere il nuovo modello
+
+	return splittedClass;
+}
+
+//recupero tutti i message dell'operazione
+operation Operation getAllOwnMessages() : List(Message){
+	var returnValue : List(Message) = new List(Message);
+	for(message in Message.allInstances){
+		if(message.hasStereotype("GaStep") and message.getSignature() == self){
+			returnValue.add(message);
+		}
+	}
+	return returnValue;
+}
+
+//recupero tutti gli interaction che contengono l'op critica
+operation Operation getAllInteractions() : List(Interaction){
+	var returnValue : List(Interaction) = new List(Interaction);
+	for(interaction in Interaction.allInstances){
+		for(message in self.getAllOwnMessages()){
+			if(message.namespace == interaction){
+				returnValue.add(interaction);
+				break;
+			}
+		}
+	}
+	return returnValue;
+}
+
+operation Operation getMessageIn(interaction : Interaction) : Message{
+	var mes = interaction.getMessages()->selectOne(iterator : Message | iterator.getSignature() == self);
+	return mes;
+}
+
+operation Operation getMessagesIn(interaction : Interaction) : Sequence(Message){
+	var mes = interaction.getMessages()->select(iterator : Message | iterator.getSignature() == self);
+	return mes.asSequence();
+}
+
+operation Operation getUsages() : List(Usage){
+	return Usage.allInstances->select(usage : Usage |
+				usage.getSuppliers()->exists(supplier : Operation | supplier == self) or
+					usage.getClients()->exists(client : Operation | client == self)
+			);
+}
+
+operation Operation getUsedInterfaces() : Sequence(Interface){
+	var usages = self.getUsages();	
+	var returnValue : Sequence(Interface) = new Sequence(Interface);
+	for(usage in usages){
+		if(usage.getSuppliers()->exists(cli | cli.isTypeOf(Interface))){
+			returnValue.add(usage.getSuppliers()->selectOne(cli | cli.isTypeOf(Interface)));
+		}
+	}	
+	return returnValue;
+}
+
+
+/***********************
+
+	IT MUST BE CHECKED	
+
+************************/
+//FIXME Check the behavior
+operation Operation moveIntoComponent(component : Component){
+	var usages = self.getUsages()->select(usage : Usage | 
+		(usage.getSuppliers().size() == 1 and usage.getSuppliers()->first() == self) or 
+			(usage.getClients().size() == 1 and usage.getClients()->first() == self));
+			
+	component.addUsages(usages);
+	component.moveOperation(self);
+}
+
+operation Operation moveIntoClass(class : Class){
+	var usages = self.getUsages()->select(usage : Usage | 
+		(usage.getSuppliers().size() == 1 and usage.getSuppliers()->first() == self) or 
+			(usage.getClients().size() == 1 and usage.getClients()->first() == self));
+			
+	class.addUsages(usages);
+	class.moveOperation(self);
+}
+
+
+operation Operation _redeployOnNearLessUsedNode() : Boolean{
+	var listOfCriticSourceNode = self.getDeployedNodesHwUtilization(th_maxHwUtil()->first()); 
+	var listOfNearLessUsed : List(Node) = new List(Node);
+	
+	for(node in listOfCriticSourceNode){
+		var listOfNeighbours = node.getDirectlyLinkedNode(); //lista dei nodi vicini
+		
+		if(listOfNeighbours.isUndefined() or listOfNeighbours.size() == 0){
+			//non esistono vicini al nodo
+			return false;
+		}
+		
+		var lessNode : Node = listOfNeighbours->selectOne(
+			node : Node | node.hasStereotype("GaExecHost") and node.notLegacy() and
+				node.getTag("GaExecHost", "utilization").isDefined()
+		);
+		
+		if(lessNode.isUndefined()) {
+			("lessNode is undefined").println();
+			showError("Method: _redeployOnNearLessUsedNode() in operation.eol");
+			return false;
+		}
+		var utilization : Real = 0.0;
+		if(lessNode.getTag("GaExecHost", "utilization").isDefined() and 
+			lessNode.getTag("GaExecHost", "utilization").notEmpty()){
+				utilization = lessNode.getTag("GaExecHost", "utilization")->first().asReal();
+		}
+		
+		for(neighbour in listOfNeighbours){
+			if(neighbour.hasStereotype("GaExecHost") and neighbour.notLegacy()){
+				if(neighbour.getTag("GaExecHost", "utilization").isUndefined() or neighbour.getTag("GaExecHost", "utilization").isEmpty()){
+					showError("Method: _redeployOnNearLessUsedNode() in operation.eol");
+				}else{
+					var nearNodeUtilization = neighbour.getTag("GaExecHost", "utilization")->first();
+					if(nearNodeUtilization.isDefined() and nearNodeUtilization.asReal() < utilization){
+						lessNode = neighbour;	
+						utilization = nearNodeUtilization.asReal();
+					}
+				}
+			}
+		}
+		listOfNearLessUsed.add(lessNode);
+		if(listOfNearLessUsed.isUndefined() or listOfNearLessUsed.notEmpty()){ 
+			return false;
+		}
+	}
+	//deploy il componente splittato sul primo nodo della lista dei vicini meno utilizzati
+	return true;
+}
+
+
+
+//TODO controllare con gli altri AP, modificato il comportamento del fixing
+
+/******************************************************
+ *						FIXING						  *
+ *      		To be Checked auto-messages			  *
+ *													  *	
+ ******************************************************/
+ 
+ 
+ operation Operation dynamicFixing(artifact : Artifact) {
+ 
+ 	var gaAcqSteps = self.getAllOwnMessages(); //all msgs with self as signature
+ 	var receiveMoses = MessageOccurrenceSpecification.all.select(mos|gaAcqSteps.exists(m|m=mos.message and m.receiveEvent=mos)); //all (receive event) moses with message in msgs
+ 	var receivingLifelines = Lifeline.all.select(lf|lf.coveredBy.exists(el|receiveMoses.exists(mos|mos=el)));
+ 	//var beses = BehaviorExecutionSpecification.all.select(bes|gaAcqSteps.exists(m|bes.getStart().getMessage()=m));//receivingLifelines.exists(l|bes.covered.includes(l)));
+ 	//var eoses = beses.collect(b|b.getFinish());
+ 	//var lfReplyMsgs = self.getAllOwnMessages().select(m|m.isReturn() and eoses.exists(eos|eos.getIndexOf()=m.getIndexOf()-1)).println("REPLYS: ");
+ 	
+ 	for(lf in receivingLifelines) {
+ 		var interactions = lf.getInteractions();
+		for(interaction in interactions) {
+			var lifeline = interaction.createLifeline(artifact.getName());
+			var spProp = interaction.createOwnedAttribute(artifact.getName(), artifact);
+			lifeline.setRepresents(spProp);
+			lifeline.cloneAppliedStereotypesFrom(lf);
+			lifeline.setVisibility(lf.getVisibility());
+			
+			var combFrags = lf.coveredBy.select(f|f.isTypeOf(CombinedFragment));
+			for(f in combFrags) {
+				lifeline.coveredBy.add(f);
+			}
+			
+			var lfBeses = lf.coveredBy.select(bes|bes.isTypeOf(BehaviorExecutionSpecification));
+			for(lfBes in lfBeses) {
+				lifeline.coveredBy.add(lfBes);
+				lf.removeInteractionFragment(lfBes);
+			}
+			
+			//var lfReceiveMoses = lf.coveredBy.select(mos|mos.isTypeOf(MessageOccurrenceSpecification) and
+			//											 gaAcqSteps.exists(m|m=mos.message and m.receiveEvent=mos));
+			var lfReceiveMoses = lfBeses.collect(bes|bes.getStart()).flatten();
+			for(lfMos in lfReceiveMoses) {
+				lifeline.coveredBy.add(lfMos);
+				lf.removeInteractionFragment(lfMos);
+			}
+			
+			var lfEoses = lfBeses.collect(bes|bes.getFinish()).flatten();//lf.coveredBy.select(eos|eos.isTypeOf(ExecutionOccurrenceSpecification));
+			for(lfEos in lfEoses) {
+				lifeline.coveredBy.add(lfEos);
+				lf.removeInteractionFragment(lfEos);
+			}
+			var lfReplyMoses = MessageOccurrenceSpecification.all.select(mos|mos.getMessage().isDefined() and mos.getMessage().isReturn() and lfEoses.exists(eos|eos.getIndexOf()=mos.getIndexOf()-1));
+			for(lfReplyMos in lfReplyMoses) {
+				lifeline.coveredBy.add(lfReplyMos);
+				lf.removeInteractionFragment(lfReplyMos);
+			}
+		}
+ 	}
+}
+ 
+ 
+operation Operation dynamicFixing(component : Component) {
+
+	info("self interactions size -> " + self.getAllInteractions().size().asString());	
+
+	var interaction = self.getAllInteractions()->first(); //TODO controllare potrebbe lavorare su un interaction non corretto
+	
+	var sourceLifeline = component.getLifeline(interaction);
+	
+	if(sourceLifeline.isUndefined()){
+		if(debug()){
+			("sourceComponent --> "+component.getName()).println();
+		}	
+			("the operation ["+ self.getName() + "] has not a lifeline").println();
+			showError("Method: moveToNewComponentDeployedOnNearLessUsedNode() in operation.eol");
+	}else{
+		if(debug()){
+			("@@@@@@@@@@@@@ DEBUG dynamic Fixing @@@@@@@@@@@@").println();
+		}
+		
+		var lifeline = interaction.createLifeline(self.getOwner().getName()+"Lifeline"); //L2
+		var spProp = interaction.createOwnedAttribute(self.getOwner().getName(), self.getOwner());
+		
+		lifeline.setRepresents(spProp);
+		lifeline.cloneAppliedStereotypesFrom(sourceLifeline);
+		lifeline.setVisibility(sourceLifeline.getVisibility());
+		
+		var beses = sourceLifeline.getBESes();
+		
+		if(debug()){
+			("self name -> " + self.getName()).println();
+			("source beses").println();
+			for(bes in beses){
+				"".println();
+				"&&&&&&&&&&&".println();
+				("bes.getOwner() --> "+bes.getOwner()).println();
+				("bes.getStart() --> "+bes.getStart()).println();
+				("bes.getFinish() --> "+bes.getFinish()).println();
+				"&&&&&&&&&&&".println(); 
+				"".println();
+			}
+			("new lifeline -> " + lifeline.getName()).println();
+		}
+		
+		var bes = beses->selectOne(bes | bes.getStart().getMessage().getSignature() == self and bes.getFinish().isTypeOf(MessageOccurrenceSpecification));
+		
+		if(debug()){
+			("bes --> "+ bes.asString() ).println();
+			("indexOf bes of self --> "+ bes.getIndexOf()).println();
+			("self operation --> "+self.getName()).println();
+		}
+		
+		var sourceCoveredBys :Sequence(InteractionFragment) = new Sequence(InteractionFragment);
+		//sposto dal MOS_receive dell'op fino all'EOS esclusi
+		
+		for(i in sourceLifeline.getCoveredBys()){
+			//var indexOf_i = i.getOwner().getIndexOf(i,0);
+			var indexOf_i = i.getIndexOf();
+			
+			/*if(bes.isDefined() and  indexOf_i > bes.getOwner().getIndexOf(bes.getStart(),0) 
+				and indexOf_i < bes.getOwner().getIndexOf(bes.getFinish(),0)
+			)*/
+			if(bes.isDefined() and  indexOf_i > bes.getStart().getIndexOf() 
+				and indexOf_i < bes.getFinish().getIndexOf()){
+				if(debug()){
+					("i --> "+ i ).println();
+				}
+				lifeline.getCoveredBys().add(i);
+				sourceCoveredBys.add(i);
+			}
+			if(debug()){
+				"************************".println();
+				("i.getOwner() --> "+i.getOwner()).println();
+				("bes.getOwner() --> "+bes.getOwner()).println();
+				("bes.getStart() --> "+bes.getStart()).println();
+				("bes.getFinish() --> "+bes.getFinish()).println();
+				("indexOf_i --> "+indexOf_i).println();
+				"************************".println(); 
+				"".println();
+			}
+		}
+		
+		if(debug()){
+			"".println();
+			("sourceLifeline --> "+sourceLifeline.getName()).println();
+			("sourceCoveredBys --> "+sourceCoveredBys.size()).println();
+			"".println();
+		}
+		
+		for(i in sourceCoveredBys){
+			if(debug()){
+				"removing element i".println();
+				("i of sourceCoveredBys --> " + i).println();
+				if(i.isTypeOf(MessageOccurrenceSpecification))
+					i.getMessage().println();
+			}
+			sourceLifeline.removeInteractionFragment(i);
+		}
+		
+		if(bes.isDefined()){
+			//sposto il MOS_r dell'op e il EOS
+			lifeline.getCoveredBys().add(bes.getStart());
+			lifeline.getCoveredBys().add(bes.getFinish());
+			lifeline.getCoveredBys().add(bes);
+		
+			sourceLifeline.removeInteractionFragment(bes.getStart());
+			sourceLifeline.removeInteractionFragment(bes.getFinish());
+			sourceLifeline.removeInteractionFragment(bes);
+		}
+		
+		if(debug()){
+		
+			"print bes information: getStart and getFinish getMessage getSignature".println();
+			bes.getStart().println();
+			bes.getFinish().println();
+			bes.getStart().getMessage().println();
+			bes.getStart().getMessage().getSignature().println();
+			
+	
+			("sourceLifeline -> " + sourceLifeline.getBESes().size()).println();
+			("lifeline -> "+ lifeline.getBESes().size()).println();
+			
+			("lifeline getCoveredBys() -> " + lifeline.getCoveredBys());
+			
+			"new lifeline getCoveredBys()".println(); 
+			
+			for(i in  lifeline.getCoveredBys){
+				if(i.isTypeOf(MessageOccurrenceSpecification))
+					i.getMessage().println();
+			}
+			("@@@@@@@@@@@@@ DEBUG dynamic Fixing @@@@@@@@@@@@").println();
+			"".println();
+		}
+	}
+
+}
+
+/*operation Operation dynamicFixing(class : Class) {
+	var interaction = self.getAllInteractions()->first(); //TODO controllare potrebbe lavorare su un interaction non corretto
+	var sourceLifeline = class.getLifeline(interaction);
+	var lifeline = interaction.createLifeline(self.class.name+"Lifeline"); //L2
+	var spProp = interaction.createOwnedAttribute(self.class.name, self.class);
+	
+	lifeline.setRepresents(spProp);
+	lifeline.cloneAppliedStereotypesFrom(sourceLifeline);
+	lifeline.setVisibility(sourceLifeline.getVisibility());
+	
+	var beses = sourceLifeline.getBESes();
+	var bes = beses->selectOne(bes | bes.getStart().getMessage().getSignature() == self );
+	
+	var sourceCoveredBys :Sequence(InteractionFragment) = new Sequence(InteractionFragment);
+	//sposto dal MOS_receive dell'op fino all'EOS esclusi
+	for(i in sourceLifeline.getCoveredBys()){
+		if( i.getOwner().getIndexOf(i) > bes.getOwner().getIndexOf(bes.getStart()) 
+			and i.getOwner().getIndexOf(i) < bes.getOwner().getIndexOf(bes.getFinish())
+		){
+			lifeline.getCoveredBys().add(i);
+			sourceCoveredBys.add(i);
+		}
+	}
+	for(i in sourceCoveredBys){
+		sourceLifeline.removeInteractionFragment(i);
+	}
+	
+	//sposto il MOS_r dell'op e il EOS
+	lifeline.getCoveredBys().add(bes.getStart());
+	lifeline.getCoveredBys().add(bes.getFinish());
+	
+	sourceLifeline.removeInteractionFragment(bes.getStart());
+	sourceLifeline.removeInteractionFragment(bes.getFinish());
+}
+*/
+
+operation Operation calculateTotalUtilization() : Real{
+	var totalUtilization : Real = 0.0;
+	var i : Integer = 0;
+	if(self.hasStereotype("GaStep") and self.hasStereotype("GaScenario") ){
+		for(utl in self.getValue(self.getStereotype("GaStep"), "servCount")){
+			totalUtilization = totalUtilization + utl.asReal();
+			i = i + 1;
+		}
+	} 
+	return (totalUtilization/i.asReal());
+}
+
+operation Operation moveIntoNewComponent(){
+	var sourceComponent : Component = self.class;
+	var packageContainer = sourceComponent.getNearestPackage();
+	
+	var newComponent : Component = new Component;
+	newComponent.name = "New "+sourceComponent.name;
+	packageContainer.addElement(newComponent);
+	
+	self.moveIntoComponent(newComponent);	
+}
+
+
+operation Operation getOwnerInteractionOperands() : List(InteractionOperand){
+	var returnValue : List(InteractionOperand) = new List(InteractionOperand);
+	for(mes in self.getAllOwnMessages()){
+		if(mes.getSendEvent().getOwner().isTypeOf(InteractionOperand)){
+			returnValue.add(mes.getSendEvent().getOwner());
+		}
+	}
+	return returnValue->select(iterator | iterator.getOwner().getInteractionOperator().asString == "alt");
+}
+
+operation Operation splittingComponent( numberOfSplitting : Integer, percentage : Integer ) : Boolean {	
+	//static
+	var sourceComponent : Component = self.class;
+	var splittedComponent = self.splitComponent(percentage.asReal());
+	
+	//dynamic
+	var interaction = self.getAllInteractions()->first();
+	var sourceLifeline = sourceComponent.getLifeline(interaction);
+	var lifeline = interaction.createLifeline(splittedComponent.name+"lifeline"); //L2
+	
+	//deploy
+	var listNodesOfSplittedComponent = splittedComponent.getNodes();
+
+	var spProp = interaction.createOwnedAttribute(splittedComponent.name, splittedComponent);
+	lifeline.setRepresents(spProp);
+	
+	splittedComponent.moveOperation(self); //sposta l'operazione sul componente appena creato
+	
+	var newMessage = interaction.createMessage(self.name+"_message");
+	
+	lifeline.cloneAppliedStereotypesFrom(sourceLifeline);
+	lifeline.setVisibility(sourceLifeline.getVisibility());
+		
+	var sendMOS : MessageOccurrenceSpecification = new MessageOccurrenceSpecification;
+	var receiveMOS : MessageOccurrenceSpecification = new MessageOccurrenceSpecification;
+	
+	interaction.getFragments().add(sendMOS);
+	interaction.getFragments().add(receiveMOS);
+	
+	newMessage.setSendEvent(sendMOS);
+	newMessage.setReceiveEvent(receiveMOS);
+	
+	var besL2 : BehaviorExecutionSpecification = new BehaviorExecutionSpecification;
+	interaction.getFragments().add(besL2);
+	
+	var messageEnd : ExecutionOccurrenceSpecification = new ExecutionOccurrenceSpecification;
+	interaction.getFragments().add(messageEnd);
+	
+	besL2.start = receiveMOS ;
+	besL2.finish = messageEnd;
+	
+	lifeline.getCoveredBys().add(besL2);
+	lifeline.getCoveredBys().add(receiveMOS);
+	
+	//return 
+	return true;
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 									PAPER												 *
+ *																							 *
+ *********************************************************************************************/
+ 
+ 
+ 
+operation Operation moveToNewComponentDeployedToNewDevice() : Boolean{
+	//static
+	var criticalOp = self;
+	var sourceComponent : Component = criticalOp.getOwner();
+	var criticalOpPackage = criticalOp.getNearestPackage(); //recupero il package contenitore dell'operazione critica
+	
+	//var splittedComponent = sourceComponent.createNewComponent();
+	
+	var splittedComponent : Component = new Component(); //creo il componente splittato
+	
+	criticalOpPackage.packagedElement.add(splittedComponent); //aggiungo il componente splittato al package del componente sorgente
+
+	splittedComponent.name = sourceComponent.getName() + " Splitted";
+	splittedComponent.cloneAppliedStereotypesFrom(sourceComponent); //clono gli stessi stereotipi del componente sorgente
+	sourceComponent.ownedOperation.remove(criticalOp);
+	splittedComponent.ownedOperation.add(criticalOp);
+
+	var intReals : Sequence(InterfaceRealization) = sourceComponent.getInterfaceRealizations().
+							select(ir|ir.getContract().ownedOperation.exists(o|o.getName().equals(criticalOp.getName())));
+	for(ir in intReals) {
+		var newIR : InterfaceRealization = new InterfaceRealization;
+		newIR.contract = ir.contract;
+		newIR.supplier.addAll(ir.supplier);
+		newIR.client.add(splittedComponent);
+		splittedComponent.interfaceRealization.add(newIR);
+	}
+	
+	var mans = sourceComponent.getManifestations();
+	if(mans.isDefined() and mans.notEmpty()) {
+		var criticalArtifact = mans.first().client.first();
+		var newArtifact : Artifact;
+		
+		//deployment
+		var deplDevs = criticalArtifact.getDeploymentDevices();
+		for(d in deplDevs) {
+			if(d.hasDeployment(criticalArtifact)) {
+				var depl = d.deployment.select(dep|dep.deployedArtifact.includes(criticalArtifact));
+				if(depl.isDefined())
+					d.deployment.removeAll(depl);
+			}
+			var newDeplDev = d.createNewDevice();
+			newArtifact = new Artifact;
+			var newManifestation; 
+			var newDeployment; 
+			d.getNearestPackage().addElement(newArtifact); 
+			newArtifact.name = criticalArtifact.name + " Splitted"; 
+			newManifestation = newArtifact.createManifestation(splittedComponent.getName(), splittedComponent);
+			newManifestation.getClients().add(newArtifact); 
+			//newDeployment = newDeplDev.createDeployment(newArtifact.getName()); 
+			//newDeployment.getDeployedArtifacts().add(newArtifact);
+			newArtifact.deployTo(newDeplDev);
+		}
+		
+		//dynamic
+		if(newArtifact.isDefined())
+			criticalOp.dynamicFixing(newArtifact);
+	}
+}
+ 
+ 
+ 
+
+operation Operation moveToNewComponentDeployedToNearLessUsedDevice() : Boolean{
+	//static
+	var criticalOp = self;
+	var sourceComponent : Component = criticalOp.getOwner();
+	var criticalOpPackage = criticalOp.getNearestPackage(); //recupero il package contenitore dell'operazione critica
+	
+	//var splittedComponent = sourceComponent.createNewComponent();
+	
+	var splittedComponent : Component = new Component(); //creo il componente splittato
+	var package = Package.all.select(p|p.name.isDefined() and p.name.contains('static')).first();
+	if(package.isDefined()) {
+		package.packagedElement.add(splittedComponent);
+	} else {
+		package = new Package();
+		package.name = "staticView";
+		package.packagedElement.add(splittedComponent);
+		self.packagedElement.add(package);
+	}
+	//criticalOpPackage.packagedElement.add(splittedComponent); //aggiungo il componente splittato al package del componente sorgente
+
+	splittedComponent.name = sourceComponent.getName() + " Splitted";
+	splittedComponent.cloneAppliedStereotypesFrom(sourceComponent); //clono gli stessi stereotipi del componente sorgente
+	sourceComponent.ownedOperation.remove(criticalOp);
+	splittedComponent.ownedOperation.add(criticalOp);
+
+	var intReals : Sequence(InterfaceRealization) = sourceComponent.getInterfaceRealizations().
+							select(ir|ir.getContract().ownedOperation.exists(o|o.getName().equals(criticalOp.getName())));
+	for(ir in intReals) {
+		var newIR : InterfaceRealization = new InterfaceRealization;
+		newIR.contract = ir.contract;
+		newIR.supplier.addAll(ir.supplier);
+		newIR.client.add(splittedComponent);
+		splittedComponent.interfaceRealization.add(newIR);
+	}
+	
+	
+	var mans = sourceComponent.getManifestations();
+	if(mans.isDefined() and mans.notEmpty()) {
+		var criticalArtifact = mans.first().client.first();
+		var newArtifact : Artifact;
+		
+		//deployment
+		var deplDevs = criticalArtifact.getDeploymentDevices();
+		for(d in deplDevs) {
+			if(d.hasDeployment(criticalArtifact)) {
+				var depl = d.deployment.select(dep|dep.deployedArtifact.includes(criticalArtifact));
+				if(depl.isDefined())
+					d.deployment.removeAll(depl);
+			}
+			
+			var listOfNeighbours = d.getDirectlyLinkedNode(); //lista dei nodi vicini
+			var neighs = listOfNeighbours->select(
+				node | node.hasStereotype("GaExecHost") and 
+					node.getTag("GaExecHost", "utilization").isDefined() and node.getTag("GaExecHost", "utilization").notEmpty()
+			);
+			
+			var lessDev;
+			var minMeanUtil : Real = 0.0;
+			if(neighs.isDefined() and neighs.notEmpty()) {
+				lessDev = neighs.first();
+				minMeanUtil = neighs.first().getMeanUtilization();
+			}
+			
+			for(neigh in neighs) {
+				var neighMeanUtil = neigh.getMeanUtilization();
+				if(neighMeanUtil.isDefined() and neighMeanUtil < minMeanUtil){
+					lessDev = neigh;	
+					minMeanUtil = neighMeanUtil;
+				}
+			}
+			//lessDev is the neighbour with lowest mean util
+			//lessDev.println("LESS USED DEV: " + lessDev.getName());
+			newArtifact = new Artifact;
+			var newManifestation; 
+			var newDeployment; 
+			d.getNearestPackage().addElement(newArtifact); 
+			newArtifact.name = criticalArtifact.name + " Splitted"; 
+			newManifestation = newArtifact.createManifestation(splittedComponent.getName(), splittedComponent);
+			newManifestation.getClients().add(newArtifact); 
+			if(lessDev.deployment.isDefined() and not lessDev.deployment.collect(depl|depl.deployedArtifact).flatten().includes(newArtifact)) {
+				//newDeployment = lessDev.createDeployment(newArtifact.getName()); 
+				//newDeployment.getDeployedArtifacts().add(newArtifact);
+				newArtifact.deployTo(lessDev);
+			}
+		}
+		
+		//dynamic
+		if(newArtifact.isDefined())
+			criticalOp.dynamicFixing(newArtifact);
+	}
+}
+
+
+
+
+operation Operation redeployToNearLessUsedDevice() : Boolean {
+	var criticalOp = self;
+	var sourceComponent : Component = criticalOp.getOwner();
+	var criticalArtifact;
+	var mans = sourceComponent.getManifestations();
+	if(mans.isDefined() and mans.notEmpty()) 
+		criticalArtifact = mans.first().client.first();
+		
+	//deployment
+	var deplDevs = criticalArtifact.getDeploymentDevices();
+	for(d in deplDevs) {
+		if(d.hasDeployment(criticalArtifact)) {
+			var depl = d.deployment.select(dep|dep.deployedArtifact.includes(criticalArtifact));
+			if(depl.isDefined())
+				d.deployment.removeAll(depl);
+		}
+		
+		var listOfNeighbours = d.getDirectlyLinkedNode(); //lista dei nodi vicini
+		var neighs = listOfNeighbours->select(
+			node | node.hasStereotype("GaExecHost") and 
+				node.getTag("GaExecHost", "utilization").isDefined() and node.getTag("GaExecHost", "utilization").notEmpty()
+		);
+		
+		var lessDev;
+		var minMeanUtil : Real = 0.0;
+		if(neighs.isDefined() and neighs.notEmpty()) {
+			lessDev = neighs.first();
+			minMeanUtil = neighs.first().getMeanUtilization();
+		}
+		
+		for(neigh in neighs) {
+			var neighMeanUtil = neigh.getMeanUtilization();
+			if(neighMeanUtil.isDefined() and neighMeanUtil < minMeanUtil){
+				lessDev = neigh;	
+				minMeanUtil = neighMeanUtil;
+			}
+		}
+		//lessDev is the neighbour with lowest mean util
+		//lessDev.println("LESS USED DEV: " + lessDev.getName());
+		var newDeployment; 
+		if(lessDev.deployment.isDefined() and not lessDev.deployment.collect(depl|depl.deployedArtifact).flatten().includes(criticalArtifact)) {
+			//newDeployment = lessDev.createDeployment(criticalArtifact.getName()); 
+			//newDeployment.getDeployedArtifacts().add(criticalArtifact);
+			criticalArtifact.deployTo(lessDev);
+		}
+		
+	}
+}
+
+
+ 
+ 
+ 
+ operation Operation moveToNearLessDemandingComponent() : Boolean{
+	//static
+	var criticalOp = self;
+	var sourceComponent : Component = criticalOp.getOwner();
+	var criticalArtifact;
+	var mans = sourceComponent.getManifestations();
+	if(mans.isDefined() and mans.notEmpty()) 
+		criticalArtifact = mans.first().client.first();
+
+	//individuare less demanding component (fra quelle deployate altrove) e spostarci criticalOp
+	var listOfNeighbours = criticalArtifact.getDeploymentDevices().first().getDirectlyLinkedNode(); //lista dei nodi vicini
+	var neighs = listOfNeighbours->select(node | node.hasStereotype("GaExecHost"));
+	if(neighs.isDefined() and neighs.notEmpty()) {
+		var otherArtifacts = neighs.collect(d|d.deployment.deployedArtifact).flatten()
+										.select(a|not a.getManifestedComponents().includes(sourceComponent));
+		var lessDemArt;
+		var minArtDem : Real = 0.0;
+		if(otherArtifacts.isDefined() and otherArtifacts.notEmpty()) {
+			lessDemArt = otherArtifacts.first();
+			minArtDem = otherArtifacts.first().getTotalDemand();
+		}
+		for(otherArt in otherArtifacts) {
+			var otherArtTotDem = otherArt.getTotalDemand();
+			if(otherArtTotDem.isDefined() and otherArtTotDem < minArtDem){
+				lessDemArt = otherArt;	
+				minArtDem = otherArtTotDem;
+			}
+		
+		}
+		var lessDemComp = lessDemArt.getManifestedComponents().first();
+		//sourceComponent.ownedOperation.println("OLD OPS SOURCE COMP: ");
+		sourceComponent.ownedOperation.remove(criticalOp);//.println("REMOVED FROM SOURCE COMP? ");
+		//sourceComponent.ownedOperation.println("NEW OPS SOURCE COMP: ");
+		//lessDemComp.ownedOperation.println("OLD OPS LESS DEM COMP: ");
+		lessDemComp.ownedOperation.add(criticalOp);//.println("ADDED TO LESS DEM COMP? ");
+		//lessDemComp.ownedOperation.println("NEW OPS LESS DEM COMP: ");
+		
+		var intReals : Sequence(InterfaceRealization) = sourceComponent.getInterfaceRealizations().
+								select(ir|ir.getContract().ownedOperation.exists(o|o.getName().equals(criticalOp.getName())));
+		for(ir in intReals) {
+			var newIR : InterfaceRealization = new InterfaceRealization;
+			newIR.contract = ir.contract;
+			newIR.supplier.addAll(ir.supplier);
+			newIR.client.add(lessDemComp);
+			lessDemComp.interfaceRealization.add(newIR);
+		}
+		
+		//dynamic
+		if(lessDemArt.isDefined())
+			criticalOp.dynamicFixing(lessDemArt);
+	}
+}
+ 
+ 
+ 
+ 
+ operation Operation redeployToNewDevice() {
+	var criticalOp = self;
+	var sourceComponent : Component = criticalOp.getOwner();
+	var criticalArtifact;
+	var mans = sourceComponent.getManifestations();
+	if(mans.isDefined() and mans.notEmpty()) {
+		criticalArtifact = mans.first().client.first();
+		//deployment
+		var deplDevs = criticalArtifact.getDeploymentDevices();
+		for(d in deplDevs) {
+			if(d.hasDeployment(criticalArtifact)) {
+				var depl = d.deployment.select(dep|dep.deployedArtifact.includes(criticalArtifact));
+				if(depl.isDefined())
+					d.deployment.removeAll(depl);
+				d.deployment;
+			}
+		}
+		var newDeplDev = deplDevs.first().createNewDevice();
+		criticalArtifact.deployTo(newDeplDev);
+	}
+}
+ 
+ 
+ 
+ 
+ 
+ 
+operation Operation moveToNewNode() : Boolean{
+	
+	if(self.getOwner().isLegacy()) 
+		return false;
+	
+	if(debug()){
+		("moved operation --> "+ self.getName()).println();
+	}
+
+	var sourceComponent : Component = self.getOwner();
+	
+	sourceComponent.deployOnNewNode();
+	return true;
+}
+
+operation UML!Operation moveToNewComponentDeployedToNewNode() : Boolean {	
+	
+	"moveToNewComponent".println();
+	
+	
+	if(self.notLegacy()){
+		//static
+		var sourceComponent : Component = self.getOwner();
+		
+		
+		var splittedComponent = self.splitComponent();
+		
+		//deploy
+		splittedComponent.deployOnNewNodes(sourceComponent);
+		
+		splittedComponent.moveOperation(self); //sposta l'operazione sul componente appena creato
+		
+		//dynamic
+		self.dynamicFixing(sourceComponent);
+		
+		if(debug()){
+			("moved operation --> "+self.getName()).println();
+		}
+		return true;
+	}
+	return false;
+}
+
+operation UML!Operation moveToNewOwnerDeployedOnNewNode() : Boolean{
+
+	if(self.getOwner().isTypeOf(Class)){
+		self.moveToNewClassDeployedOnNewNode();
+	}else if(self.getOwner().isTypeOf(Component)){
+		self.println();
+		self.moveToNewComponentDeployedToNewNode();
+	}
+
+}
+
+operation UML!Operation moveToNewClassDeployedOnNewNode() : Boolean {	
+	//static
+	var sourceClass : Class = self.getOwner();
+	var splittedClass = self.splitClass();
+	
+	//deploy
+	splittedClass.deployOnNewNodes(sourceClass);
+	splittedClass.moveOperation(self); //sposta l'operazione sul componente appena creato
+	
+	//dynamic
+	self.dynamicFixing(sourceClass);
+	
+	return true;
+}
+
+operation UML!Operation moveToNewOwnerDeployedOnNearLessUsedNode() : Boolean{
+	if(self.getOwner().isTypeOf(Class)){
+		return self.moveToNewClassDeployedOnNearLessUsedNode();
+	}else if(self.getOwner().isTypeOf(Component)){
+		return self.moveToNewComponentDeployedOnNearLessUsedNode();
+	}
+}
+
+operation Operation moveToNewClassDeployedOnNearLessUsedNode() : Boolean {
+	//static
+	var sourceClass : Class = self.getOwner();
+	var splittedClass : Class = self.splitClass();
+	
+	//deploy
+	var listOfNearLessUsedNode = sourceClass.getNearLessUsedNodes();
+	
+	//lista dei nodi critici che manifestano il componente con l'op critica
+	var listOfCriticSourceNode = self.getDeployedNodesHwUtilization(th_maxHwUtil); 
+	var listOfNearLessUsed : List(Node) = new List(Node);
+		
+	splittedClass.moveOperation(self);
+		
+	for(node in listOfCriticSourceNode){
+		var listOfNeighbours = node.getDirectlyLinkedNode(); //lista dei nodi vicini
+		if(listOfNeighbours.isUndefined() or listOfNeighbours.size() == 0){
+			//non esistono vicini al nodo
+			return false;
+			//break;
+		}
+		
+		var lessNode : Node = listOfNeighbours->selectOne(
+			node : Node | node.hasStereotype("GaExecHost") and
+				node.getValue(node.getStereotype("GaExecHost"), "utilization").isDefined()
+		);
+		
+		if(lessNode.isUndefined()) return false;
+		var utilization : Real = lessNode.getValue(lessNode.getStereotype("GaExecHost"), "utilization")->first().asReal();
+		
+		for(neighbour in listOfNeighbours){
+			if(neighbour.hasStereotype("GaExecHost")){
+				var nearNodeUtilization = neighbour.getValue(lessNode.getStereotype("GaExecHost"), "utilization")->first();
+				if(nearNodeUtilization.isDefined() and nearNodeUtilization.asReal() < utilization){
+					lessNode = nearNode;	
+					utilization = nearNodeUtilization;
+				}
+			}
+		}
+		listOfNearLessUsed.add(lessNode);
+	}
+	//deploy il componente splittato sul primo nodo della lista dei vicini meno utilizzati
+	if(listOfNearLessUsed.isUndefined() or listOfNearLessUsed.size() == 0) return false;
+	splittedClass.deployOn(listOfNearLessUsed->first());
+	
+	//dynamic
+	self.dynamicFixing(sourceClass);
+	
+	return true;
+}
+
+
+operation Operation getCriticSourceNode() : List(Node){
+	
+	"@@@@@@@@@".println();
+	("operation self --> "+self.getName()).println();
+	
+	var selfNodes = self.getProcessNodes();
+	var returnValue : List(Node);
+	
+	"selfNodes --> ".println();
+	selfNodes.println();
+	
+	
+	for(node in selfNodes){
+		if(node.F_maxHwUtil(th_maxHwUtil()->first())){
+			returnValue.add(node);
+		}
+	}
+	if(returnValue.isUndefined() or returnValue.isEmpty()){
+		return null;
+	}else{
+		return returnValue;
+	}
+}
+
+operation Operation moveToNewComponentDeployedOnNearLessUsedNode() : Boolean {
+	
+	if(self.getOwner().isLegacy()){
+		showError("the component ["+self.getOwner()+"] has legacy constraints");
+		return false;
+	}
+		//static
+	var sourceComponent : Component = self.getOwner();
+	var splittedComponent : Component = self.splitComponent();
+	
+	//deploy
+	var listOfNearLessUsedNode = sourceComponent.getNearLessUsedNodes();
+	
+	//lista dei nodi critici che manifestano il componente con l'op critica
+	//var listOfCriticSourceNode = self.getCriticSourceNode();
+	
+	var listOfCriticSourceNode = self.getProcessNodes()->select(iterator | iterator.hasStereotype("GaExecHost") and iterator.notLegacy() and iterator.getTag("GaExecHost", "utilization").isDefined());
+	
+	var listOfNearLessUsed : List(Node) = new List(Node);
+		
+	splittedComponent.moveOperation(self);
+	//self.reductionServDemand(percentage);
+		
+	for(node in listOfCriticSourceNode){
+		var listOfNeighbours = node.getDirectlyLinkedNode(); //lista dei nodi vicini
+		if(listOfNeighbours.isUndefined() or listOfNeighbours.isEmpty()){
+			("the operation ["+ self.getName() + "] has not Directly Linked Node").println();
+			showError("Method: moveToNewComponentDeployedOnNearLessUsedNode() in operation.eol");
+			//non esistono vicini al nodo
+			return false;
+			//break;
+		}
+		
+		var lessNode : Node = listOfNeighbours->selectOne(
+			node : Node | node.hasStereotype("GaExecHost") and node.notLegacy() and 
+				node.getTag("GaExecHost", "utilization").isDefined()
+		);
+		
+		if(lessNode.isUndefined()) 
+			return false;
+			
+		var utilization : Real = lessNode.getTag("GaExecHost", "utilization")->first().asReal();
+		
+		for(neighbour in listOfNeighbours){
+			if(neighbour.hasStereotype("GaExecHost") and neighbour.notLegacy()){
+				var nearNodeUtilization = neighbour.getTag("GaExecHost", "utilization")->first();
+				if(nearNodeUtilization.isDefined() and nearNodeUtilization.asReal() < utilization){
+					lessNode = neighbour;	
+					utilization = nearNodeUtilization.asReal();
+				}
+			}
+		}
+		listOfNearLessUsed.add(lessNode);
+	}
+	//deploy il componente splittato sul primo nodo della lista dei vicini meno utilizzati
+	if(listOfNearLessUsed.isUndefined() or listOfNearLessUsed.size() == 0) 
+		return false;
+	
+	log("less used node --> "+listOfNearLessUsed->first());
+	
+	splittedComponent.deployOn(listOfNearLessUsed->first());
+			
+	//dynamic
+	self.dynamicFixing(sourceComponent);
+	
+	log("moved operation --> "+self.getName());
+	
+	return true;
+}
+
+
+operation Operation redeployOnNearLessUsedNode() : Boolean {
+	
+	if(self.getOwner().notLegacy()){
+		var sourceComponent = self.getOwner();
+		
+		//var listOfSourceNode = sourceComponent.getNodes();
+		log("moved operation --> " + self.getName());
+		
+		return self._redeployOnNearLessUsedNode();
+	}
+	return false; 
+}
+
+operation Operation moveToLessCriticalOwner() : Boolean{
+	
+	if(debug()){
+		("moved operation --> " + self.getName()).println();
+	}
+	
+	if(self.getOwner().isTypeOf(Class)){
+		return self.moveToLessCriticalClass();
+	}else if(self.getOwner().isTypeOf(Component)){
+		return self.moveToLessCriticalComponent();
+	}
+	return false;
+}
+
+operation Operation moveToLessCriticalComponent() : Boolean{
+	if(self.getOwner().notLegacy()){
+		//var lessUsedComponent : Component = Component.allInstances->first();
+		var lessUsedComponent = getLessUsedComponent();
+		
+		var sourceComponent : Component = self.getOwner();
+		
+		if(sourceComponent.isUndefined()){
+			"mostrare errore in moveToLessCriticalComponent operation.eol".println();
+			return false;
+		}
+		
+		if(lessUsedComponent <> sourceComponent){
+			("less used component --> " + lessUsedComponent.getName()).println();
+			self.moveIntoComponent(lessUsedComponent);
+		}
+		
+		//dynamic
+	//	var listOfLifeline = sourceComponent.getLifelines();
+		var listOfMessages = self.getAllOwnMessages();
+		
+		for(mes in listOfMessages){
+			var mesInteraction = mes.getInteraction();
+			var lessUsedComponentLifeline = lessUsedComponent.createLifelineInto(mesInteraction);
+			var sourceLifeline = mesInteraction.getLifelineOf(sourceComponent);
+			
+			if(sourceLifeline.isUndefined()){
+				"mostrare errore SourceLifeline is undefined in moveToLessCriticalComponent operation.eol".println();
+				("mesInteraction --> "+mesInteraction.getName()).println();
+				return false;
+			}
+			
+			//var indexOfMesMOS_R : Integer = interaction.getIndexOf(mes.getReceiveEvent());
+		
+			//var besL2 : BehaviorExecutionSpecification = new BehaviorExecutionSpecification;
+			//interaction.addFragmentAt(besL2,indexOfMesMOS_R+1);
+			
+			var sourceBES = sourceLifeline.getBESStartedBy(mes.getReceiveEvent());
+			//besL2.start = self.getMessageIn(interaction).getReceiveEvent();
+			//besL2.finish = sourceBES.getFinish();
+			
+			lessUsedComponentLifeline.getCoveredBys().add(mes.getReceiveEvent());
+			lessUsedComponentLifeline.getCoveredBys().add(sourceBES);
+			lessUsedComponentLifeline.getCoveredBys().add(sourceBES.getFinish());
+			
+			sourceLifeline.removeCovered(mes.getReceiveEvent());
+			sourceLifeline.removeCovered(sourceBES);
+			sourceLifeline.removeCovered(sourceBES.getFinish());
+		}
+	}
+	return false;
+}
+
+operation Operation moveToLessCriticalClass() : Boolean{
+	var lessUsedClass : Class = Class.allInstances->first();
+	var sourceClass : Class = self.getOwner();
+	
+	for(class in Class.allInstances){
+		if( class.calculateUtilization() < lessUsedClass.calculateUtilization() ){
+			lessUsedClass = class;
+		}
+	}
+	
+	if(lessUsedClass <> self.getOwner()){
+		self.moveIntoClass(lessUsedClass);
+	}
+	
+	//dynamic
+	var listOfLifeline = sourceClass.getLifelines();
+	var interaction = listOfLifeline->first().getInteraction();
+	var sourceLifeline = interaction.getClassLifeline(sourceClass);
+	
+	var lifeline = lessUsedClass.createLifelineInto(interaction);
+	
+	var message = self.getMessageIn(interaction);
+	var indexOfMesMOS_R : Integer = interaction.getIndexOf(message.getReceiveEvent());
+	
+	var besL2 : BehaviorExecutionSpecification = new BehaviorExecutionSpecification;
+	interaction.addFragmentAt(besL2,indexOfMesMOS_R+1);
+	
+	var sourceBES = sourceLifeline.getBESStartedBy(message.getReceiveEvent());
+	besL2.start = self.getMessageIn(interaction).getReceiveEvent();
+	besL2.finish = sourceBES.getFinish();
+	
+	lifeline.getCoveredBys().add(message.getReceiveEvent());
+	lifeline.getCoveredBys().add(besL2);
+	lifeline.getCoveredBys().add(sourceBES.getFinish());
+	
+	sourceLifeline.removeCovered(message.getReceiveEvent());
+	//sourceLifeline.removeCovered(sourceBES);
+	sourceLifeline.removeCovered(sourceBES.getFinish());
+}
+
+operation Operation getDeployedNodesHwUtilization(th_maxHwUtil : Real) : List(Node){
+	
+	var listOfProcessNode : List(Node) = new List(Node);
+	
+	listOfProcessNode = self.getProcessNodes();
+	
+	var listOfProcessNodeWithUtilizationGreater : List(Node) = new List(Node);
+	
+	for(node in listOfProcessNode){
+		if(node.hasStereotype('GaExecHost') and node.notLegacy()){
+			var utilization = node.getValue(node.getStereotype('GaExecHost'), 'utilization')->first();
+			if( utilization.isDefined() and utilization.asReal() >= th_maxHwUtil ){
+				listOfProcessNodeWithUtilizationGreater.add(node);
+			}
+		}
+	}
+	
+	return listOfProcessNodeWithUtilizationGreater;
+}
+
+
+//Fixing decomposition
+operation Operation decomposition() : Boolean{
+	
+	if(self.getOwner().notLegacy()){
+		if(debug()){
+			("decomposed operation --> " + self.getName()).println();
+		}
+	
+		var owner = self.getOwner();
+		
+		var indices;
+		
+		var listOfInteraction = self.getAllInteractions();
+		//check di controllo
+		if(listOfInteraction.isEmpty()){
+			showError("Method: decomposition() in operation.eol");
+			return false;
+		}
+		
+		var new_op := owner.createNewOperation(self);
+		
+		var mos = new MessageOccurrenceSpecification();
+	
+		for(interaction in listOfInteraction){
+			indices = interaction.getIndexOf(self);
+			var message_new_op = interaction.createMessage("new_"+new_op.getName());
+			message_new_op.setSignature(new_op);
+			for(index in indices){
+				var loopFragment = interaction.createLoopFragmentAt(index);
+				var loopFragmentOperand = loopFragment.getOperands()->first();
+				
+				var sendEvent = new MessageOccurrenceSpecification();
+				sendEvent.setName("MOS_SendEvent_"+message_new_op.getName());
+				loopFragmentOperand.getFragments().add(sendEvent);
+				var receiveEvent = new MessageOccurrenceSpecification();
+				receiveEvent.setName("MOS_ReceiveEvent_"+message_new_op.getName());
+				loopFragmentOperand.getFragments().add(receiveEvent);
+				
+				message_new_op.setSendEvent(sendEvent);
+				message_new_op.setReceiveEvent(receiveEvent);
+				
+				var ownerLifeline = owner.getLifeline(interaction);
+				if(ownerLifeline.isUndefined()){
+					showError("Method: decomposition() in operation.eol");
+					return 0;
+				}
+				ownerLifeline.getCoveredBys().add(sendEvent);			
+				ownerLifeline.getCoveredBys().add(receiveEvent);			
+			}
+		}
+		if(not owner.deleteOperation(self)){
+			showError("Method: deleteOperation(Operation) in operation.eol");
+			//return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+
+operation getOperationWithResDemanLesser(th_minResDemand : List(Real)) : List(Operation){
+	var opLesser : List(Operation) = new List(Operation);
+	var isMin : Boolean = true; 
+	
+	for(op in Operation.allInstances){
+		if(op.hasStereotype("GaStep")){
+			var gaStep = op.getStereotype("GaStep");
+			var i : Integer = 0;
+			for(resDem in op.getValue(gaStep, "servCount")){
+				
+				if(not (resDem.asReal() < th_minResDemand[i].asReal())){
+					isMin = false;
+				}
+				i = i+1;
+			}
+			if(isMin){
+				opLesser.add(op);
+			}
+		}	
+		isMin=true;
+	}
+	
+	if(opLesser.isUndefined() or opLesser.isEmpty()){
+		return null;
+	}else{
+		return opLesser;
+	}
+}
+
+operation Operation retrieveOperation() : Operation{
+	info("Operation retrieveOperation() : Operation");
+	var listOfIntOperands = self.getOwnerInteractionOperands();
+	if(listOfIntOperands.isEmpty())
+		return null; 
+	
+	for(int in listOfIntOperands){
+		
+		if( int.hasStereotype("GaStep") ){
+			var combFrag = int.getOwner();
+			var listOfSiblingOperands = combFrag.getOperands()->select(iterator | iterator <> int);
+			var listOfOpsWithGaStep;
+			
+			for(operand in listOfSiblingOperands){
+				if(operand.hasStereotype("GaStep") and 
+					(operand.getTag("GaStep", "prob").asReal()+int.getTag("GaStep", "prob").asReal()) == 1){
+					
+					var listOfOperations = operand.getOperations();
+					listOfOpsWithGaStep = listOfOperations->select(iterator : Operation | iterator.hasStereotype("GaStep"));
+					
+					if(listOfOpsWithGaStep->select(iterator : Operation | 
+							(self.F_resDemandCpuGreaterOrEqualThan(th_maxResDemand()->first()) and iterator.F_resDemandCpuLesserThan(th_minOpResDemand()->first()) ) or
+							(self.F_resDemandDiskGreaterOrEqualThan(th_maxResDemand()->second()) and iterator.F_resDemandDiskLesserThan(th_minOpResDemand()->second()) )).notEmpty()
+					){
+						//iterator.F_resDemandLesserThan(th_minOpResDemand())).notEmpty()){
+						//return listOfOpsWithGaStep->selectOne(iterator : Operation | iterator.F_resDemandLesserThan(th_minOpResDemand()));
+						return listOfOpsWithGaStep->first();
+					}
+				}
+			}
+		}
+	}
+	return null;
+}
+
+operation Operation getAverageDemand() : Real {
+	var avgDemand : Real = 0.0;
+	var servCount = self.getTag("GaStep", "servCount");
+	var maxDemands = self.getMaxDemands();
+	if(servCount.isUndefined() or servCount.isEmpty() ){
+		showError("the operation "+ self.getName() +" hasn't got any service demand");
+		showError("Method: getAverageDemand() in operation.eol");
+		return 0.0;
+	}
+	var i : Integer = 0;
+	for(dem in self.getTag("GaStep", "servCount")){
+		avgDemand = avgDemand + (dem.asReal()/maxDemands.at(i));
+	}
+	return avgDemand / (maxDemands.size());
+}
+
+operation Operation getCPUDemand() : Real {
+	var servCount = self.getTag("GaStep", "servCount");
+	if(servCount.isUndefined() or servCount.isEmpty()){
+		("the operation  ["+ self.getName() +"] hasn't got any service demand").println();
+		showError("Method: getCPUDemand() in operation.eol");
+		return 0.0;
+	}
+	if(self.getTag("GaStep", "servCount")->first().isDefined())
+		return self.getTag("GaStep", "servCount")->first().asReal();
+	return 0.0; 
+}
+
+operation Operation getDiskDemand() : Real {
+	var servCount = self.getTag("GaStep", "servCount");
+	if(servCount.isUndefined() or servCount.isEmpty()){
+		("the operation  ["+ self.getName() +"] hasn't got any service demand").println();
+		showError("Method: getCPUDemand() in operation.eol");
+		return 0.0;
+	}
+	if(self.getTag("GaStep", "servCount")->second().isDefined())
+		return self.getTag("GaStep", "servCount")->second().asReal();
+	return 0.0; 
+}
+
+
+
+operation Operation getMaxDemands() : Sequence(Real){
+	var maxDemands : Sequence(Real) = new Sequence(Real);
+	var operations = Operation.allInstances->select(iterator | iterator.hasStereotype("GaStep"));
+	for(demand in operations->first().getTag("GaStep", "servCount")){
+		maxDemands.add(0.0);
+	}
+	var i : Integer = 0;
+	for(op in operations){
+		if(op.getTag("GaStep", "servCount").isDefined()){
+			for(tag in op.getTag("GaStep", "servCount")){
+				
+				if(maxDemands.at(i) < tag.asReal()){
+					maxDemands.add(i, tag.asReal());
+					maxDemands.removeAt(i+1);
+				}
+				i = i+1;
+			}
+		}
+		i = 0;	
+	}
+	return maxDemands;
+}
+
+
+
+operation Operation getMeanDemand() : Real {
+	var meanDem;
+	var opMsgs = self.getAllOwnMessages();
+	var opMsgsResDemands = opMsgs.select(m|m.getValue(m.getStereotype("GaAcqStep"),"servCount").isDefined() and m.getValue(m.getStereotype("GaAcqStep"),"servCount").notEmpty()).
+									collect(m|m.getValue(m.getStereotype("GaAcqStep"),"servCount").first().asReal()).flatten().asSequence();
+	meanDem = getMeanValue(opMsgsResDemands);
+	return meanDem;
+}
+

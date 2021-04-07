@@ -1,0 +1,306 @@
+operation Classifier getProvidedInterfaces() : Sequence(InterfaceRealization) {
+	return self.getInterfaceRealizations()->collect(cd | cd.supplier->first())->asSequence();
+}
+
+operation Component getInterfaceRealizations() : Sequence(InterfaceRealization) {
+	return self.clientDependency->select(cd | cd.isTypeOf(InterfaceRealization))->asSequence();
+}
+
+operation Classifier getAllUsedIntefacesProvidedsBy (op : Operation) : List(Interface){
+	var returnValue : List(Interface) = new List(Interface);
+	
+	var listOfUsage = op.getNearestPackage().getUsageRelations();
+	
+	for (proInterface in self.getProvidedInterfaces() ){
+		for(usage in listOfUsage){
+			if(usage.supplier->first() == op){
+				for(iOp in proInterface.getOwnedOperations()){
+					if(usage.client->first() == iOp){
+						returnValue.add(proInterface);
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	//le sole interfacce utilizzate dall'operzione critica
+	for(proInterface in returnValue){
+		for(usage in listOfUsage){
+			if(usage.supplier->first() <> self and usage.client->first == proInterface){
+				returnValue.remove(proInterface);
+			}
+		}
+	}
+	
+	return returnValue;
+}
+
+//recupero la lista di usage proprie del componente
+operation Classifier getUsageRelations() : List(Usage){
+	var returnValue : List(Usage) = new List(Usage);
+	
+	for(relation in Usage.allInstances){
+		if( relation.isTypeOf(Usage) and relation.owner == self){
+			returnValue.add(relation);
+		}
+	}
+	return returnValue;
+}
+
+operation Classifier deployOnNewNodes(classfier : Classifier) {
+	var listOfNode : List(Node) = classfier.getNodes();
+	for(node in listOfNode){
+		var newNode = node.clone(self);
+	}
+}
+
+operation Classifier getNodes() : List(Node){
+	var returnValue : List(Node) = new List(Node);
+	for (artifact in self.getAllArtifacts()){
+		for(node in Node.allInstances){
+			if( node.hasDeployment(artifact) ){
+				returnValue.add(node);
+			}
+		}
+	}
+	return returnValue;
+}
+
+operation Classifier getAllArtifacts() : Sequence(Artifact){
+	var returnValue : Sequence(Artifact) = new Sequence(Artifact);
+	for(manifestation in Manifestation.allInstances){
+		if(manifestation.hasUtilizedElement(self)){
+			returnValue.addAll(manifestation.getClients());
+		}
+	}
+	return returnValue;
+}
+
+operation Classifier moveOperation( op : Operation ) : Boolean{
+	if(self.ownedOperation.add(op)){
+		return true;
+	}
+	return false;
+}
+
+operation Classifier getLifeline(interaction : Interaction) : Lifeline{
+	for(lf in interaction.getLifelines()){
+		if(lf.getRepresents().type == self){
+			return lf; //L1
+		}	
+	}
+}
+
+operation Classifier getLifelines() : List(Lifeline){
+	var returnValue : List(Lifeline) = new List (Lifeline);
+	for(lifeline in Lifeline.allInstances){
+		if(lifeline.getInteraction().isDefined() and lifeline.getRepresents().getType() == self){
+			returnValue.add(lifeline);
+		}
+	}
+	return returnValue;
+}
+
+operation Classifier getNearLessUsedNodes() : List(Node){
+	
+	var listOfNode = self.getNodes();
+	var listOfNearLessUsed : List(Node) = new List(Node);
+	
+	for(node in listOfNode){
+		var listOfNearNode = node.getDirectlyLinkedNode();
+		var lessNode : Node = listOfNode->first(); 
+		var utilization = lessNode.getValue(lessNode.getStereotype("GaExecHost"), "utilization")->first();
+		if(utilization.isUndefined()) utilization = 0.0; //utilizzazione minima
+		var i : Integer = 0;
+		for(nearNode in listOfNearNode){
+			
+			var stereotype = listOfNode->first().getStereotype("GaExecHost");
+			
+			if( nearNode.hasStereotype("GaExecHost") ){
+				var nearNodeUtilization = nearNode.getValue(stereotype, "utilization")->first();
+				if(nearNodeUtilization.isDefined() and nearNodeUtilization.asReal() < utilization){
+					lessNode = nearNode;	
+					utilization = nearNodeUtilization;
+				}
+			}
+			i = i+1;
+		}
+		listOfNearLessUsed.add(lessNode);
+	}
+	return listOfNearLessUsed;
+}
+
+operation Classifier deployOn(node : Node){
+	var newArtifact : Artifact = new Artifact; //creo l'artefatto
+	var newManifestation; //e' la manifestazione del componente
+	var newDeployment; //e' il deployment dell artefatto appena creato
+	
+	//aggiungo l'artefatto al package del nodo
+	node.getNearestPackage().addElement(newArtifact); 
+	//setto il nome dell'artefatto come il componente
+	newArtifact.name = self.name; 
+	
+	//creo la manifestazione del componente sull artefatto
+	newManifestation = newArtifact.createManifestation(self.name, self); 
+	newDeployment = node.createDeployment(newArtifact.name); //creo il deploy sul nodo
+	newDeployment.getDeployedArtifacts().add(newArtifact); //aggiungo al deploy l'artefatto
+}
+
+operation Classifier redeployOn(node : Node, from : Node){
+	var artifact = self.getArtifactOn(from);
+	var deployment = self.getDeploymentOn(from, artifact);
+	node.getDeployments().add(deployment); //sposto l'artefatto dal nodo sorgente al nuovo nodo
+}
+
+operation Classifier getArtifactOn(node : Node) : Artifact{
+	var deploymentNode: Node; 
+	for (art in self.getAllArtifacts()){
+		deploymentNode = art.getDeploymentNode();
+		if(deploymentNode.isDefined() and deploymentNode == node){
+			return art;
+		}
+	}
+	return null;
+}
+
+operation Classifier getDeploymentOn(node : Node, art : Artifact) : Deployment{
+	var returnValue = Deployment.allInstances->selectOne(
+		deployment : Deployment | deployment.client->exists(targetNode : Node | targetNode == node) and deployment.supplier->exists(
+			deployedArtifact : Artifact | deployedArtifact == art
+		)
+	);
+	return returnValue;
+}
+
+operation Class calculateUtilization() : Sequence(Real){
+	var ownOperations = self.getOperations(); //recupero le operazioni proprie del componente
+	var utilization : Sequence(Real) = new Sequence(Real);
+	
+	var computationUtilization : Real = 0.0;
+	var storageUtilization : Real = 0.0;
+	var bandwidthUtilization : Real = 0.0;
+	
+	for(op in ownOperations){
+		if(op.hasStereotype("GaStep") and op.getValue(op.getStereotype("GaStep"), "servCount").isDefined()){
+			var sCount = op.getValue(op.getStereotype("GaStep"), "servCount");
+			if(not sCount.isEmpty()){
+				computationUtilization = computationUtilization + sCount.at(0).asReal(); //computation
+				storageUtilization = storageUtilization + sCount.at(1).asReal(); //storage
+				bandwidthUtilization = bandwidthUtilization + sCount.at(2).asReal(); //bandwidth
+			}
+		}
+	}
+	utilization.add(0,computationUtilization);
+	utilization.add(1,storageUtilization);
+	utilization.add(2,bandwidthUtilization);
+	
+	return utilization;
+}
+
+operation Classifier getAllInteractionProperties() : List(Property){
+	var returnValue : List(Lifeline) = new List(Lifelinei);
+	for(interaction in Interaction.allInstances){
+		for(prop in interaction.ownedAttribute){
+			if(prop.getType() == self){
+				returnValue.add(prop);
+			}
+		}
+	}
+	return returnValue;
+}
+
+operation Classifier createLifelineInto(interaction : Interaction) : Lifeline {
+	var lifeline = interaction.createLifeline(self.name+"lifeline"); //L2
+	
+	var spProp = interaction.createOwnedAttribute(self.name, self);
+	lifeline.setRepresents(spProp);
+		
+	return lifeline;
+}
+
+operation Classifier countRemoteMessages(th_maxRemMsgs : Integer) : Boolean{
+	var map = self.getRemoteMesIntoInteractions();
+	for(ks in map.keySet()){
+		if(map.get(ks).size() >= th_maxRemMsgs) //numero di messaggi remoti in un interaction
+			return true;
+	}
+	return false;
+}
+
+operation Classifier getRemoteMesIntoInteractions() : Map{	
+	var returnMap : Map(Interaction, Sequence(Message)) = new Map(Interaction, Sequence(Message));
+	
+	var seqMes : Sequence(Message) = new Sequence(Message);
+	
+	var selfInteractions = self.getInteractions();
+	for(int in selfInteractions){
+		var seqOfMes = int.getMessageOf(self);
+		for(mes in seqOfMes){
+			if(not mes.isReturn()){
+				var lf = mes.getReceiveLifeline(); //lifeline destinataria
+				var classifier = lf.getRepresents().getType();
+				if(classifier.isKindOf(Classifier) and classifier.isRemote(self) ){ // i due componenti sono remoti
+					seqMes.add(mes);
+				}
+			} 
+		}
+		if(not seqMes.isEmpty() ){
+			returnMap.put(int, seqMes.clone());
+			seqMes.clear();
+		}
+	}
+	return returnMap;
+}
+
+operation Classifier getInteractions() : Sequence(Interaction){
+	var returnValue : Sequence(Interaction) = new Sequence(Interaction);
+	for(lf in self.getLifelines()){
+		returnValue.add(lf.getInteraction());
+	}
+	return returnValue;
+}
+
+operation Classifier isRemote(classifier : Classifier) : Boolean{
+	for (node in self.getNodes()){
+		for(n in classifier.getNodes()){
+			if(n.isReachableByNetwork() and node.isReachableByNetwork() and n <> node){ //se n e node sono raggiungibili in rete e sono due nodi differenti
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+operation Classifier getNodesWithNetworkUsageGreaterThan(th_maxNetUtil : Real) : Sequence(Node){
+	var returnValue : Sequence(Node) = new Sequence(Node);
+	
+	for (node in self.getNodes()){
+		var commPaths = node.getNetworkUsage().keySet();
+		for(cp in commPaths){
+			if(node.getNetworkUsage().get(cp)->exists(iterator | iterator.asReal() >= th_maxNetUtil))
+				returnValue.add(node);
+		}
+	}
+	return returnValue;
+}
+
+
+operation Classifier countRemoteInstances(th_maxRemInst : Integer) : Boolean{
+	var map = self.getRemoteMesIntoInteractions();
+	var seqLf : Sequence(Lifeline) = new Sequence(Lifeline);
+	for(ks in map.keySet()){
+		for(mes in map.get(ks)){
+			if(not mes.isReturn() and mes.getReceiveLifeline().isDefined() and 
+				not seqLf.contains(mes.getReceiveLifeline())){
+				seqLf.add(mes.getReceiveLifeline());
+			} 
+		}
+		
+		if(seqLf.size() >= th_maxRemInst){
+			return true;
+		}
+		seqLf.clear();
+	}
+	return false;
+}

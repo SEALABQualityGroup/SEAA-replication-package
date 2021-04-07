@@ -1,0 +1,125 @@
+import "operations.eol";
+
+// Annotates all the UML!UseCase stereotyped with GaScenario
+var scenarios = UML!UseCase.all().select(i | i.checkStereotypeApplication("GaScenario"));
+for(scenario in scenarios)
+	scenario.annotateScenario();
+	
+// Annotates all the UML!Node stereotyped with GaExecHost
+var processors = UML!Node.all().select(i | i.checkStereotypeApplication("GaExecHost"));
+for(processor in processors)
+	processor.annotateNode();
+
+// Annotates all the UML!Message stereotyped with GaStep
+var activities = UML!Message.all().select(i | i.checkStereotypeApplication("GaStep"));
+for(activity in activities)
+	activity.annotateActivity();
+
+
+/**
+ * Collects the children of the tag indicate with the parameter 'name'
+ * @return a collection containing the elements in the subtree of a tag
+ */
+ 
+operation getChildren(processor, name : String)
+{
+	return processor.children.flatten.select(i | i.tagName = name);
+}
+
+operation Collection getChildren(name : String)
+{
+	return self.children.flatten.select(i | i.tagName = name);
+}
+
+/**
+ * Calculates the response time of a Scenario
+ * @return a double
+ */
+operation UML!UseCase getScenarioRespTime()
+{		
+	// Gets the names of the actors triggering a scenario
+	var lifelines = self.classifierBehavior.lifelines.select(i | i.checkStereotypeApplication("GaWorkloadEvent"));
+	
+	if(lifelines.isEmpty())
+		throw "Error: GaWorkloadEvent not found in scenario's lifelines";
+	
+	// Gets the type of a lifeline (e.g., UML!Component, UML! Actor)
+	var types = lifelines.represents.collect(i | i.getType().name);
+	
+	// Gets all the reference tasks
+	var referenceTasks =  LQXO!`t_task`.all().select(i | i.`a_scheduling` == "ref" and types.includes(i.`a_name`));	
+	var entries = referenceTasks.getChildren("entry");
+	var entryPhases = entries.getChildren("entry-phase-activities");
+		
+	var activities = entryPhases.getChildren("activity");
+
+	// @Assumption the calls execues sequentially
+	var times = activities.getChildren("result-activity").`a_service-time`;	
+	times = times.collect(i | i.asDouble());
+	
+	return times.sum();
+}
+
+/**
+ * Given a Scenario, the function retrieves the response time calculated in the LQN;
+ * Calculates the throughput and annotates the source model
+ */
+operation UML!UseCase annotateScenario()
+{
+	var stereotype = self.getAppliedStereotypes().selectOne(i | i.name = "GaScenario");
+	// Sets Response Time
+	var resptime = self.getScenarioRespTime();		
+	self.setValue(stereotype, "respT", Sequence{resptime.asString()});
+		
+	// Sets Throughput
+	var root = self.getValue(stereotype, "root");
+	// Calculates Throughput
+	var throughput = root.rep.asDouble() / resptime; 
+	self.setValue(stereotype, "throughput", Sequence{throughput.asString()});
+	
+	// Stores the values
+	UML.store();//.println("Scenario: " + self.name + " ResponseTime: " +	resptime + " Throughput: " + throughput +  " Stored: ");
+}
+
+/**
+ * Retrieves and sets the utilization to a UML!Node
+ */
+operation UML!Node annotateNode()
+{	
+	var stereotype = self.getAppliedStereotypes().selectOne(i | i.name == "GaExecHost");
+	
+	var processor =LQXO!`t_processor`.all().selectOne(i | i.`a_name` = self.name);
+	var utilization = Sequence{"0.0"};
+	
+	/*
+	 * If the node is actually transformed, then it retrieves and sets the utilization
+	 * otherwise, the utilization is set to zero
+     */
+	if(processor.isDefined())
+	{
+		// Sets the utilization
+		var subtree = getChildren(processor, "result-processor");
+		utilization = subtree.select(i | i.name = "result-processor").a_utilization;		
+	}
+		
+	self.setValue(stereotype, "utilization", utilization);
+	
+	UML.store();//.println("Processor: " + self.name + " Utilization: " + utilization.first + " Stored: ");
+}
+
+/**
+ * Adds the service time to a UML!Message
+ */
+operation UML!Message annotateActivity()
+{
+	var activity =LQXO!`t_activity`.all().selectOne(i | i.`a_name` = self.name);
+	var stereotype = self.getAppliedStereotypes().selectOne(i | i.name == "GaStep");	
+		
+	var subtree = getChildren(activity, "result-activity");
+	var serviceTime = subtree.`a_service-time`;
+	
+	self.setValue(stereotype, "respT", serviceTime);	
+	
+	UML.store();//.println("Activity: " + activity.a_name + " ServiceTime: " + serviceTime.first + " Stored: ");
+}
+	

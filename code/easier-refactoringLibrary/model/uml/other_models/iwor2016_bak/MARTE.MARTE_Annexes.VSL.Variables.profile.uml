@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Profile xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_9UgzYA-MEdyLh7muGbCqMw" name="Variables" URI="" metamodelReference="_9UgzYA-MEdyLh7muGbCqMw_packageImportcreatedOnLoad">
+  <eAnnotations xmi:id="_zq1C8TIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <contents xmi:type="ecore:EPackage" xmi:id="_zq1C8jIsEeagfJvsBaC-YA" name="Variables" nsURI="http:///schemas/Variables/_zHQb0DIsEeagfJvsBaC-YA/0" nsPrefix="Variables">
+      <eClassifiers xmi:type="ecore:EEnum" xmi:id="_zq1C8zIsEeagfJvsBaC-YA" name="VariableDirectionKind">
+        <eAnnotations xmi:id="_zq1C9DIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_zT7mkBBNEdyt6tGzWCpUVA"/>
+        <eLiterals xmi:id="_zq1C9TIsEeagfJvsBaC-YA" name="in"/>
+        <eLiterals xmi:id="_zq1C9jIsEeagfJvsBaC-YA" name="out" value="1"/>
+        <eLiterals xmi:id="_zq1C9zIsEeagfJvsBaC-YA" name="inout" value="2"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zq1C-DIsEeagfJvsBaC-YA" name="Var">
+        <eAnnotations xmi:id="_zq1C-TIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_7-_5QBBNEdyt6tGzWCpUVA"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zq1C-jIsEeagfJvsBaC-YA" name="dir" ordered="false" unique="false" eType="_zq1C8zIsEeagfJvsBaC-YA" defaultValueLiteral="inout"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zq1C_DIsEeagfJvsBaC-YA" name="base_Property" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Property"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zq1C_jIsEeagfJvsBaC-YA" name="ExpressionContext">
+        <eAnnotations xmi:id="_zq1C_zIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_UXvlwBBOEdyt6tGzWCpUVA"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zq1DADIsEeagfJvsBaC-YA" name="base_NamedElement" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//NamedElement"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+    </contents>
+  </eAnnotations>
+  <packageImport xmi:id="_9UgzYA-MEdyLh7muGbCqMw_packageImportcreatedOnLoad">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_METAMODELS/UML.metamodel.uml#_0"/>
+  </packageImport>
+  <packageImport xmi:id="_0primitiveTypesVariables">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packageImport xmi:id="_0javaPrimitiveTypesVariables">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_bJqlgBBOEdyt6tGzWCpUVA" name="Extension_ExpressionContext" memberEnd="_bJ0WgBBOEdyt6tGzWCpUVA _bJ0WgRBOEdyt6tGzWCpUVA" navigableOwnedEnd="_bJ0WgBBOEdyt6tGzWCpUVA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_bJ0WgBBOEdyt6tGzWCpUVA" name="extension_ExpressionContext" visibility="public" type="_UXvlwBBOEdyt6tGzWCpUVA" aggregation="composite" association="_bJqlgBBOEdyt6tGzWCpUVA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Enumeration" xmi:id="_zT7mkBBNEdyt6tGzWCpUVA" name="VariableDirectionKind">
+    <ownedLiteral xmi:id="_1NX0cBBNEdyt6tGzWCpUVA" name="in"/>
+    <ownedLiteral xmi:id="_1PwaEBBNEdyt6tGzWCpUVA" name="out"/>
+    <ownedLiteral xmi:id="_1bE5QBBNEdyt6tGzWCpUVA" name="inout"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_7-_5QBBNEdyt6tGzWCpUVA" name="Var">
+    <ownedAttribute xmi:id="_9QgkcBBNEdyt6tGzWCpUVA" name="dir" visibility="public" type="_zT7mkBBNEdyt6tGzWCpUVA" isUnique="false">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BxvT8BBOEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Bx4d4BBOEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_Bx4d4RBOEdyt6tGzWCpUVA" name="" value="inout"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_NhDawRBOEdyt6tGzWCpUVA" name="base_Property" visibility="public" isUnique="false" association="_Ng5pwBBOEdyt6tGzWCpUVA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Property"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_Ng5pwBBOEdyt6tGzWCpUVA" name="Extension_Var" memberEnd="_NhDawBBOEdyt6tGzWCpUVA _NhDawRBOEdyt6tGzWCpUVA" navigableOwnedEnd="_NhDawBBOEdyt6tGzWCpUVA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_NhDawBBOEdyt6tGzWCpUVA" name="extension_Var" visibility="public" type="_7-_5QBBNEdyt6tGzWCpUVA" aggregation="composite" association="_Ng5pwBBOEdyt6tGzWCpUVA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_UXvlwBBOEdyt6tGzWCpUVA" name="ExpressionContext">
+    <ownedAttribute xmi:id="_bJ0WgRBOEdyt6tGzWCpUVA" name="base_NamedElement" visibility="public" isUnique="false" association="_bJqlgBBOEdyt6tGzWCpUVA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#NamedElement"/>
+    </ownedAttribute>
+  </packagedElement>
+</uml:Profile>

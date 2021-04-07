@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LqnModelType name="Model">
+  <processor name="container-web" replication="1">
+    <task name="web">
+      <entry name="web-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="37275.0" name="findProducts" phase="1">
+            <synch-call dest="prod1-bes"/>
+          </activity>
+          <activity host-demand-mean="19030.0" name="findItems" phase="1">
+            <synch-call dest="item1-bes"/>
+          </activity>
+          <activity host-demand-mean="13025.0" name="getcategory" phase="1">
+            <synch-call dest="cat-bes"/>
+          </activity>
+          <activity host-demand-mean="11560.0" name="findFeatures" phase="1">
+            <synch-call dest="item2-bes"/>
+          </activity>
+          <activity host-demand-mean="31335.0" name="findItemsRandom" phase="1">
+            <synch-call dest="item3-bes"/>
+          </activity>
+          <activity host-demand-mean="13600.0" name="findProductsRandom" phase="1">
+            <synch-call dest="prod2-bes"/>
+          </activity>
+        </entry-phase-activities>
+      </entry>
+    </task>
+    <task name="User" scheduling="ref">
+      <entry name="user-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="4659823.0" name="getHomepageMsg" phase="1">
+            <synch-call dest="web-bes"/>
+          </activity>
+        </entry-phase-activities>
+      </entry>
+    </task>
+  </processor>
+  <processor name="container-categories" replication="1">
+    <task name="categories">
+      <entry name="cat-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="13025.0" name="getcategory" phase="1"/>
+        </entry-phase-activities>
+      </entry>
+    </task>
+  </processor>
+  <processor name="container-items" replication="1">
+    <task name="items">
+      <entry name="item3-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="31335.0" name="findItemsRandom" phase="1"/>
+        </entry-phase-activities>
+      </entry>
+      <entry name="item1-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="19030.0" name="findItems" phase="1"/>
+        </entry-phase-activities>
+      </entry>
+      <entry name="item2-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="11560.0" name="findFeatures" phase="1"/>
+        </entry-phase-activities>
+      </entry>
+      <entry name="navigate-items-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="40.0" name="findItemsRandomByProductId" phase="1"/>
+        </entry-phase-activities>
+      </entry>
+    </task>
+    <task name="Mobile-User" scheduling="ref">
+      <entry name="mobile-user-items">
+        <entry-phase-activities>
+          <activity host-demand-mean="40.0" name="findItemsRandomByProductId" phase="1">
+            <synch-call dest="navigate-items-bes"/>
+          </activity>
+        </entry-phase-activities>
+      </entry>
+    </task>
+  </processor>
+  <processor name="container-products" replication="1">
+    <task name="products">
+      <entry name="prod1-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="37275.0" name="findProducts" phase="1"/>
+        </entry-phase-activities>
+      </entry>
+      <entry name="prod2-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="13600.0" name="findProductsRandom" phase="1"/>
+        </entry-phase-activities>
+      </entry>
+      <entry name="show-product-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="30000.0" name="findProductShow" phase="1"/>
+        </entry-phase-activities>
+      </entry>
+    </task>
+    <task name="Warehouse worker" scheduling="ref">
+      <entry name="worker-bes">
+        <entry-phase-activities>
+          <activity host-demand-mean="30000.0" name="findProductShow" phase="1">
+            <synch-call dest="show-product-bes"/>
+          </activity>
+        </entry-phase-activities>
+      </entry>
+    </task>
+  </processor>
+</LqnModelType>

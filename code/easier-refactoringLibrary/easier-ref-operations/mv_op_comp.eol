@@ -1,0 +1,35 @@
+//Move an Operation to new Component that is deployed on a New Node
+
+//libraries
+
+import "../evl/library/artifact.eol";
+import "../evl/library/association.eol";
+//import "library/class.eol";
+import "../evl/library/classifier.eol";
+import "../evl/library/component.eol";
+import "../evl/library/element.eol";
+import "../evl/library/interaction.eol";
+import "../evl/library/interactionFragment.eol";
+import "../evl/library/interactionOperand.eol";
+import "../evl/library/combinedFragment.eol";
+import "../evl/library/interface.eol";
+import "../evl/library/lifeline.eol";
+import "../evl/library/manifestation.eol";
+import "../evl/library/message.eol";
+import "../evl/library/node.eol";
+import "../evl/library/operation.eol";
+import "../evl/library/package.eol";
+//HELPER
+import "../evl/library/HELPER.eol";
+
+var target = Component.all->selectOne(c | c.getName() == targetComponentName);
+var selfOperation = Operation.all->selectOne(c | c.getName() == targetOperationName);
+
+//("move operation-->" + selfOperation.getName() + "--> to " + target.getName()).println();
+
+var sourceComponent : Component = selfOperation.getOwner();
+target.moveOperation(selfOperation); //sposta l'operazione sul componente appena creato
+selfOperation.dynamicFixing(sourceComponent);
+
+//"done".println();
+

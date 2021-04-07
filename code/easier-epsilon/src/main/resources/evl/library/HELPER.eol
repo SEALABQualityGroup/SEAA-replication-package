@@ -1,0 +1,46 @@
+// Function that checks for the conditions necessary for the detection of an instance of Extensive Processing antipattern
+operation checkExtensiveProcessingCond(element: ElemType, maxOpResDemand: Real, minOpResDemand: Real) : Boolean {
+	var opWithHighResDemand : Sequence(Action) = findOpWithHighResDemand(element, maxOpResDemand);
+	var opWithLowResDemand : Sequence(Action) = findOpWithLowResDemand(element, minOpResDemand);
+	if (opWithHighResDemand -> size() <> 0 and opWithLowResDemand -> size() <> 0) {
+		return opWithHighResDemand -> exists(act1: Action | opWithLowResDemand -> 
+			exists(act2: Action | belongToTheSameChoice(act1, act2)));
+	}
+	return false;
+}
+
+/*
+Function that checks the presence, within the behavior of a certain kind of architectural element, of one
+or more actions that have an exponential rate strictly less than a bound given as input; if yes
+--returns the set of actions that verify the condition
+*/
+operation findOpWithLowResDemand(elemType: ElemType, bound : Real) : Sequence(Action) {
+	return Action.allInstances() -> reject(act: Action | act.belongs.isUndefined()) ->
+		select(act: Action | act.belongs.etName = elemType.etName and  
+			act.rate.isTypeOf(RateExp) and act.getActionRate() < bound) -> asSequence();
+}
+
+/*
+Function that checks the presence, within the behavior of a certain kind of architectural element, of one
+or more esponenzially timed actions that have a rate greater than or equal to a bound given as input; if yes
+returns the set of actions that verify the condition
+*/
+operation findOpWithHighResDemand(elemType: ElemType, bound: Real) : Sequence(Action) {
+	return Action.allInstances() -> reject(act: Action | act.belongs.isUndefined()) ->
+		select(act: Action | act.belongs.etName = elemType.etName and
+			act.rate.isTypeOf(RateExp) and
+				act.getActionRate() >= bound) -> asSequence();
+}
+
+// Function that checks if two actions belong to the same alternatives composition and if so, verify that they are the only two
+operation belongToTheSameChoice(action1: Action, action2: Action) : Boolean {
+	var actionProcess1 : ActionProcess = action1.getActionProcess().first();
+	var actionProcess2 : ActionProcess = action2.getActionProcess().first();
+	if (actionProcess1.eContainer().isTypeOf(ChoiceProcess) and actionProcess2.eContainer().isTypeOf(ChoiceProcess)) {
+		var container1 : ChoiceProcess = actionProcess1.eContainer();
+		var container2 : ChoiceProcess = actionProcess2.eContainer();
+		container1 = container2 and container1.processes -> size() = 2;
+		return true;
+	}
+	return false;
+}												  

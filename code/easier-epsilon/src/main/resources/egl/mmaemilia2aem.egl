@@ -1,0 +1,225 @@
+ARCHI_TYPE [%=ArchiType.all->first().atName%](
+	[% for (c in ArchiType.all->first().header.initConst){%]
+	const [%=c.initConstData._toString()%] [%=c.name%] := [%=c.initConstExpr.name%][%if(hasMore)%],
+	[%}%]
+)
+
+ARCHI_ELEM_TYPES
+
+	[%for(et in ArchiType.all->first().aetDeclaration.etDeclaration){%]
+		
+		ELEM_TYPE [%=et.etName%]([%=et.elemHeader._toString()%])
+		
+			BEHAVIOR
+			
+				[%for(eq in et.behaviorDecl.equations){%]
+				[%=eq.name%]([%=eq.bHeader.getHeader()%]) = [%=eq.pt._toString() %]
+				[%}%]
+			
+			INPUT_INTERACTIONS
+			
+				[%=et.getInteractions(et.iiDecl)%]
+				
+			OUTPUT_INTERACTIONS
+			
+				[%=et.getInteractions(et.oiDecl)%]
+	[%}%]
+		
+		ARCHI_TOPOLOGY
+				
+           ARCHI_ELEM_INSTANCES
+           
+	           [%for (e in ArchiType.all->first().atDeclaration.aeiDecl){%]
+	           [%=e.instanceName%] : [%=e.TypeOf.etName%]([%for(param in e.actualParam){%][%=param%][%if(hasMore){%], [%}%][%}%])[%if(hasMore){%];[%}%] 
+	           [%}%]
+           
+           ARCHI_INTERACTIONS
+           	   
+	           [%if(ArchiType.all->first().atDeclaration.aiDecl.isEmpty)%]
+	           void
+	           [%for(e in ArchiType.all->first().atDeclaration.aiDecl){%]
+	           [%=e.fromInstance.instanceName%].[%=e.name%][%if(hasMore)%];
+	           [%}%]
+           
+           ARCHI_ATTACHMENTS
+           	   [%for (e in ArchiType.all->first().atDeclaration.attDecl){%]
+	           FROM [%=e.start.fromInstance.instanceName%].[%=e.start.isOutput.intName%] TO [%=e.end.toInstance.instanceName%].[%=e.end.isInput.intName%][%if(hasMore)%]; 
+	           [%}%]
+END
+
+	
+[%
+
+operation aemilia!ElemType getInteractions(interactions : OrderedSet(aemilia!LocalInteraction)) : String {
+
+	var actualType;
+	var orList : List;
+	var uniList : List;
+	var andList : List;
+	for(iDecl in interactions){
+		switch(iDecl.type.literal){
+			case "UNI": uniList.add(iDecl);
+			case "AND": andList.add(iDecl);
+			case "OR": orList.add(iDecl);
+		}				
+	}
+	
+	var str;
+	
+	if(uniList.notEmpty()){
+		str = str + "UNI";
+		
+		for(i in uniList){
+			str = str + " " + i.intName;
+			if(hasMore) str = str + ";\n";
+		}
+	}
+	
+	if(orList.notEmpty()){
+		str= str + "\n" + "OR";
+		
+		for(i in orList){
+			str = str + " " + i.intName;
+			if(hasMore) str = str + ";\n";
+		}
+	}
+	
+	if(andList.notEmpty()){
+		str = str + "\n" + "AND";
+		
+		for(i in andList){
+			str = str + " " + i.intName;
+			if(hasMore) str = str + ";\n";
+		}
+	}
+	
+	return str;
+}
+
+operation aemilia!ET_Header _toString() : String {
+	if(self.costant.isEmpty()) return "void";
+	
+	var str;
+	for(c in self.costant){
+		str = str + c._toString();
+		if(hasMore) str = str + ", ";
+	}
+	return str;
+}
+
+operation aemilia!Const _toString() : String{
+	return ("const " + self.constantData._toString() + " " + self.name);
+}
+
+operation aemilia!IdentExpr _toString() : String {
+	if(self.type.literal <> "TRUTH_VAL")
+		return self.name;
+}
+
+operation aemilia!RangeInt _toString() : String{
+	return (self.minVal._toString() + ".."+ self.maxVal._toString());
+}
+
+operation aemilia!`Integer` _toString() :String{
+	return "integer";
+}
+
+operation aemilia!Special _toString() :String{
+	return self.type.name.toLowerCase();
+}
+
+operation aemilia!VarInit _toString() : String {
+	return  "integer (" + self.initVarType._toString() +") " + self.name;
+}
+
+operation aemilia!BehavHeader getHeader() : String{
+	var str;
+	if(self.left.initVar.isEmpty()){
+		str = "void";
+	}
+	else{
+		str = self.left.initVar->first()._toString() + " := " + self.left.initVar->first().initVarExpr.name;
+	}
+	str = str + ";";
+	if(self.right.localDef.isEmpty()){
+		str = str + "void"; 
+	}
+	else{
+		str= str + self.right.localDef._toString() + self.right.localDef.initVarType.localType;
+	}
+	return str;
+}
+
+operation aemilia!ActionProcess _toString() : String {
+	return (self.condition._toString() + self.act._toString() + " . "  + self.process._toString());
+}
+
+operation aemilia!ChoiceProcess _toString() : String {
+	var str = self.condition._toString();
+	str = str + "choice{\n";
+	for(pt in self.processes){
+		str = str + pt._toString();
+		if(hasMore){
+			str = str + ",\n";
+		}
+	}
+	str = str + "\n}";
+	return str;
+}
+
+operation aemilia!ArithExpr _toString() : String {
+	return (self.leftExprArith._toString() + " " +self.operator.literal + " " + self.rightExprArith._toString());
+}
+
+operation aemilia!RelationalExpr _toString() : String{
+	return ("cond("+self.leftExprRel._toString()+ " " + self.operator.literal.asString() + " " + self.rightExprRel._toString()+") -> ");
+}
+
+operation aemilia!BehavProcess _toString() : String {
+	var str = self.condition._toString() + self.eqCall.name + "(";
+	for(e in self.exprs){
+		str = str + e._toString();
+	}
+	str = str + ")";
+	return str;
+}
+
+operation aemilia!BehavEquation _toString() : String {
+	var str = self.name + "(";
+	str = str + self.bHeader._toString();
+	str = str + ")";
+	return str;
+}
+
+operation aemilia!BehavHeader _toString() : String {
+	if(self.left.initVar.isEmpty() and self.right.localDef.isEmpty())
+		return "";
+	return (self.left.initVar.name + ", " + self.right.localDef.initVarType.localType);
+}
+
+operation aemilia!Action _toString() : String {
+	return ("<"+self.name+", "+self.rate._toString() +">");
+}
+
+operation aemilia!RateExp rateToString() : String{
+	return ("<"+ self.act.name + ", exp(" + self.act.rate._toString() + ") >").asString();
+}
+
+operation aemilia!RateExp _toString() : String {
+	return "exp(" + self.expr.name +")";
+}
+
+operation aemilia!RateInf _toString() : String {
+	if(self.inf_priority.isUndefined() and self.inf_weight.isUndefined()) return "inf";
+	return ("inf(" + self.inf_priority._toString() + ", " + self.inf_weight._toString() +")");
+}
+
+operation aemilia!RatePas _toString() : String {
+	return "_";
+}
+
+operation aemilia!BehavProcess _toString() {
+	"TODO Stub method".println();
+}
+%]
+

@@ -1,0 +1,26 @@
+operation Node F_maxQl(th_maxQL : Integer) : Boolean {
+	
+	if(self.hasStereotype("RtUnit") and
+		self.getValue(self.getStereotype("RtUnit"), "queueSize").isDefined() and 
+			self.getValue(self.getStereotype("RtUnit"), "queueSize").asInteger() > th_maxQL ){
+		return true;
+	}
+	return false;
+}
+
+
+operation Node F_HwUtil(th_maxHwUtil : Real) : Boolean {
+	
+	var utilization = self.getUtilization();
+	if(utilization.isUndefined()){
+		return false;
+	}else{
+		//CPU and DISK of Component
+		if( utilization.asReal() >= th_maxHwUtil){
+			if ( self.getNeighboursWithLowUtilization().isEmpty() ){
+				return false;			
+			}
+		}
+	}
+	return true;
+}

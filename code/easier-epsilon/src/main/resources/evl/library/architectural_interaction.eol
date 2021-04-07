@@ -1,0 +1,70 @@
+// Function that allows you to clone an ArchitecturalInteraction
+operation ArchitecturalInteraction cloneArchitecturalInteraction(instance : ArchiElemInstance) : ArchitecturalInteraction {
+	var clone := new ArchitecturalInteraction;
+	
+	clone.throughput = self.throughput;
+	clone.utilization = self.utilization;
+	clone.responseTime = self.responseTime;
+	clone.throughtputDistr = self.throughtputDistr;
+	clone.respTimeDistr = self.respTimeDistr;
+	clone.utilDistr = self.utilDistr;
+	clone.name = self.name + '_cloned';
+	clone.fromInstance := instance;
+	clone.Is_A := self.Is_A;
+	
+	return clone; 
+}
+
+// Function that allows you to select a specific ArchitecturalInteraction
+operation ArchitecturalInteraction selectArchitecturalInteraction() : ArchitecturalInteraction { 
+	return ArchitecturalInteraction.allInstances() ->
+		selectOne(ai : ArchitecturalInteraction | ai.name = self.name + '_cloned');
+}
+
+// Returns true if the calling ArchitecturalInteraction has a rating either RateExp or RateInf
+operation ArchitecturalInteraction isServiceExpOrInf() : Boolean {
+
+	return Action.allInstances() -> reject(act: Action | act.belongs.isUndefined()) ->
+		select(act: Action | act.belongs.etName = self.fromInstance.TypeOf.etName and
+			act.name = self.Is_A.intName and
+				(act.rate.isTypeOf(RateInf) or act.rate.isTypeOf(RateExp))) -> asSet() -> notEmpty();
+}
+
+/*
+Function that, given a service, check whether there is the necessary condition so that you can
+detect an instance of Extensive processing antipatterns
+*/
+operation ArchitecturalInteraction unbalancedOpResDemand(maxOpResDemand: Real, minOpResDemand: Real) : Boolean {
+	var namesSet : Set(String) = Set{};
+	var elemTypes : Set(ElemType) = nextInstances(self.fromInstance -> asSet(), namesSet) ->
+		collect(x: ArchiElemInstance | x.TypeOf) -> asSet();
+	return elemTypes -> exists(elem: ElemType | checkExtensiveProcessingCond(elem, maxOpResDemand, minOpResDemand));
+}
+
+// Function that checks the presence of the Extensive Processing antipattern in relation to a service
+operation ArchitecturalInteraction extensiveProcessingPA() : Boolean {
+	var respTimeUB : Real = 0.04;
+	var opResDemLB : Real = 11000000;
+	var opResDemUB : Real = 19000000;
+	var elemTypeName : ElemType = self.fromInstance.TypeOf;
+	if (isServiceExpOrInf(self) and self.responseTime > respTimeUB) {
+		return unbalancedOpResDemand(self, opResDemLB, opResDemUB);
+	}
+	return false;
+}
+
+// Function that checks the presence of the Pipe and Filter antipattern in relation to a service
+operation ArchitecturalInteraction pipeAndFilterPA() : Boolean {
+	var serviceThLB : Real = 250;
+	var opResDemUB : Real = 12682;
+	var elemTypeName : ElemType = self.fromInstance.TypeOf;
+	if (self.isServiceExpOrInf() and self.throughput < serviceThLB) {
+		return self.checkOpResDemand(opResDemUB);
+	}
+	return false;
+}
+
+// Function that takes the archi elem instance from which an architectural interaction starts
+operation ArchitecturalInteraction takeFromInstance() : ArchiElemInstance {
+	return self.fromInstance;
+}

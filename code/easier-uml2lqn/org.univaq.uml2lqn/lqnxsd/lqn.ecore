@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="lqnmodel" nsURI="lqnmodel" nsPrefix="">
+  <eClassifiers xsi:type="ecore:EClass" name="lqnmodel">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lqnSchemaVersion" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lqnCoreSchemaVersion" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="xmldebug" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="processor" lowerBound="1"
+        upperBound="-1" eType="#//processor" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="processor">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="multiplicity" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="speedfactor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="scheduling" eType="#//PSchedulerType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="replication" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="quantum" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"
+        defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="task" lowerBound="1" upperBound="-1"
+        eType="#//task" containment="true" eOpposite="#//task/host"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="task">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="multiplicity" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="priority" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="queuelength" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="scheduling" eType="#//TSchedulerType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="activitygraph" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="thinktime" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"
+        defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entry" lowerBound="1" upperBound="-1"
+        eType="#//entry" containment="true" eOpposite="#//entry/task1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="taskactivities" upperBound="-1"
+        eType="#//taskactivities" containment="true" eOpposite="#//taskactivities/task2"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="host" lowerBound="1" eType="#//processor"
+        eOpposite="#//processor/task"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="entry">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//EntryType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="openarrivalrate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="priority" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="semaphore" eType="#//SemaphoreType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="task1" lowerBound="1" eType="#//task"
+        eOpposite="#//task/entry"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entryphaseactivities" eType="#//entryphaseactivities"
+        containment="true" eOpposite="#//entryphaseactivities/entry1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="taskactivities">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activity" lowerBound="1"
+        upperBound="-1" eType="#//activity" containment="true" eOpposite="#//activity/taskActivity"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precedence" upperBound="-1"
+        eType="#//precedence" containment="true" eOpposite="#//precedence/taskActivityP"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="replyentry" upperBound="-1"
+        eType="#//replyentry" containment="true" eOpposite="#//replyentry/taskActivityR"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="task2" lowerBound="1" eType="#//task"
+        eOpposite="#//task/taskactivities"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="entryphaseactivities">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activity1" lowerBound="1"
+        upperBound="3" eType="#//activity" containment="true" eOpposite="#//activity/entryphaseactivities1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entry1" lowerBound="1"
+        eType="#//entry" eOpposite="#//entry/entryphaseactivities"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="activity">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hostdemandmean" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hostdemandcvsq" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="thinktime" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"
+        defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="maxservicetime" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"
+        defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="callorder" eType="#//CallOrderType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="phase" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="boundtoentry" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="prob" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="count" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="synchcall" upperBound="-1"
+        eType="#//synchcall" containment="true" eOpposite="#//synchcall/activitySynchCall"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="asynchcall" upperBound="-1"
+        eType="#//asynchcall" containment="true" eOpposite="#//asynchcall/activityASynchCall"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="taskActivity" eType="#//taskactivities"
+        eOpposite="#//taskactivities/activity"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entryphaseactivities1"
+        eType="#//entryphaseactivities" eOpposite="#//entryphaseactivities/activity1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="precedence">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="taskActivityP" lowerBound="1"
+        eType="#//taskactivities" eOpposite="#//taskactivities/precedence"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pre" eType="#//pre" containment="true"
+        eOpposite="#//pre/precedence1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="preor" eType="#//preor"
+        containment="true" eOpposite="#//preor/precedence2"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="preand" eType="#//preand"
+        containment="true" eOpposite="#//preand/precedence3"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="post" eType="#//post" containment="true"
+        eOpposite="#//post/precedence4"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postor" eType="#//postor"
+        containment="true" eOpposite="#//postor/precedence5"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postand" eType="#//postand"
+        containment="true" eOpposite="#//postand/precedence6"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="replyentry">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="taskActivityR" lowerBound="1"
+        eType="#//taskactivities" eOpposite="#//taskactivities/replyentry"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="replyactivity" lowerBound="1"
+        upperBound="-1" eType="#//replyactivity" containment="true" eOpposite="#//replyactivity/replyEntry1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="replyactivity">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="replyEntry1" lowerBound="1"
+        eType="#//replyentry" eOpposite="#//replyentry/replyactivity"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="synchcall">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dest" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="callsmean" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activitySynchCall" lowerBound="1"
+        eType="#//activity" eOpposite="#//activity/synchcall"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="asynchcall">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="dest" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="callsmean" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activityASynchCall" lowerBound="1"
+        eType="#//activity" eOpposite="#//activity/asynchcall"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="activityR">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="prob" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"
+        defaultValueLiteral="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="preActivityR" eType="#//pre"
+        eOpposite="#//pre/activityRPre"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="preorActivityR" eType="#//preor"
+        eOpposite="#//preor/activityRPreOr"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="preandActivityR" eType="#//preand"
+        eOpposite="#//preand/activityRPreAnd"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postActivityR" eType="#//post"
+        eOpposite="#//post/activityRPost"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postorActivityR" eType="#//postor"
+        eOpposite="#//postor/activityRPostOr"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postandActivityR" eType="#//postand"
+        eOpposite="#//postand/activityRPostAnd"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="pre">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precedence1" lowerBound="1"
+        eType="#//precedence" eOpposite="#//precedence/pre"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activityRPre" lowerBound="1"
+        eType="#//activityR" containment="true" eOpposite="#//activityR/preActivityR"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="preor">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precedence2" lowerBound="1"
+        eType="#//precedence" eOpposite="#//precedence/preor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activityRPreOr" lowerBound="1"
+        upperBound="-1" eType="#//activityR" containment="true" eOpposite="#//activityR/preorActivityR"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="preand">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="quorum" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precedence3" lowerBound="1"
+        eType="#//precedence" eOpposite="#//precedence/preand"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activityRPreAnd" lowerBound="1"
+        upperBound="-1" eType="#//activityR" containment="true" eOpposite="#//activityR/preandActivityR"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="post">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precedence4" lowerBound="1"
+        eType="#//precedence" eOpposite="#//precedence/post"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activityRPost" lowerBound="1"
+        eType="#//activityR" containment="true" eOpposite="#//activityR/postActivityR"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="postor">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precedence5" lowerBound="1"
+        eType="#//precedence" eOpposite="#//precedence/postor"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activityRPostOr" lowerBound="1"
+        upperBound="-1" eType="#//activityR" containment="true" eOpposite="#//activityR/postorActivityR"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="postand">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precedence6" lowerBound="1"
+        eType="#//precedence" eOpposite="#//precedence/postand"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="activityRPostAnd" lowerBound="1"
+        upperBound="-1" eType="#//activityR" containment="true" eOpposite="#//activityR/postandActivityR"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="PSchedulerType">
+    <eLiterals name="default"/>
+    <eLiterals name="fcfs" value="1"/>
+    <eLiterals name="hol" value="2"/>
+    <eLiterals name="pp" value="3"/>
+    <eLiterals name="rand" value="4"/>
+    <eLiterals name="inf" value="5"/>
+    <eLiterals name="pshol" value="6"/>
+    <eLiterals name="pspp" value="7"/>
+    <eLiterals name="cfs" value="8"/>
+    <eLiterals name="ref" value="9"/>
+    <eLiterals name="pri" value="10"/>
+    <eLiterals name="burst" value="11"/>
+    <eLiterals name="poll" value="12"/>
+    <eLiterals name="semaphore" value="13"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="TSchedulerType">
+    <eLiterals name="default"/>
+    <eLiterals name="ref" value="1"/>
+    <eLiterals name="fcfs" value="2"/>
+    <eLiterals name="hol" value="3"/>
+    <eLiterals name="inf" value="4"/>
+    <eLiterals name="pri" value="5"/>
+    <eLiterals name="burst" value="6"/>
+    <eLiterals name="poll" value="7"/>
+    <eLiterals name="semaphore" value="8"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="EntryType">
+    <eLiterals name="default"/>
+    <eLiterals name="graph" value="1"/>
+    <eLiterals name="PH1PH2" value="2"/>
+    <eLiterals name="NONE" value="3"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="SemaphoreType">
+    <eLiterals name="default"/>
+    <eLiterals name="signal" value="1"/>
+    <eLiterals name="wait" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="CallOrderType">
+    <eLiterals name="default"/>
+    <eLiterals name="stochastic" value="1"/>
+    <eLiterals name="deterministic" value="2"/>
+  </eClassifiers>
+</ecore:EPackage>

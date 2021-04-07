@@ -1,0 +1,216 @@
+import mmaemilia : 'http://mmaemilia.ecore'
+
+package mmaemilia
+
+context mmaemilia::ArchitecturalInteraction
+--function that returns the expression, of the type identExpr, contained in an instance of the metaclass
+--RateExp passed as input and associated to a given action
+def: getActionIdentExpr(set: Sequence(Behavior::RateExp)) : Sequence(Expressions::IdentExpr) =
+let app : Behavior::RateExp = set -> first() in
+			Expressions::IdentExpr.allInstances() -> select (z: Expressions::IdentExpr | z.oclAsType(ecore::EObject).eContainer() = app) -> asSequence()
+
+--function to extract the name associated to the identExpr that corresponds to the rate of a given action								
+def: getActionRateName(set: Sequence(Expressions::IdentExpr)) : Sequence(String) =
+let app : Expressions::IdentExpr = set -> first() in
+			Expressions::IdentExpr.allInstances() -> select (z: Expressions::IdentExpr | z.name = app.name) 
+												  -> collect(z: Expressions::IdentExpr | z.name) -> asSequence()
+
+--function to get the RateExp instance contained in an Action instance
+def: getActionRateExp(action: Behavior::Action) : Sequence(Behavior::RateExp) =
+Behavior::RateExp.allInstances() -> select(x: Behavior::RateExp | x.oclAsType(ecore::EObject).eContainer() = action) -> asSequence()
+
+--function to obtain a constant defined in the ArchiType header
+def: getConstantExpr(set: Sequence(String)) : Sequence(Headers::ConstInit) =
+let app : String = set -> first() in
+	Headers::ConstInit.allInstances() -> select(c: Headers::ConstInit | c.name = app) -> asSequence()
+
+--function that, given a ArchiType's constant, returns the IdentExpr that contains it	
+def: getConstantIdentExpr(set: Sequence(Headers::ConstInit)) : Sequence(Expressions::IdentExpr) =
+let app: Headers::ConstInit = set -> first() in
+	Expressions::IdentExpr.allInstances() -> select (z: Expressions::IdentExpr | z.oclAsType(ecore::EObject).eContainer() = app) -> asSequence()
+
+--function that, given a numeric IdentExpr, returns the numeric value associated
+def: getActionRateValue(set: Sequence(Expressions::IdentExpr)) : Real =
+let app: Expressions::IdentExpr = set -> first() in
+if (app.type = Expressions::IdentifierType::NUMERIC_CONST) then
+	app.name.toReal()
+else
+	0.0
+endif
+
+--function that returns the exponential rate of one action given as input
+def: getActionRate(action: Behavior::Action) : Real =
+getActionRateValue(getConstantIdentExpr(getConstantExpr(getActionRateName(getActionIdentExpr(getActionRateExp(action))))))
+
+--function to get the ActionProcess instance that contains the considered action 
+def: getActionProcess(action: Behavior::Action) : Sequence(Behavior::ActionProcess) =
+Behavior::ActionProcess.allInstances() -> select(x: Behavior::ActionProcess | x.act = action) -> asSequence()
+
+--support function that determines, given an instance of an architectural element, the set of instances which is connected
+--from its attachment relative to its output interactions
+def: appFunction(instance: ArchiElemInstance) : Set(ArchiElemInstance) =
+		Attachment.allInstances()
+					 ->	select(a1:Attachment | a1.start.fromInstance.instanceName = instance.instanceName)
+					 -> collect(a1:Attachment | a1.end.toInstance) -> asSet()
+
+--recursive function that, from an architectural element instance, returns the set of all instances it
+--reachable browsing all attachments from those related to its output interactions 
+def: nextInstances(set: Set(ArchiElemInstance), names: Set(String)) : Set(ArchiElemInstance) =
+let resultSet : Set(ArchiElemInstance) = set in
+let emptySet : Set(ArchiElemInstance) = Set{} in
+if(set -> isEmpty()) then resultSet
+else
+let app : Set(ArchiElemInstance) = set -> collect(x: ArchiElemInstance | if(names -> includes(x.instanceName)) then emptySet else appFunction(x) endif)->asSet() in
+let addedNames : Set(String) = set -> collect(y: ArchiElemInstance | y.instanceName)->asSet() in
+resultSet -> union(nextInstances(app, names -> union(addedNames))) -> asSet()
+endif
+
+--function that checks the presence, within the behavior of a certain kind of architectural element, of one
+--or more esponenzially timed actions that have a rate greater than or equal to a bound given as input; if yes
+--returns the set of actions that verify the condition
+def: findOpWithHighResDemand (elemType: ElemType, bound: Real) : Sequence(Behavior::Action) =
+	Behavior::Action.allInstances() -> reject(act: Behavior::Action|act.belongs.oclIsUndefined())-> 
+						select(act: Behavior::Action | act.belongs.etName = elemType.etName and  
+													   act.rate.oclIsTypeOf(Behavior::RateExp) and 
+													   getActionRate(act) >= bound) -> asSequence() 
+
+--function that checks the presence, within the behavior of a certain kind of architectural element, of one
+--or more actions that have an exponential rate strictly less than a bound given as input; if yes
+--returns the set of actions that verify the condition
+def: findOpWithLowResDemand (elemType: ElemType, bound: Real) : Sequence(Behavior::Action) =
+	Behavior::Action.allInstances() -> reject(act: Behavior::Action|act.belongs.oclIsUndefined())-> 
+						select(act: Behavior::Action | act.belongs.etName = elemType.etName and  
+													   act.rate.oclIsTypeOf(Behavior::RateExp) and 
+													   getActionRate(act) < bound) -> asSequence() 
+
+--function that checks if two actions belong to the same alternatives composition and if so, verify that they are the only two
+def: belongToTheSameChoice(action1: Behavior::Action, action2: Behavior::Action) : Boolean =
+let actionProcess1 : Behavior::ActionProcess = getActionProcess(action1) -> first() in
+let actionProcess2 : Behavior::ActionProcess = getActionProcess(action2) -> first() in
+if (actionProcess1.oclAsType(ecore::EObject).eContainer().oclIsTypeOf(Behavior::ChoiceProcess) and
+	actionProcess2.oclAsType(ecore::EObject).eContainer().oclIsTypeOf(Behavior::ChoiceProcess)) then
+
+	let container1 : Behavior::ChoiceProcess = actionProcess1.oclAsType(ecore::EObject).eContainer() in
+	let container2 : Behavior::ChoiceProcess = actionProcess2.oclAsType(ecore::EObject).eContainer() in
+	container1 = container2 and container1.processes -> size() = 2
+		
+else
+	false
+endif
+
+--function that checks for the conditions necessary for the detection of an instance of Extensive Processing antipattern
+def: checkExtensiveProcessingCond(element: ElemType, 
+maxOpResDemand: Real, minOpResDemand: Real) : Boolean =
+let opWithHighResDemand : Sequence(Behavior::Action) = 
+	findOpWithHighResDemand(element, maxOpResDemand) in 
+let opWithLowResDemand : Sequence(Behavior::Action) = 
+	findOpWithLowResDemand(element, minOpResDemand) in
+if (opWithHighResDemand -> size() <> 0 and opWithLowResDemand ->size() <> 0) then
+	opWithHighResDemand -> exists(act1: Behavior::Action | 
+	opWithLowResDemand -> exists(act2: Behavior::Action 
+								| belongToTheSameChoice(act1, act2)))
+
+else
+	false
+endif
+
+
+def: checkAncestorChoice(actionProc: Behavior::ActionProcess) : Boolean =
+if(actionProc.oclAsType(ecore::EObject).eContainer().oclIsTypeOf(Behavior::ChoiceProcess)) then
+	true
+	else if(actionProc.oclAsType(ecore::EObject).eContainer().oclIsTypeOf(Behavior::BehavEquation)) then
+		false
+		else if(actionProc.oclAsType(ecore::EObject).eContainer().oclIsTypeOf(Behavior::ActionProcess)) then
+			let actionProcess : Behavior::ActionProcess = actionProc.oclAsType(ecore::EObject).eContainer() in
+			checkAncestorChoice(actionProcess)
+		else
+			false
+		endif
+	endif
+endif	
+
+--function that checks the presence, inside the behavior of a particular type of
+--architectural element, of one or more actions which have a rate timed esponentially
+--less than or equal with respect to a bound given as input and which do not belong to an
+--alternative composition; if so returns the set of actions that verify the condition
+def: checkOp (elemType: ElemType, bound: Real) : Sequence(Behavior::Action) =
+	Behavior::Action.allInstances() -> reject(act: Behavior::Action|act.belongs.oclIsUndefined())->
+		select(act: Behavior::Action 
+	   | let actionProcess : Behavior::ActionProcess = getActionProcess(act)->first()in
+			   act.belongs.etName = elemType.etName and  
+			   act.rate.oclIsTypeOf(Behavior::RateExp) and 
+			   getActionRate(act) <= bound and
+			   not checkAncestorChoice(actionProcess)
+			   ) -> asSequence() 
+
+--function that, given a service, check if exists, between the operations performed for the execution of the service, a transaction with a rate
+--higher than a certain bound given as input
+def: checkOpResDemand(service: ArchitecturalInteraction, bound: Real) : Boolean =
+let namesSet : Set(String) = Set{} in
+let elemTypes : Set(ElemType) = nextInstances(service.fromInstance -> asSet(), namesSet) -> collect(x: ArchiElemInstance | x.TypeOf)->asSet() in
+elemTypes -> exists(elem: ElemType | checkOp (elem, bound) -> notEmpty())
+
+--function that, given a service, check whether there is the necessary condition so that you can
+--detect an instance of Extensive processing antipatterns
+def: unbalancedOpResDemand(service: ArchitecturalInteraction, maxOpResDemand: Real, minOpResDemand: Real) : Boolean =
+let namesSet : Set(String) = Set{} in
+let elemTypes : Set(ElemType) = nextInstances(service.fromInstance -> asSet(), namesSet) -> collect(x: ArchiElemInstance | x.TypeOf)->asSet() in
+elemTypes -> exists(elem: ElemType | checkExtensiveProcessingCond (elem, maxOpResDemand, minOpResDemand))
+
+--function that determines whether a service given as input corresponds to an esponentially timed action or not
+def: isServiceExpOrInf(service: ArchitecturalInteraction) : Boolean =
+Behavior::Action.allInstances() -> reject(act: Behavior::Action|act.belongs.oclIsUndefined())->
+				select(act: Behavior::Action | act.belongs.etName = service.fromInstance.TypeOf.etName and
+											   act.name = service.Is_A.intName and 
+											   (act.rate.oclIsTypeOf(Behavior::RateInf) or act.rate.oclIsTypeOf(Behavior::RateExp))) -> asSet() -> notEmpty()
+
+--function that checks the presence of the Extensive Processing antipattern in relation to a service
+def: extensiveProcessingPA(service: ArchitecturalInteraction) : Boolean =
+let respTimeUB : Real = 0.04 in--<threshold numerical value> in
+let opResDemLB : Real = 11000000 in--<threshold numerical value> in
+let opResDemUB : Real = 19000000 in--<threshold numerical value> in
+let elemTypeName : ElemType = service.fromInstance.TypeOf in
+if (isServiceExpOrInf(service) and service.responseTime > respTimeUB) then
+ 	unbalancedOpResDemand(service, opResDemLB, opResDemUB)
+else
+ false
+endif
+ 
+--function that checks the presence of the Pipe and Filter antipattern in relation to a service
+def: pipeAndFilterPA(service: ArchitecturalInteraction) : Boolean =
+let serviceThLB : Real = 250 in--<threshold numerical value> in
+let opResDemUB : Real = 12682 in--<threshold numerical value> in
+let elemTypeName : ElemType = service.fromInstance.TypeOf in
+if (isServiceExpOrInf(service) and service.throughput < serviceThLB) then
+       checkOpResDemand(service, opResDemUB)
+else
+ false
+endif
+
+-------------------------------------------------CHECK SINGLE-VALUE ANTIPATTERNS--------------------------------------------------------------
+
+--invariant which determines the presence of instances of the Pipe & Filter antipattern in the analyzed model
+inv pipeFilterAntipattern:
+let serviceThLB : Real = 0.161592 in--<threshold numerical value> in
+let opResDemUB : Real = 3.486090909 in--<threshold numerical value> in
+let elemTypeName : ElemType = self.fromInstance.TypeOf in
+if (isServiceExpOrInf(self) and self.throughput < serviceThLB) then
+       checkOpResDemand(self, opResDemUB)
+else
+ false
+endif
+
+
+
+--invariant which determines the presence of instances of the Pipe & Filter antipattern in the analyzed model
+--inv pipeFilterAntipattern:
+--ArchitecturalInteraction.allInstances() -> exists(service: ArchitecturalInteraction 
+--													| pipeAndFilterPA(service))
+
+--invariant which determines the presence of instances of the Extensive Processing antipattern in the analyzed model
+--inv extensiveProcessingAntipattern:
+--ArchitecturalInteraction.allInstances() -> exists(service: ArchitecturalInteraction 
+--			| extensiveProcessingPA(service))
+
+endpackage
+

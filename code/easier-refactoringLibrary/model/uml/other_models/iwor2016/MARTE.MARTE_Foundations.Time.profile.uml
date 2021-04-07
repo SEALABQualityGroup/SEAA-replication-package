@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Profile xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_WStkoAPMEdyuUt-4qHuVvQ" name="Time" URI="" metamodelReference="_WStkoAPMEdyuUt-4qHuVvQ_packageImportcreatedOnLoad">
+  <eAnnotations xmi:id="_zqz1ZDIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <contents xmi:type="ecore:EPackage" xmi:id="_zqz1ZTIsEeagfJvsBaC-YA" name="Time" nsURI="http:///schemas/Time/_zHTfIDIsEeagfJvsBaC-YA/0" nsPrefix="Time">
+      <eAnnotations xmi:id="_zqz1ZjIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/4.0.0/UML">
+        <references xmi:type="uml:Package" href="iwor2016_ase_example.uml#_x9l9sA74EdyML4mHwjNDrw"/>
+      </eAnnotations>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz1ZzIsEeagfJvsBaC-YA" name="Clock">
+        <eAnnotations xmi:id="_zqz1aDIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_i_gjkBBSEdyt6tGzWCpUVA"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz1aTIsEeagfJvsBaC-YA" name="standard" ordered="false" unique="false" eType="_zqz1czIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1azIsEeagfJvsBaC-YA" name="base_InstanceSpecification" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//InstanceSpecification"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1bTIsEeagfJvsBaC-YA" name="type" ordered="false" unique="false" lowerBound="1" eType="_zqz1gDIsEeagfJvsBaC-YA"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1bzIsEeagfJvsBaC-YA" name="unit" ordered="false" unique="false" eType="_zqz1nDIsEeagfJvsBaC-YA"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1cTIsEeagfJvsBaC-YA" name="base_Property" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Property"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EEnum" xmi:id="_zqz1czIsEeagfJvsBaC-YA" name="IWoR2016_ase_MARTE_Library_TimeTypesLibrary_TimeStandardKind">
+        <eAnnotations xmi:id="_zqz1dDIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:Enumeration" href="iwor2016_ase_example.uml#_MDyyoA-KEdyNj8xzjk-DoA"/>
+        </eAnnotations>
+        <eLiterals xmi:id="_zqz1dTIsEeagfJvsBaC-YA" name="TAI"/>
+        <eLiterals xmi:id="_zqz1djIsEeagfJvsBaC-YA" name="UT0" value="1"/>
+        <eLiterals xmi:id="_zqz1dzIsEeagfJvsBaC-YA" name="UT1" value="2"/>
+        <eLiterals xmi:id="_zqz1eDIsEeagfJvsBaC-YA" name="UTC" value="3"/>
+        <eLiterals xmi:id="_zqz1eTIsEeagfJvsBaC-YA" name="Local" value="4"/>
+        <eLiterals xmi:id="_zqz1ejIsEeagfJvsBaC-YA" name="TT" value="5"/>
+        <eLiterals xmi:id="_zqz1ezIsEeagfJvsBaC-YA" name="TBD" value="6"/>
+        <eLiterals xmi:id="_zqz1fDIsEeagfJvsBaC-YA" name="TCG" value="7"/>
+        <eLiterals xmi:id="_zqz1fTIsEeagfJvsBaC-YA" name="TCB" value="8"/>
+        <eLiterals xmi:id="_zqz1fjIsEeagfJvsBaC-YA" name="Sidereal" value="9"/>
+        <eLiterals xmi:id="_zqz1fzIsEeagfJvsBaC-YA" name="GPS" value="10"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz1gDIsEeagfJvsBaC-YA" name="ClockType">
+        <eAnnotations xmi:id="_zqz1gTIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_j4bvoBBSEdyt6tGzWCpUVA"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz1gjIsEeagfJvsBaC-YA" name="nature" ordered="false" unique="false" lowerBound="1" eType="_zqz1ljIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1hDIsEeagfJvsBaC-YA" name="unitType" ordered="false" unique="false">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Enumeration"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz1hjIsEeagfJvsBaC-YA" name="isLogical" ordered="false" unique="false" lowerBound="1" eType="_zqz1mjIsEeagfJvsBaC-YA" defaultValueLiteral="false"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1iDIsEeagfJvsBaC-YA" name="resolAttr" ordered="false" unique="false">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Property"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1ijIsEeagfJvsBaC-YA" name="maxValAttr" ordered="false" unique="false">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Property"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1jDIsEeagfJvsBaC-YA" name="offsetAttr" ordered="false" unique="false">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Property"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1jjIsEeagfJvsBaC-YA" name="getTime" ordered="false" unique="false">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Operation"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1kDIsEeagfJvsBaC-YA" name="setTime" ordered="false" unique="false">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Operation"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1kjIsEeagfJvsBaC-YA" name="indexToValue" ordered="false" unique="false">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Operation"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1lDIsEeagfJvsBaC-YA" name="base_Class" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Class"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EEnum" xmi:id="_zqz1ljIsEeagfJvsBaC-YA" name="IWoR2016_ase_MARTE_Library_TimeTypesLibrary_TimeNatureKind">
+        <eAnnotations xmi:id="_zqz1lzIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:Enumeration" href="iwor2016_ase_example.uml#_WAvb0A75EdyML4mHwjNDrw"/>
+        </eAnnotations>
+        <eLiterals xmi:id="_zqz1mDIsEeagfJvsBaC-YA" name="discrete"/>
+        <eLiterals xmi:id="_zqz1mTIsEeagfJvsBaC-YA" name="dense" value="1"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EDataType" xmi:id="_zqz1mjIsEeagfJvsBaC-YA" name="IWoR2016_ase_MARTE_Library_MARTE_PrimitivesTypes_Boolean" instanceClassName="java.lang.String">
+        <eAnnotations xmi:id="_zqz1mzIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:PrimitiveType" href="iwor2016_ase_example.uml#_Ddte8AnqEdy9WM11hWri2g"/>
+        </eAnnotations>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz1nDIsEeagfJvsBaC-YA" name="NFPs_Unit">
+        <eAnnotations xmi:id="_zqz1nTIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:Stereotype" href="MARTE.MARTE_Foundations.NFPs.profile.uml#_xNTikA4vEdysTsAUPnp57Q"/>
+        </eAnnotations>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz1njIsEeagfJvsBaC-YA" name="convFactor" ordered="false" unique="false" eType="_zqz1pjIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz1oDIsEeagfJvsBaC-YA" name="offsetFactor" ordered="false" unique="false" eType="_zqz1pjIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1ojIsEeagfJvsBaC-YA" name="baseUnit" ordered="false" unique="false" eType="_zqz1nDIsEeagfJvsBaC-YA"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1pDIsEeagfJvsBaC-YA" name="base_EnumerationLiteral" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//EnumerationLiteral"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EDataType" xmi:id="_zqz1pjIsEeagfJvsBaC-YA" name="IWoR2016_ase_MARTE_Library_MARTE_PrimitivesTypes_Real" instanceClassName="java.lang.String">
+        <eAnnotations xmi:id="_zqz1pzIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:PrimitiveType" href="iwor2016_ase_example.uml#_beo90AnpEdy9WM11hWri2g"/>
+        </eAnnotations>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz1qDIsEeagfJvsBaC-YA" name="TimedProcessing" eSuperTypes="_zqz1tzIsEeagfJvsBaC-YA">
+        <eAnnotations xmi:id="_zqz1qTIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_3V3e0BD5EdyybZnLxHsjyA"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1qjIsEeagfJvsBaC-YA" name="base_Action" ordered="false" unique="false" upperBound="-1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Action"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1rDIsEeagfJvsBaC-YA" name="base_Behavior" ordered="false" unique="false" upperBound="-1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Behavior"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1rjIsEeagfJvsBaC-YA" name="base_Message" ordered="false" unique="false" upperBound="-1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Message"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1sDIsEeagfJvsBaC-YA" name="duration" ordered="false" unique="false" containment="true">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//ValueSpecification"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1sjIsEeagfJvsBaC-YA" name="start" ordered="false" unique="false">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Event"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1tDIsEeagfJvsBaC-YA" name="finish" ordered="false" unique="false">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Event"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz1tzIsEeagfJvsBaC-YA" name="TimedElement" abstract="true">
+        <eAnnotations xmi:id="_zqz1uDIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_llNagBBSEdyt6tGzWCpUVA"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1uTIsEeagfJvsBaC-YA" name="on" ordered="false" unique="false" upperBound="-1" eType="_zqz1ZzIsEeagfJvsBaC-YA"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz1uzIsEeagfJvsBaC-YA" name="TimedEvent" eSuperTypes="_zqz1tzIsEeagfJvsBaC-YA">
+        <eAnnotations xmi:id="_zqz1vDIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_gp3dcBD4EdyybZnLxHsjyA"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz1vTIsEeagfJvsBaC-YA" name="repetition" ordered="false" unique="false" eType="_zqz1xDIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1vzIsEeagfJvsBaC-YA" name="base_TimeEvent" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//TimeEvent"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1wTIsEeagfJvsBaC-YA" name="every" ordered="false" unique="false" containment="true">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//ValueSpecification"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EDataType" xmi:id="_zqz1xDIsEeagfJvsBaC-YA" name="IWoR2016_ase_MARTE_Library_MARTE_PrimitivesTypes_Integer" instanceClassName="java.lang.String">
+        <eAnnotations xmi:id="_zqz1xTIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:PrimitiveType" href="iwor2016_ase_example.uml#_HJ1zcAnfEdy9WM11hWri2g"/>
+        </eAnnotations>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz1xjIsEeagfJvsBaC-YA" name="TimedValueSpecification" eSuperTypes="_zqz1tzIsEeagfJvsBaC-YA">
+        <eAnnotations xmi:id="_zqz1xzIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_JUPuYBCWEdyu4qthTScrTA"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz1yDIsEeagfJvsBaC-YA" name="interpretation" ordered="false" unique="false" eType="_zqz1zTIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1yjIsEeagfJvsBaC-YA" name="base_ValueSpecification" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//ValueSpecification"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EEnum" xmi:id="_zqz1zTIsEeagfJvsBaC-YA" name="IWoR2016_ase_MARTE_Library_TimeTypesLibrary_TimeInterpretationKind">
+        <eAnnotations xmi:id="_zqz1zjIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:Enumeration" href="iwor2016_ase_example.uml#_a_LrwA75EdyML4mHwjNDrw"/>
+        </eAnnotations>
+        <eLiterals xmi:id="_zqz1zzIsEeagfJvsBaC-YA" name="duration"/>
+        <eLiterals xmi:id="_zqz10DIsEeagfJvsBaC-YA" name="instant" value="1"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz10TIsEeagfJvsBaC-YA" name="TimedObservation" abstract="true" eSuperTypes="_zqz1tzIsEeagfJvsBaC-YA">
+        <eAnnotations xmi:id="_zqz10jIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_e7rvQBD2EdyybZnLxHsjyA"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz11DIsEeagfJvsBaC-YA" name="TimedConstraint" eSuperTypes="_zqz12jIsEeagfJvsBaC-YA _zqz1tzIsEeagfJvsBaC-YA">
+        <eAnnotations xmi:id="_zqz11TIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_n90TkBD1EdyybZnLxHsjyA"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz11jIsEeagfJvsBaC-YA" name="interpretation" ordered="false" unique="false" eType="_zqz1zTIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz12jIsEeagfJvsBaC-YA" name="NFPs_NfpConstraint">
+        <eAnnotations xmi:id="_zqz12zIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:Stereotype" href="MARTE.MARTE_Foundations.NFPs.profile.uml#_P9c2AA4wEdysTsAUPnp57Q"/>
+        </eAnnotations>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz13DIsEeagfJvsBaC-YA" name="kind" ordered="false" unique="false" eType="_zqz14jIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz13jIsEeagfJvsBaC-YA" name="base_Constraint" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Constraint"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz14DIsEeagfJvsBaC-YA" name="mode" ordered="false" unique="false" upperBound="-1" eType="_zqz15zIsEeagfJvsBaC-YA"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EEnum" xmi:id="_zqz14jIsEeagfJvsBaC-YA" name="NFPs_ConstraintKind">
+        <eAnnotations xmi:id="_zqz14zIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:Enumeration" href="MARTE.MARTE_Foundations.NFPs.profile.uml#_ZCtm0A4vEdysTsAUPnp57Q"/>
+        </eAnnotations>
+        <eLiterals xmi:id="_zqz15DIsEeagfJvsBaC-YA" name="required"/>
+        <eLiterals xmi:id="_zqz15TIsEeagfJvsBaC-YA" name="offered" value="1"/>
+        <eLiterals xmi:id="_zqz15jIsEeagfJvsBaC-YA" name="contract" value="2"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz15zIsEeagfJvsBaC-YA" name="CoreElements_Mode">
+        <eAnnotations xmi:id="_zqz16DIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:Stereotype" href="MARTE.MARTE_Foundations.CoreElements.profile.uml#_yeqiEECMEd6UTJZnztgOLw"/>
+        </eAnnotations>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz16TIsEeagfJvsBaC-YA" name="base_State" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//State"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz16zIsEeagfJvsBaC-YA" name="ClockConstraint" eSuperTypes="_zqz1tzIsEeagfJvsBaC-YA _zqz12jIsEeagfJvsBaC-YA">
+        <eAnnotations xmi:id="_zqz17DIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_og1hEBD1EdyybZnLxHsjyA"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz17TIsEeagfJvsBaC-YA" name="isCoincidenceBased" ordered="false" unique="false" lowerBound="1" eType="_zqz1mjIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz17zIsEeagfJvsBaC-YA" name="isPrecedenceBased" ordered="false" unique="false" lowerBound="1" defaultValueLiteral="">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//Boolean"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz18TIsEeagfJvsBaC-YA" name="isChronometricBased" ordered="false" unique="false" lowerBound="1" eType="_zqz1mjIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz19TIsEeagfJvsBaC-YA" name="TimedDurationObservation" eSuperTypes="_zqz10TIsEeagfJvsBaC-YA">
+        <eAnnotations xmi:id="_zqz19jIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_xRmWoBD2EdyybZnLxHsjyA"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz19zIsEeagfJvsBaC-YA" name="obsKind" ordered="false" unique="false" upperBound="2" eType="_zqz1_DIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz1-TIsEeagfJvsBaC-YA" name="base_DurationObservation" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//DurationObservation"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EEnum" xmi:id="_zqz1_DIsEeagfJvsBaC-YA" name="IWoR2016_ase_MARTE_Library_TimeTypesLibrary_EventKind">
+        <eAnnotations xmi:id="_zqz1_TIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+          <references xmi:type="uml:Enumeration" href="iwor2016_ase_example.uml#_eMs4wA-KEdyNj8xzjk-DoA"/>
+        </eAnnotations>
+        <eLiterals xmi:id="_zqz1_jIsEeagfJvsBaC-YA" name="start"/>
+        <eLiterals xmi:id="_zqz1_zIsEeagfJvsBaC-YA" name="finish" value="1"/>
+        <eLiterals xmi:id="_zqz2ADIsEeagfJvsBaC-YA" name="send" value="2"/>
+        <eLiterals xmi:id="_zqz2ATIsEeagfJvsBaC-YA" name="receive" value="3"/>
+        <eLiterals xmi:id="_zqz2AjIsEeagfJvsBaC-YA" name="consume" value="4"/>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz2AzIsEeagfJvsBaC-YA" name="TimedInstantObservation" eSuperTypes="_zqz10TIsEeagfJvsBaC-YA">
+        <eAnnotations xmi:id="_zqz2BDIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_noixsBD2EdyybZnLxHsjyA"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_zqz2BTIsEeagfJvsBaC-YA" name="obsKind" ordered="false" unique="false" eType="_zqz1_DIsEeagfJvsBaC-YA" defaultValueLiteral=""/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz2BzIsEeagfJvsBaC-YA" name="base_TimeObservation" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//TimeObservation"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_zqz2CjIsEeagfJvsBaC-YA" name="TimedDomain">
+        <eAnnotations xmi:id="_zqz2CzIsEeagfJvsBaC-YA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_hEbW8BBSEdyt6tGzWCpUVA"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_zqz2DDIsEeagfJvsBaC-YA" name="base_Namespace" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Namespace"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+    </contents>
+  </eAnnotations>
+  <packageImport xmi:id="_MbX8EA9REdyey4B16cv6mQ">
+    <importedPackage xmi:type="uml:Profile" href="MARTE.MARTE_Foundations.NFPs.profile.uml#_U_GAoAPMEdyuUt-4qHuVvQ"/>
+  </packageImport>
+  <packageImport xmi:id="_vg6ygBBOEdyt6tGzWCpUVA">
+    <importedPackage xmi:type="uml:Profile" href="MARTE.MARTE_Annexes.VSL.DataTypes.profile.uml#_9FdqwA-MEdyLh7muGbCqMw"/>
+  </packageImport>
+  <packageImport xmi:id="_oCiOABBREdyt6tGzWCpUVA">
+    <importedPackage href="iwor2016_ase_example.uml#_x9l9sA74EdyML4mHwjNDrw"/>
+  </packageImport>
+  <packageImport xmi:id="_WStkoAPMEdyuUt-4qHuVvQ_packageImportcreatedOnLoad">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_METAMODELS/UML.metamodel.uml#_0"/>
+  </packageImport>
+  <packageImport xmi:id="_0primitiveTypesTime">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packageImport xmi:id="_0javaPrimitiveTypesTime">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_Hj9wABD4EdyybZnLxHsjyA" name="Extension_TimedDurationObservation" memberEnd="_Hj9wARD4EdyybZnLxHsjyA _HkHhABD4EdyybZnLxHsjyA" navigableOwnedEnd="_Hj9wARD4EdyybZnLxHsjyA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_Hj9wARD4EdyybZnLxHsjyA" name="extension_TimedDurationObservation" visibility="public" type="_xRmWoBD2EdyybZnLxHsjyA" aggregation="composite" association="_Hj9wABD4EdyybZnLxHsjyA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_i_gjkBBSEdyt6tGzWCpUVA" name="Clock">
+    <ownedAttribute xmi:id="_odZIkBBSEdyt6tGzWCpUVA" name="standard" visibility="public" isUnique="false">
+      <type xmi:type="uml:Enumeration" href="iwor2016_ase_example.uml#_MDyyoA-KEdyNj8xzjk-DoA"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_sjNHYBBSEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_sjW4YBBSEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_sjW4YRBSEdyt6tGzWCpUVA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="__Lr-EBBVEdyt6tGzWCpUVA" name="base_InstanceSpecification" visibility="public" isUnique="false" association="__LZDIBBVEdyt6tGzWCpUVA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#InstanceSpecification"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_skGj0BCVEdyu4qthTScrTA" name="type" visibility="public" type="_j4bvoBBSEdyt6tGzWCpUVA" isUnique="false" association="_sj8y0BCVEdyu4qthTScrTA">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ssbX0GqGEdyHVMM3AaZxvA" name="" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ssfpQGqGEdyHVMM3AaZxvA" name="" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_7R2xsRCVEdyu4qthTScrTA" name="unit" visibility="public" isUnique="false" association="_7R2xsBCVEdyu4qthTScrTA">
+      <type xmi:type="uml:Stereotype" href="MARTE.MARTE_Foundations.NFPs.profile.uml#_xNTikA4vEdysTsAUPnp57Q"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_A66E4BCWEdyu4qthTScrTA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_A7D14BCWEdyu4qthTScrTA" name="" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_dkEmIDJLEd211cMdxu944g" name="base_Property" visibility="public" isUnique="false" association="_dZML0DJLEd211cMdxu944g">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Property"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_dJBKwBKWEdyGYuetzx6T5A" name="Association_TimedProcessing_Event" memberEnd="_dJUFsBKWEdyGYuetzx6T5A _dKpicBKWEdyGYuetzx6T5A">
+    <ownedEnd xmi:id="_dKpicBKWEdyGYuetzx6T5A" name="timedProcessing" visibility="public" type="_3V3e0BD5EdyybZnLxHsjyA" isUnique="false" association="_dJBKwBKWEdyGYuetzx6T5A">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_dLZJUBKWEdyGYuetzx6T5A" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_dLPYUBKWEdyGYuetzx6T5A" name="" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_zAhpkBKWEdyGYuetzx6T5A" name="Association_TimedEvent_ValueSpecification" memberEnd="_zA-VgBKWEdyGYuetzx6T5A _zCKoUBKWEdyGYuetzx6T5A">
+    <ownedEnd xmi:id="_zCKoUBKWEdyGYuetzx6T5A" name="timedEvent" visibility="public" type="_gp3dcBD4EdyybZnLxHsjyA" isUnique="false" association="_zAhpkBKWEdyGYuetzx6T5A">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_zC5oIRKWEdyGYuetzx6T5A" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_zC5oIBKWEdyGYuetzx6T5A" name="" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_3V3e0BD5EdyybZnLxHsjyA" name="TimedProcessing">
+    <generalization xmi:id="_-kwcgBD7EdyybZnLxHsjyA" general="_llNagBBSEdyt6tGzWCpUVA"/>
+    <ownedAttribute xmi:id="_7197ABD7EdyybZnLxHsjyA" name="base_Action" visibility="public" isUnique="false" association="_71hPEBD7EdyybZnLxHsjyA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Action"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_18_0_4_28c0145_1450440451045_930002_4828" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_18_0_4_28c0145_1450440451046_747661_4829" name="" value="*"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_8ZuvYRD7EdyybZnLxHsjyA" name="base_Behavior" visibility="public" isUnique="false" association="_8Zk-YBD7EdyybZnLxHsjyA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Behavior"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_18_0_4_28c0145_1450440478076_447274_4837" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_18_0_4_28c0145_1450440478076_639262_4838" name="" value="*"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_9M_YUBD7EdyybZnLxHsjyA" name="base_Message" visibility="public" isUnique="false" association="_9MsdYBD7EdyybZnLxHsjyA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Message"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_18_0_4_28c0145_1450440489604_989631_4839" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_18_0_4_28c0145_1450440489604_356889_4840" name="" value="*"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_OAQb4BKWEdyGYuetzx6T5A" name="duration" visibility="public" isUnique="false" aggregation="composite" association="_N_zv8BKWEdyGYuetzx6T5A">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#ValueSpecification"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Y8sUQBKWEdyGYuetzx6T5A" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Y81eMBKWEdyGYuetzx6T5A" name="" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_dJUFsBKWEdyGYuetzx6T5A" name="start" visibility="public" isUnique="false" association="_dJBKwBKWEdyGYuetzx6T5A">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Event"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_k_gl4BKWEdyGYuetzx6T5A" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_k_qW4BKWEdyGYuetzx6T5A" name="" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_n3A-gBKWEdyGYuetzx6T5A" name="finish" visibility="public" isUnique="false" association="_n2uDkBKWEdyGYuetzx6T5A">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Event"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_p2NPEBKWEdyGYuetzx6T5A" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_p2WZABKWEdyGYuetzx6T5A" name="" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_gp3dcBD4EdyybZnLxHsjyA" name="TimedEvent">
+    <generalization xmi:id="_y_yE0BD4EdyybZnLxHsjyA" general="_llNagBBSEdyt6tGzWCpUVA"/>
+    <ownedAttribute xmi:id="_jA93sBD4EdyybZnLxHsjyA" name="repetition" visibility="public" isUnique="false">
+      <type xmi:type="uml:PrimitiveType" href="iwor2016_ase_example.uml#_HJ1zcAnfEdy9WM11hWri2g"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_mSU6wBD4EdyybZnLxHsjyA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_mSeEsBD4EdyybZnLxHsjyA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_mSeEsRD4EdyybZnLxHsjyA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_74jcUBD4EdyybZnLxHsjyA" name="base_TimeEvent" visibility="public" isUnique="false" association="_74QhYBD4EdyybZnLxHsjyA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#TimeEvent"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_zA-VgBKWEdyGYuetzx6T5A" name="every" visibility="public" isUnique="false" aggregation="composite" association="_zAhpkBKWEdyGYuetzx6T5A">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#ValueSpecification"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_1c17ABKWEdyGYuetzx6T5A" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_1c_E8BKWEdyGYuetzx6T5A" name="" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_71hPEBD7EdyybZnLxHsjyA" name="Extension_TimedProcessing" memberEnd="_7197ABD7EdyybZnLxHsjyA _71rAEBD7EdyybZnLxHsjyA" navigableOwnedEnd="_71rAEBD7EdyybZnLxHsjyA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_71rAEBD7EdyybZnLxHsjyA" name="extension_TimedProcessing" visibility="public" type="_3V3e0BD5EdyybZnLxHsjyA" aggregation="composite" association="_71hPEBD7EdyybZnLxHsjyA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_74QhYBD4EdyybZnLxHsjyA" name="Extension_TimedEvent" memberEnd="_74jcUBD4EdyybZnLxHsjyA _74aSYBD4EdyybZnLxHsjyA" navigableOwnedEnd="_74aSYBD4EdyybZnLxHsjyA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_74aSYBD4EdyybZnLxHsjyA" name="extension_TimedEvent" visibility="public" type="_gp3dcBD4EdyybZnLxHsjyA" aggregation="composite" association="_74QhYBD4EdyybZnLxHsjyA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_JUPuYBCWEdyu4qthTScrTA" name="TimedValueSpecification">
+    <generalization xmi:id="_WruF0BCWEdyu4qthTScrTA" general="_llNagBBSEdyt6tGzWCpUVA"/>
+    <ownedAttribute xmi:id="_LerloBCWEdyu4qthTScrTA" name="interpretation" visibility="public" isUnique="false">
+      <type xmi:type="uml:Enumeration" href="iwor2016_ase_example.uml#_a_LrwA75EdyML4mHwjNDrw"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_SItNoBCWEdyu4qthTScrTA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_SI2XkBCWEdyu4qthTScrTA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_SI2XkRCWEdyu4qthTScrTA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_eSY8QBCWEdyu4qthTScrTA" name="base_ValueSpecification" visibility="public" isUnique="false" association="_eSGBUBCWEdyu4qthTScrTA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#ValueSpecification"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_e7rvQBD2EdyybZnLxHsjyA" name="TimedObservation" isAbstract="true">
+    <generalization xmi:id="_mJLQsBD2EdyybZnLxHsjyA" general="_llNagBBSEdyt6tGzWCpUVA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_j4bvoBBSEdyt6tGzWCpUVA" name="ClockType">
+    <ownedAttribute xmi:id="_wZrCoBBSEdyt6tGzWCpUVA" name="nature" visibility="public" isUnique="false">
+      <type xmi:type="uml:Enumeration" href="iwor2016_ase_example.uml#_WAvb0A75EdyML4mHwjNDrw"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_1KGrwBBSEdyt6tGzWCpUVA" name="" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_1KP1sBBSEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_1KP1sRBSEdyt6tGzWCpUVA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_we450BBSEdyt6tGzWCpUVA" name="unitType" visibility="public" isUnique="false">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Enumeration"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="__RQh8BBSEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="__RaS8BBSEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="__RaS8RBSEdyt6tGzWCpUVA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_wn-kYBBSEdyt6tGzWCpUVA" name="isLogical" visibility="public" isUnique="false">
+      <type xmi:type="uml:PrimitiveType" href="iwor2016_ase_example.uml#_Ddte8AnqEdy9WM11hWri2g"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_McqMQBBTEdyt6tGzWCpUVA" name="" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Mcz9QBBTEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralBoolean" xmi:id="_JhtzMBBVEdyt6tGzWCpUVA" name=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_wt8CcBBSEdyt6tGzWCpUVA" name="resolAttr" visibility="public" isUnique="false">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Property"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_MYZscBBVEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_MYZscRBVEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_MYjdcBBVEdyt6tGzWCpUVA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_wzJ5oBBSEdyt6tGzWCpUVA" name="maxValAttr" visibility="public" isUnique="false">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Property"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Puh6wBBVEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_PurrwBBVEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_PurrwRBVEdyt6tGzWCpUVA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_w4XJwBBSEdyt6tGzWCpUVA" name="offsetAttr" visibility="public" isUnique="false">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Property"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_S5Vp4BBVEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_S5Vp4RBVEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_S5fa4BBVEdyt6tGzWCpUVA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_w9SGABBSEdyt6tGzWCpUVA" name="getTime" visibility="public" isUnique="false">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Operation"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_U1d_YBBVEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_U1d_YRBVEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_U1d_YhBVEdyt6tGzWCpUVA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_xESF4BBSEdyt6tGzWCpUVA" name="setTime" visibility="public" isUnique="false">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Operation"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ZolJEBBVEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ZolJERBVEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_ZouTABBVEdyt6tGzWCpUVA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_xJpuEBBSEdyt6tGzWCpUVA" name="indexToValue" visibility="public" isUnique="false">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Operation"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cAkUIBBVEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cAuFIBBVEdyt6tGzWCpUVA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_cAuFIRBVEdyt6tGzWCpUVA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_-lZaIBBVEdyt6tGzWCpUVA" name="base_Class" visibility="public" isUnique="false" association="_-lF4IBBVEdyt6tGzWCpUVA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Class"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_8Zk-YBD7EdyybZnLxHsjyA" name="Extension_TimedProcessing" memberEnd="_8ZuvYBD7EdyybZnLxHsjyA _8ZuvYRD7EdyybZnLxHsjyA" navigableOwnedEnd="_8ZuvYBD7EdyybZnLxHsjyA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_8ZuvYBD7EdyybZnLxHsjyA" name="extension_TimedProcessing" visibility="public" type="_3V3e0BD5EdyybZnLxHsjyA" aggregation="composite" association="_8Zk-YBD7EdyybZnLxHsjyA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_n2uDkBKWEdyGYuetzx6T5A" name="Association_TimedProcessing_Event" memberEnd="_n3A-gBKWEdyGYuetzx6T5A _n4WbQBKWEdyGYuetzx6T5A">
+    <ownedEnd xmi:id="_n4WbQBKWEdyGYuetzx6T5A" name="timedProcessing" visibility="public" type="_3V3e0BD5EdyybZnLxHsjyA" isUnique="false" association="_n2uDkBKWEdyGYuetzx6T5A">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_n5GCIBKWEdyGYuetzx6T5A" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_n484MBKWEdyGYuetzx6T5A" name="" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_-lF4IBBVEdyt6tGzWCpUVA" name="Extension_ClockType" memberEnd="_-lZaIBBVEdyt6tGzWCpUVA _-lPpIBBVEdyt6tGzWCpUVA" navigableOwnedEnd="_-lPpIBBVEdyt6tGzWCpUVA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_-lPpIBBVEdyt6tGzWCpUVA" name="extension_ClockType" visibility="public" type="_j4bvoBBSEdyt6tGzWCpUVA" aggregation="composite" association="_-lF4IBBVEdyt6tGzWCpUVA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_FpfvABBWEdyt6tGzWCpUVA" name="Association_TimedElement_Clock" memberEnd="_FqFk4BBWEdyt6tGzWCpUVA _Fp8a8BBWEdyt6tGzWCpUVA">
+    <ownedEnd xmi:id="_FqFk4BBWEdyt6tGzWCpUVA" name="timedElement" visibility="public" type="_llNagBBSEdyt6tGzWCpUVA" isUnique="false" association="_FpfvABBWEdyt6tGzWCpUVA">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_FqPV4RBWEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_FqPV4BBWEdyt6tGzWCpUVA" name="" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_dZML0DJLEd211cMdxu944g" name="Extension_Clock" memberEnd="_djewQDJLEd211cMdxu944g _dkEmIDJLEd211cMdxu944g" navigableOwnedEnd="_djewQDJLEd211cMdxu944g">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_djewQDJLEd211cMdxu944g" name="extension_Clock" visibility="public" type="_i_gjkBBSEdyt6tGzWCpUVA" aggregation="composite" association="_dZML0DJLEd211cMdxu944g"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_n90TkBD1EdyybZnLxHsjyA" name="TimedConstraint">
+    <generalization xmi:id="_JuyTsBD2EdyybZnLxHsjyA">
+      <general xmi:type="uml:Stereotype" href="MARTE.MARTE_Foundations.NFPs.profile.uml#_P9c2AA4wEdysTsAUPnp57Q"/>
+    </generalization>
+    <generalization xmi:id="_KnZ9wBD2EdyybZnLxHsjyA" general="_llNagBBSEdyt6tGzWCpUVA"/>
+    <ownedAttribute xmi:id="_1EwUoBD1EdyybZnLxHsjyA" name="interpretation" visibility="public" isUnique="false">
+      <type xmi:type="uml:Enumeration" href="iwor2016_ase_example.uml#_a_LrwA75EdyML4mHwjNDrw"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_3Rt7cBD1EdyybZnLxHsjyA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_3R3scBD1EdyybZnLxHsjyA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_3R3scRD1EdyybZnLxHsjyA" name="" value=""/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_9MsdYBD7EdyybZnLxHsjyA" name="Extension_TimedProcessing" memberEnd="_9M_YUBD7EdyybZnLxHsjyA _9M1nUBD7EdyybZnLxHsjyA" navigableOwnedEnd="_9M1nUBD7EdyybZnLxHsjyA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_9M1nUBD7EdyybZnLxHsjyA" name="extension_TimedProcessing" visibility="public" type="_3V3e0BD5EdyybZnLxHsjyA" aggregation="composite" association="_9MsdYBD7EdyybZnLxHsjyA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_sj8y0BCVEdyu4qthTScrTA" name="Association_Clock_ClockType" memberEnd="_skGj0BCVEdyu4qthTScrTA _skQU0hCVEdyu4qthTScrTA">
+    <ownedEnd xmi:id="_skQU0hCVEdyu4qthTScrTA" name="clock" visibility="public" type="_i_gjkBBSEdyt6tGzWCpUVA" isUnique="false" association="_sj8y0BCVEdyu4qthTScrTA">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_skjPwRCVEdyu4qthTScrTA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_skjPwBCVEdyu4qthTScrTA" name="" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_llNagBBSEdyt6tGzWCpUVA" name="TimedElement" isAbstract="true">
+    <ownedAttribute xmi:id="_Fp8a8BBWEdyt6tGzWCpUVA" name="on" visibility="public" type="_i_gjkBBSEdyt6tGzWCpUVA" isUnique="false" association="_FpfvABBWEdyt6tGzWCpUVA">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_JBaGABBWEdyt6tGzWCpUVA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_JBaGARBWEdyt6tGzWCpUVA" name="" value="*"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_7R2xsBCVEdyu4qthTScrTA" name="Association_Clock_Unit" memberEnd="_7SAishCVEdyu4qthTScrTA _7R2xsRCVEdyu4qthTScrTA">
+    <ownedEnd xmi:id="_7SAishCVEdyu4qthTScrTA" name="clock" visibility="public" type="_i_gjkBBSEdyt6tGzWCpUVA" isUnique="false" association="_7R2xsBCVEdyu4qthTScrTA">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_7SJsoRCVEdyu4qthTScrTA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_7SJsoBCVEdyu4qthTScrTA" name="" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_N_zv8BKWEdyGYuetzx6T5A" name="Association_TimedProcessing_ValueSpecification" memberEnd="_OAQb4BKWEdyGYuetzx6T5A _OBcHoRKWEdyGYuetzx6T5A">
+    <ownedEnd xmi:id="_OBcHoRKWEdyGYuetzx6T5A" name="timedProcessing" visibility="public" type="_3V3e0BD5EdyybZnLxHsjyA" isUnique="false" association="_N_zv8BKWEdyGYuetzx6T5A">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OCVfgBKWEdyGYuetzx6T5A" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OCLugBKWEdyGYuetzx6T5A" name="" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_GvXqUBD4EdyybZnLxHsjyA" name="Extension_TimedInstantObservation" memberEnd="_Gvg0QBD4EdyybZnLxHsjyA _GvXqURD4EdyybZnLxHsjyA" navigableOwnedEnd="_GvXqURD4EdyybZnLxHsjyA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_GvXqURD4EdyybZnLxHsjyA" name="extension_TimedInstantObservation" visibility="public" type="_noixsBD2EdyybZnLxHsjyA" aggregation="composite" association="_GvXqUBD4EdyybZnLxHsjyA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_ujKNcECaEd6UTJZnztgOLw" name="Extension_TimedDomain" memberEnd="_ul_fAECaEd6UTJZnztgOLw _ulqu4ECaEd6UTJZnztgOLw" navigableOwnedEnd="_ulqu4ECaEd6UTJZnztgOLw">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_ulqu4ECaEd6UTJZnztgOLw" name="extension_TimedDomain" visibility="public" type="_hEbW8BBSEdyt6tGzWCpUVA" aggregation="composite" association="_ujKNcECaEd6UTJZnztgOLw"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_og1hEBD1EdyybZnLxHsjyA" name="ClockConstraint">
+    <generalization xmi:id="_LlZQABD2EdyybZnLxHsjyA" general="_llNagBBSEdyt6tGzWCpUVA"/>
+    <generalization xmi:id="_NyziwBD2EdyybZnLxHsjyA">
+      <general xmi:type="uml:Stereotype" href="MARTE.MARTE_Foundations.NFPs.profile.uml#_P9c2AA4wEdysTsAUPnp57Q"/>
+    </generalization>
+    <ownedAttribute xmi:id="_JaIsYECaEd6UTJZnztgOLw" name="isCoincidenceBased" visibility="public" isUnique="false">
+      <type xmi:type="uml:PrimitiveType" href="iwor2016_ase_example.uml#_Ddte8AnqEdy9WM11hWri2g"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_P1-HYECaEd6UTJZnztgOLw" name="" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_P2E1EECaEd6UTJZnztgOLw" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_P2NX8ECaEd6UTJZnztgOLw" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_Jfr6wECaEd6UTJZnztgOLw" name="isPrecedenceBased" visibility="public" isUnique="false">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_YrvOMECaEd6UTJZnztgOLw" name="" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_YsFMcECaEd6UTJZnztgOLw" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_YseOAECaEd6UTJZnztgOLw" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_JnyG0ECaEd6UTJZnztgOLw" name="isChronometricBased" visibility="public" isUnique="false">
+      <type xmi:type="uml:PrimitiveType" href="iwor2016_ase_example.uml#_Ddte8AnqEdy9WM11hWri2g"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_bUwe4ECaEd6UTJZnztgOLw" name="" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_bU6P4ECaEd6UTJZnztgOLw" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_bVA9kECaEd6UTJZnztgOLw" name="" value=""/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_xRmWoBD2EdyybZnLxHsjyA" name="TimedDurationObservation">
+    <generalization xmi:id="_8Pxe8BD3EdyybZnLxHsjyA" general="_e7rvQBD2EdyybZnLxHsjyA"/>
+    <ownedAttribute xmi:id="_2QLwgBD2EdyybZnLxHsjyA" name="obsKind" visibility="public" isUnique="false">
+      <type xmi:type="uml:Enumeration" href="iwor2016_ase_example.uml#_eMs4wA-KEdyNj8xzjk-DoA"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4XyWMBD2EdyybZnLxHsjyA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_4XyWMRD2EdyybZnLxHsjyA" name="" value="2"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_2QLwgxD2EdyybZnLxHsjyA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_HkHhABD4EdyybZnLxHsjyA" name="base_DurationObservation" visibility="public" isUnique="false" association="_Hj9wABD4EdyybZnLxHsjyA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#DurationObservation"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_noixsBD2EdyybZnLxHsjyA" name="TimedInstantObservation">
+    <generalization xmi:id="_7BGFUBD3EdyybZnLxHsjyA" general="_e7rvQBD2EdyybZnLxHsjyA"/>
+    <ownedAttribute xmi:id="_qlx-4BD2EdyybZnLxHsjyA" name="obsKind" visibility="public" isUnique="false">
+      <type xmi:type="uml:Enumeration" href="iwor2016_ase_example.uml#_eMs4wA-KEdyNj8xzjk-DoA"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_unbPYBD2EdyybZnLxHsjyA" name=""/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_unbPYRD2EdyybZnLxHsjyA" name="" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_unlAYBD2EdyybZnLxHsjyA" name="" value=""/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_Gvg0QBD4EdyybZnLxHsjyA" name="base_TimeObservation" visibility="public" isUnique="false" association="_GvXqUBD4EdyybZnLxHsjyA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#TimeObservation"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="__LZDIBBVEdyt6tGzWCpUVA" name="Extension_Clock" memberEnd="__Li0IBBVEdyt6tGzWCpUVA __Lr-EBBVEdyt6tGzWCpUVA" navigableOwnedEnd="__Li0IBBVEdyt6tGzWCpUVA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="__Li0IBBVEdyt6tGzWCpUVA" name="extension_Clock" visibility="public" type="_i_gjkBBSEdyt6tGzWCpUVA" aggregation="composite" association="__LZDIBBVEdyt6tGzWCpUVA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_hEbW8BBSEdyt6tGzWCpUVA" name="TimedDomain">
+    <ownedAttribute xmi:id="_ul_fAECaEd6UTJZnztgOLw" name="base_Namespace" visibility="public" isUnique="false" association="_ujKNcECaEd6UTJZnztgOLw">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Namespace"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_eSGBUBCWEdyu4qthTScrTA" name="Extension_TimedValueSpecification" memberEnd="_eSPyUBCWEdyu4qthTScrTA _eSY8QBCWEdyu4qthTScrTA" navigableOwnedEnd="_eSPyUBCWEdyu4qthTScrTA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_eSPyUBCWEdyu4qthTScrTA" name="extension_TimedValueSpecification" visibility="public" type="_JUPuYBCWEdyu4qthTScrTA" aggregation="composite" association="_eSGBUBCWEdyu4qthTScrTA"/>
+  </packagedElement>
+</uml:Profile>

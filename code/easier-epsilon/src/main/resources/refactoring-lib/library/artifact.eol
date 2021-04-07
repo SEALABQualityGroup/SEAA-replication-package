@@ -1,0 +1,202 @@
+//verifico se l'artifact rappresenta il componente passato per parametro
+operation Artifact hasRepresentationOf(classifier : Classifier) : Boolean {
+	for(manifestation in self.getManifestations()){
+		if(manifestation.getSuppliers()->exists(sup | sup == classifier)){
+			return true;
+		}
+	}
+	return false;
+}
+
+operation Artifact getDeploymentNode() : Node{
+	return Node.allInstances->selectOne(node : Node | 
+		node.getDeployments()->exists(deploy : Deployment | 
+			deploy.getDeployedArtifacts()->exists(artifact : Artifact | artifact == self)
+		)
+	);
+}
+
+operation Artifact getDeploymentDevices() : Sequence(Device) {
+	return Device.allInstances->select(dev : Device | 
+		dev.getDeployments()->exists(deploy : Deployment | 
+			deploy.getDeployedArtifacts()->contains(self)
+		)
+	);
+}
+
+operation Artifact getManifestedComponents() : Sequence(Component){
+	var manifestations = self.getManifestations();
+	var returnValue : Sequence(Component);
+	for(man in manifestations){
+		if( man.getUtilizedElement().isTypeOf(Component) ){
+			returnValue.add(man.getUtilizedElement());
+		}
+	}
+	return returnValue;
+	//self.getManifestations()->select(c : Component | this.getUtilizedElement().isTypeOf(Component) ).println();
+}
+
+
+operation Artifact getManifestedClassifier() : Sequence(Classifier){
+	return self.getManifestations()->select(man : Manifestation | man.getUtilizedElement().isTypeOf(Classifier) );
+}
+
+operation Artifact getDeploymentDevice() : Device {
+	return Device.allInstances->selectOne(dev : Device | 
+		dev.getDeployments()->exists(deploy : Deployment | 
+			deploy.getDeployedArtifacts()->contains(self)
+		)
+	);
+}
+
+operation Artifact getCriticalDeploymentDevice() : Device {
+	var deplDevs = self.getDeploymentDevices();
+	//return Device.allInstances->selectOne(dev : Device | 
+	//	dev.getDeployments()->exists(deploy : Deployment | 
+	//		deploy.getDeployedArtifacts()->contains(self) and dev=getDevWithMaxUtil(deplDevs)
+	//	)
+	//);
+	return getDevWithMaxUtil(deplDevs);
+}
+
+
+
+
+
+operation Artifact getCriticalOperation() : Operation {
+	var manComps = self.getManifestedComponents();
+	var allOps = manComps.collect(c|c.getOperations()).flatten().asSequence();
+	return getOpWithMaxMeanDemand(allOps);
+}
+
+
+
+
+
+//OK
+operation Artifact getLifelines() : List(Lifeline){
+	//self.name.println("ARTIFACT: ");
+	var returnValue : List(Lifeline) = new List (Lifeline);
+	for(lifeline in Lifeline.allInstances){
+		if(lifeline.getInteraction().isDefined())
+			if(lifeline.getRepresents().isDefined()) 
+				if(lifeline.getRepresents().getType().isDefined())
+					//lifeline.getRepresents().getType().println("\tLIFELINES TYPE: ");
+					if(lifeline.getRepresents().getType().isTypeOf(Artifact) and
+					   lifeline.getRepresents().getType()=self){
+							returnValue.add(lifeline);
+		}
+	}
+	//returnValue.collect(l|l.getRepresents().getType().getManifestedComponents().flatten().collect(c|c.getName())).flatten().println("LIFELINES FOR COMPONENT:" + self.getName() + " ----> ");
+	return returnValue;
+}
+
+/*
+operation Artifact getCriticalLifeline4BlobContainerAP(th_numReceivedMsgs : List(Real)) : Map{
+	var returnValue : Map(Interaction, Lifeline) = new Map();
+	var lifelines = self.getLifelines();//.println("LIFELINES: "); //OK
+	
+	for(lf in lifelines){
+		var mapOfInteracationAndIncomingMsgs = lf.getIncomingMessages(); //OK - returns a Map(interaction, seq of Mes)
+		var incomingMsgsProbability = 0.0;
+		//if(debug()){
+			("number of incomingMsgs of ["+lf.represents.type.name+"] in ["+lf.getInteraction().getName()+"] --> "+lf.getIncomingMessages().size()).println();
+		//}
+		
+		for(int in mapOfInteracationAndIncomingMsgs.keySet()){
+			for(mes in mapOfInteracationAndIncomingMsgs.get(int)){
+				incomingMsgsProbability = incomingMsgsProbability.asReal() + mes.getMsgProb();//mes.getReceiveEvent().getProbabilityOf();
+			}
+			switch (int.getName()) {
+				case "Access greenhouse" : 
+					if(incomingMsgsProbability >= th_numReceivedMsgs->first())
+						returnValue.put(int,lf);
+				case "Change settings sequence" : 
+					if(incomingMsgsProbability >= th_numReceivedMsgs->second())
+						returnValue.put(int,lf);
+				default : showError("Method: getCriticalLifeline4BlobContainerAP in component.eol"); 
+			}
+		}
+		//if(debug()){
+			("incomingMsgsProbability of ["+lf.represents.type.name+"] in ["+lf.getInteraction().getName()+"] --> "+incomingMsgsProbability).println();
+		//}
+	}
+	
+	return returnValue;
+}*/
+
+// OK BUT TO REVISE
+operation Artifact getCriticalLifeline4BlobControllerAP(th_numSentMsgs : List(Real)) : Map{
+	var returnValue : Map(Interaction, Lifeline) = new Map();
+	var lifelines = self.getLifelines(); //OK
+	
+	for(lf in lifelines){
+		var mapOfInteracationAndOutgoingMsgs = lf.getOutgoingMessages(); //OK - returns a Map(interaction, seq of Mes)
+		var outgoingMsgsProbability = 0.0;
+		//if(debug()){
+			info("number of outgoing messages of ["+lf.represents.type.name+"] in ["+lf.getInteraction().getName()+"] --> "+lf.getOutgoingMessages().size());
+		//}
+		
+		for(int in mapOfInteracationAndOutgoingMsgs.keySet()){
+			for(mes in mapOfInteracationAndOutgoingMsgs.get(int)){
+				outgoingMsgsProbability = outgoingMsgsProbability.asReal() + mes.getMsgProb();//mes.getReceiveEvent().getProbabilityOf();
+			}
+			switch (int.getName()) {
+				case "Access greenhouse" : 
+					if(outgoingMsgsProbability >= th_numSentMsgs->first())
+						returnValue.put(int,lf);
+				case "Change settings sequence" : 
+					if(outgoingMsgsProbability >= th_numSentMsgs->second())
+						returnValue.put(int,lf);
+				default : showError("Method: getCriticalLifeline4BlobContainerAP in component.eol"); 
+			}
+		}
+		info("outgoingMsgsProbability of ["+lf.represents.type.name+"] in ["+lf.getInteraction().getName()+"] --> "+outgoingMsgsProbability);
+	}
+	
+	return returnValue;
+}
+
+
+
+operation Artifact getTotalDemand() : Real {
+	//ASSUMPTION: Demand di una Interaction = SUM(Demand di ogni Message, Demand di ogni referred Interaction)
+	var totDemand : Real = 0.0;
+	var comps = self.getManifestedComponents();
+	if(comps.isDefined() and comps.notEmpty()) {
+		var ops = comps.collect(c|c.getOperations()).flatten();
+		if(ops.isDefined() and ops.notEmpty()) {
+			for(op in ops) {
+				var msgs = Message.all.select(m|m.hasStereotype("GaAcqStep") and 
+									 m.getValue(m.getStereotype("GaAcqStep"), "servCount").isDefined() and
+									 m.getValue(m.getStereotype("GaAcqStep"), "servCount").notEmpty() and
+									 m.getValue(m.getStereotype("GaAcqStep"), "prob").isDefined() and
+									 m.getValue(m.getStereotype("GaAcqStep"), "rep").isDefined() and
+									 m.signature.isDefined() and m.signature=op
+				);
+				for(m in msgs) {
+					var servCount : Real = m.getValue(m.getStereotype("GaAcqStep"), "servCount").first().asReal();
+					var prob : Real = m.getValue(m.getStereotype("GaAcqStep"), "prob").asReal();
+					var rep : Real = m.getValue(m.getStereotype("GaAcqStep"), "rep").asReal();
+					totDemand = totDemand + (servCount * prob * rep);
+				}
+			}
+		}
+		
+	}
+	return totDemand;//.println("TOTAL DEMAND FOR ARTIFACT " + self.getName() + ": ");
+}
+
+
+
+operation Artifact deployTo(d : Device) {
+	var newDepl : Deployment = new Deployment;
+	newDepl.name = self.name;
+	d.deployments.add(newDepl);
+	newDepl.deployedArtifact.add(self);
+	newDepl.supplier.add(self);
+	newDepl.client.add(d);
+	
+}
+
+	

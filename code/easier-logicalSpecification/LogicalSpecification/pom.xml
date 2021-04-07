@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>it.univaq.disim.sealab</groupId>
+		<artifactId>easier</artifactId>
+		<version>0.6.3</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
+	<artifactId>logicalSpecification</artifactId>
+	<version>0.6</version>
+	
+	<properties>
+		<src.dir>src</src.dir>
+	</properties>
+	
+	<build>
+		<sourceDirectory>${src.dir}</sourceDirectory>
+	</build>
+	<repositories>
+		<repository>
+			<id>Eclipse Repository</id>
+			<name>eclipse repo</name>
+			<url>https://repo.eclipse.org/content/groups/releases/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.eclipse.uml2/org.eclipse.uml2.uml -->
+		<dependency>
+			<groupId>it.univaq.disim.sealab.uml</groupId>
+			<artifactId>org.eclipse.uml2.uml</artifactId>
+			<version>5.5.0.v20181203-1331</version>
+		</dependency>
+
+		<dependency>
+			<groupId>it.univaq.disim.sealab</groupId>
+			<artifactId>aemiliaMetamodel</artifactId>
+			<version>${easier.aemiliaMetamodel.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<!--dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.6</version>
+		</dependency-->
+
+		<!-- https://mvnrepository.com/artifact/org.eclipse.ocl/org.eclipse.ocl -->
+		<!--dependency>
+			<groupId>org.eclipse.ocl</groupId>
+			<artifactId>org.eclipse.ocl</artifactId>
+			<version>3.4.2.v20140725-2242</version>
+		</dependency-->
+	</dependencies>
+</project>

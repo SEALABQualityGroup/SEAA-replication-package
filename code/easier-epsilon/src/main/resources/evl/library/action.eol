@@ -1,0 +1,49 @@
+// Function to get the RateExp instance contained in an Action instance
+operation Action getActionRateExp() : Sequence(RateExp) {
+	return RateExp.allInstances() -> select(x: RateExp | x.eContainer() = self) -> asSequence();
+}
+
+// Function that returns the expression, of the type identExpr, contained in an instance of the metaclass RateExp passed as input and associated to a given action
+operation Sequence(RateExp) getActionIdentExpr() : Sequence(IdentExpr) {
+	var app : RateExp = self.first();
+	return IdentExpr.allInstances() -> 
+		select (z: IdentExpr | z.eContainer() = app) -> asSequence();
+}
+
+// Function to extract the name associated to the identExpr that corresponds to the rate of a given action
+operation Sequence(IdentExpr) getActionRateName() : Sequence(String) {
+	var app : IdentExpr = self.first(); 
+	return IdentExpr.allInstances() -> 
+		select(z: IdentExpr | z.name = app.name) -> 
+			collect(z: IdentExpr | z.name) -> asSequence();
+}
+
+// Function to obtain a constant defined in the ArchiType header
+operation Sequence(String) getConstantExpr() : Sequence(ConstInit) {
+	var app : String = self.first();
+	return ConstInit.allInstances() -> 
+		select(c : ConstInit | c.name = app) -> asSequence();
+}
+
+// Function that, given a ArchiType's constant, returns the IdentExpr that contains it	
+operation Sequence(ConstInit) getConstantIdentExpr() : Sequence(IdentExpr) {
+	var app : ConstInit = self.first();
+	return IdentExpr.allInstances() -> 
+		select(z : IdentExpr | z.eContainer() = app) -> asSequence();
+}
+
+// Function that, given a numeric IdentExpr, returns the numeric value associated
+operation Sequence(IdentExpr) getActionRateValue() : Real {
+	var app : IdentExpr = self.first();
+	if(app.isDefined() and app.type = IdentifierType#NUMERIC_CONST) {
+		return app.name.asReal();
+	}
+	else {
+		return 0.0;
+	}
+}
+
+// Function that returns the exponential rate of one action given as input (the value of the constant rate)
+operation Action getActionRate() : Real {
+	return ((((self.getActionRateExp().getActionIdentExpr()).getActionRateName()).getConstantExpr()).getConstantIdentExpr()).getActionRateValue();
+}

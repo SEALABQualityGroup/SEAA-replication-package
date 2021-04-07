@@ -1,0 +1,43 @@
+//Deploy a Component to a New Node
+
+//libraries
+import "library/artifact.eol";
+import "library/association.eol";
+//import "library/class.eol";
+import "library/classifier.eol";
+import "library/component.eol";
+import "library/element.eol";
+import "library/interaction.eol";
+import "library/interactionFragment.eol";
+import "library/interactionOperand.eol";
+import "library/combinedFragment.eol";
+import "library/interface.eol";
+import "library/lifeline.eol";
+import "library/manifestation.eol";
+import "library/message.eol";
+import "library/node.eol";
+import "library/operation.eol";
+import "library/package.eol";
+//HELPER
+import "library/HELPER.eol";
+
+("cloning --> " + target.getName()).println();
+
+//self.clone(target);
+
+"getDirectlyLinkedNode".println();
+var listOfLinkedNode = target.getDirectlyLinkedNode();		
+
+var packageContainer : Package = target.getNearestPackage();
+
+"cloneAppliedStereotypesFrom".println();
+self.cloneAppliedStereotypesFrom(target); //clono gli stereotipi del nodo sorgente
+
+"cloneDeployedArtifactFrom".println();
+self.reuseDeployedArtifactFrom(target); //clono gli artefatti del nodo sorgente
+
+"cloneLink".println();
+self.cloneLink(listOfLinkedNode, packageContainer);
+
+
+"done".println();

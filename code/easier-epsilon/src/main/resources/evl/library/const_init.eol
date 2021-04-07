@@ -1,0 +1,45 @@
+// Function that allows you to change the value of a constant according to its defined type
+operation ArchitecturalInteraction changeConstant() : Boolean {
+	var list_of_names : List(String) = List{};
+	
+	for(const in ConstInit.allInstances) {
+		list_of_names.add(const.name);
+	}
+		
+	var name = System.user.choose("Select a constant:", list_of_names);
+	var choice : ConstInit = ConstInit.allInstances ->
+		selectOne(c : ConstInit | c.name = name);
+	var new_value = System.user.promptReal("Enter the new value of the constant:");
+	
+	// A WEIGHT constant must have value between 0 and 1
+	if(choice.initConstData.type = SpecialType#WEIGHT and (new_value < 0 or new_value > 1)) {
+		while(new_value < 0 or new_value > 1) {
+			new_value = System.User.promptReal("The precedent value is not correct. Please enter the new value of the constant:");
+		}
+	}
+	choice.initConstExpr.name = new_value.asString();
+	
+	return true;
+}
+
+operation ArchitecturalInteraction changeConstantRandom() : Boolean {
+	var random_rate_prio : Collection = Collection{12.54, 129.98, 2.45, 35.67, 1.12, 1.34, 5.55, 3.87, 45.65, 0.1};
+	var random_weight : Collection = Collection{0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
+	var list_of_names : List(String) = List{};
+	
+	for(const in ConstInit.allInstances) {
+		list_of_names.add(const.name);
+	}
+		
+	var name = System.user.choose("Select a constant:", list_of_names);
+	var choice : ConstInit = ConstInit.allInstances ->
+		selectOne(c : ConstInit | c.name = name);
+	
+	switch(choice.initConstData.type) {
+		case SpecialType#RATE : choice.initConstExpr.name = random_rate_prio.random().asString();
+		case SpecialType#WEIGHT :  choice.initConstExpr.name = random_weight.random().asString();
+		case SpecialType#PRIO : choice.initConstExpr.name = random_rate_prio.random().asString();
+	}
+	
+	return true;
+}

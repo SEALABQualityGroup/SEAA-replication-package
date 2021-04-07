@@ -1,0 +1,22 @@
+/*
+Returns a sequence of Actions that have rate less or equal than the bound passed as input
+additionally the action must not be part of a choice block 
+*/
+operation ElemType checkOp(th_maxResDemand: List(Real)) : Sequence(Action){			   		
+	return Action.allInstances() -> reject(act: Action | act.belongs.isUndefined()) -> select(act: Action | 
+		act.belongs.etName = self.etName and  
+			act.rate.isTypeOf(RateExp) and 
+				act.getActionRate() <= th_maxResDemand -> first() and
+			   		not act.getActionProcess() -> first().checkAncestorChoice()) -> asSequence();		 
+}
+
+/*
+Function that, given a service, check if exists, between the operations performed for the execution of the service, a transaction 
+with a rate higher than a certain bound given as input
+*/
+operation ArchitecturalInteraction checkOpResDemand(bound: List(Real)) : Boolean {
+	var namesSet : Set(String) = Set{};
+	var elemTypes : Set(ElemType) = nextInstances(self.fromInstance -> asSet(), namesSet) -> 
+		collect(x: ArchiElemInstance | x.TypeOf) -> asSet();
+	return elemTypes -> exists(elem: ElemType | elem.checkOp(bound) -> notEmpty());
+}
