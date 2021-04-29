@@ -1,0 +1,21 @@
+operation th_maxOpResDemand() : List(Real){
+	var th_maxOpResDemand : List( Real ) = new List( Real );
+	th_maxOpResDemand.add(${opResDemUB}); //CPU
+	return th_maxOpResDemand;
+}
+
+operation th_minOpResDemand() : List(Real){	
+	var th_minOpResDemand : List( Real ) = new List( Real );
+	th_minOpResDemand.add(${opResDemLB}); //CPU
+	return th_minOpResDemand;
+}
+
+operation th_SrtReq() : Real{	
+	var th_SrtReq : Real = ${respTimeUB}; 
+	return th_SrtReq;
+}
+
+operation th_SthReq() : Real{	
+	var th_SthReq = ${serviceThLB};
+	return th_SthReq;
+}

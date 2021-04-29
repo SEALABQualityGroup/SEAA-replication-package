@@ -1,0 +1,98 @@
+operation CombinedFragment createOperand() : InteractionOperand{
+	var interactionOperand = self.createOperand(self.getName()+"_Operand");
+	return interactionOperand;
+}
+
+operation MessageOccurrenceSpecification getIndexOf() : Integer{
+	if(debug()){
+		("MOS --> "+self.getMessage().getSignature()).println();
+	}
+	return (self.getOwner().getIndexOf() + self.getOwner().getFragments()->indexOf(self));
+}
+
+operation BehaviorExecutionSpecification getIndexOf() : Integer{
+	if(debug()){
+		("BES --> "+self.getStart().getMessage().getSignature()).println();
+	}
+	return (self.getOwner().getIndexOf() + self.getOwner().getFragments()->indexOf(self));
+}
+
+operation ExecutionOccurrenceSpecification getIndexOf() : Integer{
+	if(debug()){
+		("EOS --> "+self.getExecution().getStart().getMessage().getSignature()).println();
+	}
+	return (self.getOwner().getIndexOf() + self.getOwner().getFragments()->indexOf(self));
+}
+
+operation InteractionOperand getIndexOf() : Integer{
+	if(debug()){
+		("Operand ").println();
+	}
+	return (self.getOwner().getIndexOf() + self.getOwner().getOperands()->indexOf(self));
+}
+
+operation CombinedFragment getIndexOf() : Integer{
+	if(debug()){
+		("Combined ").println();
+	}
+	return (self.getOwner().getIndexOf() + self.getOwner().getFragments()->indexOf(self));
+}
+
+operation Interaction getIndexOf() : Integer{
+	if(debug()){
+		("Interaction ").println();
+	}
+	return 0;
+}
+
+
+operation MessageOccurrenceSpecification getProbabilityOf() : Real{
+	if(debug()){
+		("MOS lifeline --> "+self.getCovereds()->first()).println();
+		("MOS message --> "+self.getMessage()).println();
+		("MOS operation --> "+self.getMessage().getSignature()).println();
+	}
+	return (self.getOwner().getProbabilityOf() * 1.0);
+}
+
+operation BehaviorExecutionSpecification getProbabilityOf() : Real{
+	if(debug()){
+		("BES --> "+self.getStart().getMessage().getSignature()).println();
+	}
+	return (self.getOwner().getProbabilityOf() * 1.0);
+}
+
+operation ExecutionOccurrenceSpecification getProbabilityOf() : Real{
+	if(debug()){
+		("EOS --> "+self.getExecution().getStart().getMessage().getSignature()).println();
+	}
+	return (self.getOwner().getProbabilityOf() * 1.0);
+}
+
+operation InteractionOperand getProbabilityOf() : Real{
+	if(debug()){
+		("Operand ").println();
+	}
+	if(self.getTag("GaStep", "prob").isUndefined()){
+		showError("operand ["+ self +"] in --> "+self.getOwner());
+		showError("Method: getProbabilityOf() in interactionFragment.eol");
+		return 1.0;
+	}else{	
+		return (self.getOwner().getProbabilityOf() * self.getTag("GaStep", "prob").asReal());
+	}
+}
+
+operation CombinedFragment getProbabilityOf() : Real{
+	if(debug()){
+		("Combined ").println();
+	}
+	return (self.getOwner().getProbabilityOf() * 1.0);
+}
+
+operation Interaction getProbabilityOf() : Real{
+	if(debug()){
+		("Interaction ").println();
+	}
+	return 1.0;
+}
+

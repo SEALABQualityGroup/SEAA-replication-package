@@ -1,0 +1,244 @@
+import "../evl/metric_functions.eol";
+
+//libraries
+import "../evl/library/element.eol";
+import "../evl/library/package.eol";
+
+import "../evl/library/classifier.eol";
+import "../evl/library/class.eol";
+import "../evl/library/component.eol";
+
+import "../evl/library/operation.eol";
+import "../evl/library/interaction.eol";
+import "../evl/library/interactionFragment.eol";
+import "../evl/library/interactionOperand.eol";
+import "../evl/library/artifact.eol";
+import "../evl/library/manifestation.eol";
+import "../evl/library/node.eol";
+import "../evl/library/lifeline.eol";
+import "../evl/library/interface.eol";
+import "../evl/library/message.eol";
+
+/*********************************************************************************************
+ *																							 *
+ *	 									THRESHOLDS									 		 *
+ *																							 *
+ *********************************************************************************************/
+pre {
+	/******** DESIGN **************/
+	var th_maxMsgs : Integer = 3;
+	var th_maxRemMsgs : Integer = 2;
+	var th_maxRemInst : Integer = 1; 
+	var th_maxConnects : Integer = 4;
+	var th_maxExF : Integer = 2;
+	
+	/******** PERFORMANCE **************/
+	
+	//Resource Demand
+	var th_maxResDemand : List( Real ) = new List( Real );
+	th_maxResDemand.add(15); //computation
+	th_maxResDemand.add(7); //storage
+	th_maxResDemand.add(5); //bandwidth
+	
+	var th_minResDemand : List( Real ) = new List( Real );
+	th_minResDemand.add(5); //computation
+	th_minResDemand.add(10); //storage
+	th_minResDemand.add(3); //bandwidth
+	
+	//Hw Utilization
+	var th_maxHwUtil : Real = 0.85;
+	
+	//Network utilization
+	var th_maxNetUtil : Real = 0.9; 
+	var th_minNetUtil : Real = 0.5;
+	
+	var th_SrtReq : Real = 15; //response time
+	
+	var th_SthReq = 0.9; //throughput
+	var th_maxQL : Integer = 130; //queue lenght
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 								Pipe and Filter 										 *
+ *							Antipattern Detection and Validation					 		 *
+ *																							 *
+ *********************************************************************************************/
+ 
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand) and (not mainRole.F_T(th_SthReq) or not mainRole.F_maxHwUtil(th_maxHwUtil)))
+		onmatch {
+		mainRole.moveToNewOwnerDeployedOnNewNode();
+	}
+}
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand) and (not mainRole.F_T(th_SthReq) or not mainRole.F_maxHwUtil(th_maxHwUtil)))
+		onmatch {
+		mainRole.moveToNewOwnerDeployedOnNearLessUsedNode();
+	}
+}
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand) and (not mainRole.F_T(th_SthReq) or not mainRole.F_maxHwUtil(th_maxHwUtil)))
+		onmatch {
+			mainRole.redeployOnNearLessUsedNode();
+		}
+}
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand) and (not mainRole.F_T(th_SthReq) or not mainRole.F_maxHwUtil(th_maxHwUtil)))
+		onmatch {
+		mainRole.moveToLessCriticalOwner();
+	}
+}
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand) and (not mainRole.F_T(th_SthReq) or not mainRole.F_maxHwUtil(th_maxHwUtil)))
+		onmatch {
+		mainRole.decomposition();
+	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 							Concurrent Processing Systems 								 *
+ *							Antipattern Detection and Validation			     			 *
+ *																							 *
+ *********************************************************************************************/
+
+pattern CPS
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL) and mainRole.F_maxHwUtil(th_maxHwUtil))
+		onmatch {
+		mainRole.moveToNewComponentDeployedOnNewNode();
+	}
+}
+pattern CPS
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL) and mainRole.F_maxHwUtil(th_maxHwUtil))
+		onmatch {
+		mainRole.moveToNewComponentDeployedOnNearLessUsedNode();
+	}
+}
+pattern CPS
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL) and mainRole.F_maxHwUtil(th_maxHwUtil))
+		onmatch {
+		mainRole.redeployOnNearLessUsedNode();
+	}
+}
+pattern CPS
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL) and mainRole.F_maxHwUtil(th_maxHwUtil))
+		onmatch {
+		mainRole.moveToLessCriticalComponent();
+	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 								ExtensiveProcessing										 *
+ *							Antipattern Detection and Validation					 		 *
+ *																							 *
+ *********************************************************************************************/
+ 
+pattern ExtensiveProcessingPA
+	mainRole : Component { 
+		match : 
+			(mainRole.F_resDemand(th_maxResDemand, th_minResDemand) and mainRole.F_probExec() and (mainRole.F_maxHwUtil(th_maxHwUtil)) or mainRole.F_RT(th_SrtReq))
+		onmatch {
+		mainRole.moveToNewComponentDeployedOnNewNode();
+	}
+}
+pattern ExtensiveProcessingPA
+	mainRole : Component { 
+		match : 
+			(mainRole.F_resDemand(th_maxResDemand, th_minResDemand) and mainRole.F_probExec() and (mainRole.F_maxHwUtil(th_maxHwUtil)) or mainRole.F_RT(th_SrtReq))
+		onmatch {
+		mainRole.moveToNewComponentDeployedOnNearLessUsedNode();
+	}
+}
+pattern ExtensiveProcessingPA
+	mainRole : Component { 
+		match : 
+			(mainRole.F_resDemand(th_maxResDemand, th_minResDemand) and mainRole.F_probExec() and (mainRole.F_maxHwUtil(th_maxHwUtil)) or mainRole.F_RT(th_SrtReq))
+		onmatch {
+		mainRole.redeployOnNearLessUsedNode();
+	}
+}
+pattern ExtensiveProcessingPA
+	mainRole : Component { 
+		match : 
+			(mainRole.F_resDemand(th_maxResDemand, th_minResDemand) and mainRole.F_probExec() and (mainRole.F_maxHwUtil(th_maxHwUtil)) or mainRole.F_RT(th_SrtReq))
+		onmatch {
+		mainRole.moveToLessCriticalComponent();
+	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *								Blob Controller & Container									 *
+ *							Antipattern Detection and Validation							 *
+ *																							 *
+ *********************************************************************************************/
+
+pattern Blob_Controller
+	mainRole : Component { 
+		match : 
+			(mainRole.F_numClientConnects(th_maxConnects) and mainRole.F_numMsgsIn(th_maxMsgs) and (mainRole.F_maxHwUtil(th_maxHwUtil) or mainRole.F_maxNetUtil(th_maxNetUtil)))
+		onmatch {
+		mainRole.reduceNumberOfClientConnects(th_maxConnects);
+	}
+}
+ 
+pattern Blob_dataContainer
+	mainRole : Component { 
+		match : 
+			(mainRole.F_numSupplierConnects(th_maxConnects) and mainRole.F_numMsgsOut(th_maxMsgs) and (mainRole.F_maxHwUtil(th_maxHwUtil) or mainRole.F_maxNetUtil(th_maxNetUtil)))
+		onmatch {
+		mainRole.reduceNumberOfSupplierConnects();
+	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 								Empty Semi-Trucks 										 *
+ *							Antipattern Detection and Validation					 		 *
+ *																							 *
+ *********************************************************************************************/
+ 
+pattern EmptySemiTruck
+	mainRole : Component { 
+		match : 
+			mainRole.F_numRemMsgs(th_maxRemMsgs) and (mainRole.F_maxNetUtil(th_minNetUtil) or mainRole.F_numRemInst(th_maxRemInst))
+		onmatch {
+		mainRole.applySessionFacade();
+	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 								Tower of Babel 						 					 *
+ *							Antipattern Detection and Validation					 		 *
+ *																							 *
+ *********************************************************************************************/
+ 
+pattern TowerOfBabel
+	mainRole : Component { 
+		match : 
+			mainRole.F_numExF(th_maxExF) and mainRole.F_maxHwUtil(th_maxHwUtil)
+		onmatch {
+		mainRole.applyStandardFormat();
+	}
+}

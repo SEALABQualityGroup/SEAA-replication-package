@@ -1,0 +1,290 @@
+import "../evl/metric_functions.eol";
+import "../evl/thresholds_BGCS.eol";
+import "../evl/library/artifact.eol";
+import "../evl/library/association.eol";
+import "../evl/library/classifier.eol";
+import "../evl/library/component.eol";
+import "../evl/library/element.eol";
+import "../evl/library/interaction.eol";
+import "../evl/library/interactionFragment.eol";
+import "../evl/library/interactionOperand.eol";
+import "../evl/library/interface.eol";
+import "../evl/library/lifeline.eol";
+import "../evl/library/manifestation.eol";
+import "../evl/library/message.eol";
+import "../evl/library/node.eol";
+import "../evl/library/operation.eol";
+import "../evl/library/package.eol";
+import "../evl/library/HELPER.eol";
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(th_maxResDemand()) and (self.F_T(th_SthReq()) or self.F_maxHwUtil(th_maxHwUtil()->first())))
+	title : "Move it to a New Component deployed to a New Node"
+	do{
+		self.moveToNewOwnerDeployedOnNewNode();
+	}
+}
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(th_maxResDemand()) and (self.F_T(th_SthReq()) or self.F_maxHwUtil(th_maxHwUtil()->first())))
+	title : "Move it to a New Component deployed to the Less Used neighbour Node"
+	do{
+		self.moveToNewOwnerDeployedOnNearLessUsedNode();
+	}
+}
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(th_maxResDemand()) and (self.F_T(th_SthReq()) or self.F_maxHwUtil(th_maxHwUtil()->first())))
+	title : "Redeploy its Component to the Less Used neighbour Node"
+	do{
+		self.redeployOnNearLessUsedNode();
+	}
+}
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(th_maxResDemand()) and (self.F_T(th_SthReq()) or self.F_maxHwUtil(th_maxHwUtil()->first())))
+	title : "Change its Component to the one with the Lowest Demand"
+	do{
+		self.moveToLessCriticalOwner();
+	}
+}
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(th_maxResDemand()) and (self.F_T(th_SthReq()) or self.F_maxHwUtil(th_maxHwUtil()->first())))
+	title : "Deploy its Component to New Node"
+	do{
+		self.moveToNewNode();
+	}
+}
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(th_maxResDemand()) and (self.F_T(th_SthReq()) or self.F_maxHwUtil(th_maxHwUtil()->first())))
+	title : "Decomposition"
+	do{
+		self.decomposition();
+	}
+}
+wizard CPS_CPU{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL()) and self.F_maxCpuUtil(th_maxHwUtil()->second()))
+	title : "Move its critical Operation to a New Component deployed to a New Node"
+	do{
+		self.moveToNewComponentDeployedOnNewNode();
+	}
+}
+wizard CPS_CPU{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL()) and self.F_maxCpuUtil(th_maxHwUtil()->second()))
+	title : "Move its critical Operation to a New Component deployed to the Less Used neighbour Node"
+	do{
+		self.moveToNewComponentDeployedOnNearLessUsedNode();
+	}
+}
+wizard CPS_CPU{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL()) and self.F_maxCpuUtil(th_maxHwUtil()->second()))
+	title : "Redeploy its Critical Component to the Less Used neighbour Node"
+	do{
+		self.redeployOnNearLessUsedNode();
+	}
+}
+wizard CPS_CPU{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL()) and self.F_maxCpuUtil(th_maxHwUtil()->second()))
+	title : "Redeploy its Critical Component to a New Node"
+	do{
+		self.redeployOnNewNode();
+	}
+}
+wizard CPS_CPU{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL()) and self.F_maxCpuUtil(th_maxHwUtil()->second()))
+	title : "Move its critical Opeartion to the one with the Lowest Demand"
+	do{
+		self.moveToLessCriticalComponent();
+	}
+}
+wizard CPS_DISK{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL()) and self.F_maxCpuUtil(th_maxHwUtil()->second()))
+	title : "Move its critical Operation to a New Component deployed to a New Node"
+	do{
+		self.moveToNewComponentDeployedOnNewNode();
+	}
+}
+wizard CPS_DISK{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL()) and self.F_maxCpuUtil(th_maxHwUtil()->second()))
+	title : "Move its critical Operation to a New Component deployed to the Less Used Neighbour Node"
+	do{
+		self.moveToNewComponentDeployedOnNearLessUsedNode();
+	}
+}
+wizard CPS_DISK{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL()) and self.F_maxCpuUtil(th_maxHwUtil()->second()))
+	title : "Redeploy its Critical Component to the Less Used Neighbour Node"
+	do{
+		self.redeployOnNearLessUsedNode();
+	}
+}
+wizard CPS_DISK{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL()) and self.F_maxCpuUtil(th_maxHwUtil()->second()))
+	title : "Redeploy its Critical Component to New Node"
+	do{
+		self.redeployOnNewNode();
+	}
+}
+wizard CPS_DISK{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL()) and self.F_maxCpuUtil(th_maxHwUtil()->second()))
+	title : "Change its owning Component from "+self.name+" to the one with the lowest demand"
+	do{
+		self.moveToLessCriticalComponent();
+	}
+}
+wizard ExtensiveProcessingAP{
+	guard :
+		self.isTypeOf(Operation) and (self.F_resDemand(th_maxOpResDemand()) and self.F_probExec4EP() and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_RT(th_SrtReq())))
+	title : "Move it to a new Component deployed to a new Node"
+	do{
+		self.moveToNewComponentDeployedOnNewNode();
+	}
+}
+wizard ExtensiveProcessingAP{
+	guard :
+		self.isTypeOf(Operation) and (self.F_resDemand(th_maxOpResDemand()) and self.F_probExec4EP() and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_RT(th_SrtReq())))
+	title : "Move it to a new Component deployed to the less used neighbour Node"
+	do{
+		self.moveToNewComponentDeployedOnNearLessUsedNode();
+	}
+}
+wizard ExtensiveProcessingAP{
+	guard :
+		self.isTypeOf(Operation) and (self.F_resDemand(th_maxOpResDemand()) and self.F_probExec4EP() and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_RT(th_SrtReq())))
+	title : "Redeploy its owning Component "+self.name+" to the less used neighbour Node"
+	do{
+		self.redeployOnNearLessUsedNode();
+	}
+}
+wizard ExtensiveProcessingAP{
+	guard :
+		self.isTypeOf(Operation) and (self.F_resDemand(th_maxOpResDemand()) and self.F_probExec4EP() and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_RT(th_SrtReq())))
+	title : "Change its owning Component from "+self.name+" to the one with the lowest demand"
+	do{
+		self.moveToLessCriticalComponent();
+	}
+}
+wizard ExtensiveProcessingAP{
+	guard :
+		self.isTypeOf(Operation) and (self.F_resDemand(th_maxOpResDemand()) and self.F_probExec4EP() and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_RT(th_SrtReq())))
+	title : "Deploy its owning Component to new Node"
+	do{
+		self.moveToNewNode();
+	}
+}
+wizard Blob_Controller{
+	guard :
+		self.isTypeOf(Component) and self.F_numClientConnects(th_maxClientConnects()) and self.F_numMsgsOut(th_numSentMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Move its critical operation to a New Component deployed to a New Node"
+	do{
+		self.moveToNewComponentDeployedOnNewNode();
+	}
+}
+wizard Blob_Controller{
+	guard :
+		self.isTypeOf(Component) and self.F_numClientConnects(th_maxClientConnects()) and self.F_numMsgsOut(th_numSentMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Move its critical operation to a New Component deployed to the Less Used neighbour Node"
+	do{
+		self.moveToNewComponentDeployedOnNearLessUsedNode();
+	}
+}
+wizard Blob_Controller{
+	guard :
+		self.isTypeOf(Component) and self.F_numClientConnects(th_maxClientConnects()) and self.F_numMsgsOut(th_numSentMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Redeploy it to the Less Used Neighbour Node"
+	do{
+		self.redeployOnNearLessUsedNode();
+	}
+}
+wizard Blob_Controller{
+	guard :
+		self.isTypeOf(Component) and self.F_numClientConnects(th_maxClientConnects()) and self.F_numMsgsOut(th_numSentMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Move its critial operation to the Less used Component"
+	do{
+		self.moveToLessCriticalComponent();
+	}
+}
+wizard Blob_Controller{
+	guard :
+		self.isTypeOf(Component) and self.F_numClientConnects(th_maxClientConnects()) and self.F_numMsgsOut(th_numSentMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Deploy it to New Node"
+	do{
+		self.deployOnNewNode();
+	}
+}
+wizard Blob_Controller{
+	guard :
+		self.isTypeOf(Component) and self.F_numClientConnects(th_maxClientConnects()) and self.F_numMsgsOut(th_numSentMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Reduce its Client Connects"
+	do{
+		self.reduceNumberOfClientConnects(th_maxClientConnects());
+	}
+}
+wizard Blob_dataContainer{
+	guard :
+		self.isTypeOf(Component) and self.F_numSupplierConnects(th_maxSupplierConnects()) and self.F_numMsgsIn(th_numReceivedMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Move its Critical Operation to a New Component deployed to a New Node"
+	do{
+		self.moveToNewComponentDeployedOnNewNode();
+	}
+}
+wizard Blob_dataContainer{
+	guard :
+		self.isTypeOf(Component) and self.F_numSupplierConnects(th_maxSupplierConnects()) and self.F_numMsgsIn(th_numReceivedMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Move its Critical Operation to a New Component deployed to the Less used Neighbour Node"
+	do{
+		self.moveToNewComponentDeployedOnNearLessUsedNode();
+	}
+}
+wizard Blob_dataContainer{
+	guard :
+		self.isTypeOf(Component) and self.F_numSupplierConnects(th_maxSupplierConnects()) and self.F_numMsgsIn(th_numReceivedMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Redeploy its Critical Component to the Less used Neighbour Node"
+	do{
+		self.redeployOnNearLessUsedNode();
+	}
+}
+wizard Blob_dataContainer{
+	guard :
+		self.isTypeOf(Component) and self.F_numSupplierConnects(th_maxSupplierConnects()) and self.F_numMsgsIn(th_numReceivedMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Move its Critical Operation  to the Component with the Lowest Demand"
+	do{
+		self.moveToLessCriticalComponent();
+	}
+}
+wizard Blob_dataContainer{
+	guard :
+		self.isTypeOf(Component) and self.F_numSupplierConnects(th_maxSupplierConnects()) and self.F_numMsgsIn(th_numReceivedMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Deploy its Critical Component to a New Node"
+	do{
+		self.deployOnNewNode();
+	}
+}
+wizard Blob_dataContainer{
+	guard :
+		self.isTypeOf(Component) and self.F_numSupplierConnects(th_maxSupplierConnects()) and self.F_numMsgsIn(th_numReceivedMsgs()) and (self.F_maxHwUtil(th_maxHwUtil()->first()) or self.F_maxNetUtil(th_maxNetUtil()))
+	title : "Reduce Supplier Connects of "+self.getName()
+	do{
+		self.reduceNumberOfSupplierConnects(th_maxSupplierConnects());
+	}
+}
+wizard EmptySemiTruck{
+	guard :
+		self.isTypeOf(Component) and self.F_numRemMsgs(th_maxRemMsgs()) and (self.F_maxNetUtil(th_minNetUtil()) or self.F_numRemInst(th_maxRemInst()))
+	title : "Apply Session Facade Pattern"
+	do{
+		self.applySessionFacade();
+	}
+}

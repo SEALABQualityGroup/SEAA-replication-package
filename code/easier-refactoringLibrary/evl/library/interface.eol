@@ -1,0 +1,22 @@
+//clone una interface realization
+operation InterfaceRealization cloneInterfaceRealization() : InterfaceRealization {
+	var newRealization : InterfaceRealization = new InterfaceRealization;
+	newRealization.name = self.name;
+	newRealization.client = self.client;
+	newRealization.supplier = self.supplier;
+	newRealization.contract = self.contract;
+	
+	return newRealization;
+}
+
+
+operation Interface getRealizedBy() : Sequence(Operation){
+	return Operation.allInstances->select( 
+		op | op.getUsages()->exists( usage | usage.getSuppliers()->exists(int | int == self) ) );
+}
+
+operation Interface getUsedBy() : Sequence(Component){
+	return Component.allInstances->select( 
+		comp | comp.getUsedInterfaces()->exists( int | int == self ) 
+	);
+}

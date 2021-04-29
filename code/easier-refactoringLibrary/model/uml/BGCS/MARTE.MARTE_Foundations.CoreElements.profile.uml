@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Profile xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_-wEewECLEd6UTJZnztgOLw" name="CoreElements" visibility="public" URI="" metamodelReference="_-wEewECLEd6UTJZnztgOLw_packageImportcreatedOnLoad">
+  <eAnnotations xmi:id="_Er2csfqbEea9CeleVrgfwg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <contents xmi:type="ecore:EPackage" xmi:id="_Er2csvqbEea9CeleVrgfwg" name="CoreElements" nsURI="http:///schemas/CoreElements/_En5w0PqbEea9CeleVrgfwg/0" nsPrefix="CoreElements">
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_Er2cs_qbEea9CeleVrgfwg" name="ModeBehavior">
+        <eAnnotations xmi:id="_Er2ctPqbEea9CeleVrgfwg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_8DKXIECMEd6UTJZnztgOLw"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_Er2ctfqbEea9CeleVrgfwg" name="base_StateMachine" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//StateMachine"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_Er2ct_qbEea9CeleVrgfwg" name="ModeTransition">
+        <eAnnotations xmi:id="_Er2cuPqbEea9CeleVrgfwg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_2-EsoECMEd6UTJZnztgOLw"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_Er2cufqbEea9CeleVrgfwg" name="base_Transition" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Transition"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_Er2cu_qbEea9CeleVrgfwg" name="Mode">
+        <eAnnotations xmi:id="_Er2cvPqbEea9CeleVrgfwg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_yeqiEECMEd6UTJZnztgOLw"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_Er2cvfqbEea9CeleVrgfwg" name="base_State" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//State"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_Er2cv_qbEea9CeleVrgfwg" name="Configuration">
+        <eAnnotations xmi:id="_Er2cwPqbEea9CeleVrgfwg" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_H0HcsECNEd6UTJZnztgOLw"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_Er2cwfqbEea9CeleVrgfwg" name="base_StructuredClassifier" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//StructuredClassifier"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_Er2cw_qbEea9CeleVrgfwg" name="base_Package" ordered="false" unique="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Package"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_Er2cxfqbEea9CeleVrgfwg" name="mode" ordered="false" unique="false" upperBound="-1" eType="_Er2cu_qbEea9CeleVrgfwg"/>
+      </eClassifiers>
+    </contents>
+  </eAnnotations>
+  <elementImport xmi:id="_Sy23oECMEd6UTJZnztgOLw" alias="State">
+    <importedElement xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#State"/>
+  </elementImport>
+  <elementImport xmi:id="_S6ZDAECMEd6UTJZnztgOLw" alias="Transition">
+    <importedElement xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Transition"/>
+  </elementImport>
+  <elementImport xmi:id="_TGu14ECMEd6UTJZnztgOLw" alias="StateMachine">
+    <importedElement xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#StateMachine"/>
+  </elementImport>
+  <elementImport xmi:id="_TYU8MECMEd6UTJZnztgOLw" alias="StructuredClassifier">
+    <importedElement xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#StructuredClassifier"/>
+  </elementImport>
+  <packageImport xmi:id="_-wEewECLEd6UTJZnztgOLw_packageImportcreatedOnLoad">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_METAMODELS/UML.metamodel.uml#_0"/>
+  </packageImport>
+  <packageImport xmi:id="_0primitiveTypesCoreElements">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packageImport xmi:id="_0javaPrimitiveTypesCoreElements">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_Dw6F8ECNEd6UTJZnztgOLw" name="Extension_ModeBehavior" visibility="public" memberEnd="_EC3_sECNEd6UTJZnztgOLw _ECiogECNEd6UTJZnztgOLw" navigableOwnedEnd="_ECiogECNEd6UTJZnztgOLw">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_ECiogECNEd6UTJZnztgOLw" name="extension_ModeBehavior" visibility="public" type="_8DKXIECMEd6UTJZnztgOLw" aggregation="composite" association="_Dw6F8ECNEd6UTJZnztgOLw"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_R3Jn4ECNEd6UTJZnztgOLw" name="A_Configuration_Mode" visibility="public" memberEnd="_SEp4YECNEd6UTJZnztgOLw _SFOgIECNEd6UTJZnztgOLw">
+    <ownedEnd xmi:id="_SFOgIECNEd6UTJZnztgOLw" name="configuration" visibility="public" type="_H0HcsECNEd6UTJZnztgOLw" isUnique="false" association="_R3Jn4ECNEd6UTJZnztgOLw">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_SF2LMECNEd6UTJZnztgOLw" name="" visibility="public"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_SFzH4ECNEd6UTJZnztgOLw" name="" visibility="public" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_8DKXIECMEd6UTJZnztgOLw" name="ModeBehavior" visibility="public">
+    <ownedAttribute xmi:id="_EC3_sECNEd6UTJZnztgOLw" name="base_StateMachine" visibility="public" isUnique="false" association="_Dw6F8ECNEd6UTJZnztgOLw">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#StateMachine"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_CMdQoECNEd6UTJZnztgOLw" name="Extension_Mode" visibility="public" memberEnd="_CZ6d0ECNEd6UTJZnztgOLw _CaNYwECNEd6UTJZnztgOLw" navigableOwnedEnd="_CZ6d0ECNEd6UTJZnztgOLw">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_CZ6d0ECNEd6UTJZnztgOLw" name="extension_Mode" visibility="public" type="_yeqiEECMEd6UTJZnztgOLw" aggregation="composite" association="_CMdQoECNEd6UTJZnztgOLw"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_2-EsoECMEd6UTJZnztgOLw" name="ModeTransition" visibility="public">
+    <ownedAttribute xmi:id="_DTtMkECNEd6UTJZnztgOLw" name="base_Transition" visibility="public" isUnique="false" association="_DFrXoECNEd6UTJZnztgOLw">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Transition"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_yeqiEECMEd6UTJZnztgOLw" name="Mode" visibility="public">
+    <ownedAttribute xmi:id="_CaNYwECNEd6UTJZnztgOLw" name="base_State" visibility="public" isUnique="false" association="_CMdQoECNEd6UTJZnztgOLw">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#State"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_H0HcsECNEd6UTJZnztgOLw" name="Configuration" visibility="public">
+    <ownedAttribute xmi:id="_NM9wsECNEd6UTJZnztgOLw" name="base_StructuredClassifier" visibility="public" isUnique="false" association="_M-2cMECNEd6UTJZnztgOLw">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#StructuredClassifier"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_PSU6sECNEd6UTJZnztgOLw" name="base_Package" visibility="public" isUnique="false" association="_PEJ70ECNEd6UTJZnztgOLw">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Package"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_SEp4YECNEd6UTJZnztgOLw" name="mode" visibility="public" type="_yeqiEECMEd6UTJZnztgOLw" isUnique="false" association="_R3Jn4ECNEd6UTJZnztgOLw">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_SFJAkECNEd6UTJZnztgOLw" name="" visibility="public"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_SFMD4ECNEd6UTJZnztgOLw" name="" visibility="public" value="*"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_DFrXoECNEd6UTJZnztgOLw" name="Extension_ModeTransition" visibility="public" memberEnd="_DTWAMECNEd6UTJZnztgOLw _DTtMkECNEd6UTJZnztgOLw" navigableOwnedEnd="_DTWAMECNEd6UTJZnztgOLw">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_DTWAMECNEd6UTJZnztgOLw" name="extension_ModeTransition" visibility="public" type="_2-EsoECMEd6UTJZnztgOLw" aggregation="composite" association="_DFrXoECNEd6UTJZnztgOLw"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_PEJ70ECNEd6UTJZnztgOLw" name="Extension_Configuration" visibility="public" memberEnd="_PSAKkECNEd6UTJZnztgOLw _PSU6sECNEd6UTJZnztgOLw" navigableOwnedEnd="_PSAKkECNEd6UTJZnztgOLw">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_PSAKkECNEd6UTJZnztgOLw" name="extension_Configuration" visibility="public" type="_H0HcsECNEd6UTJZnztgOLw" aggregation="composite" association="_PEJ70ECNEd6UTJZnztgOLw"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_M-2cMECNEd6UTJZnztgOLw" name="Extension_Configuration" visibility="public" memberEnd="_NMnycECNEd6UTJZnztgOLw _NM9wsECNEd6UTJZnztgOLw" navigableOwnedEnd="_NMnycECNEd6UTJZnztgOLw">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_NMnycECNEd6UTJZnztgOLw" name="extension_Configuration" visibility="public" type="_H0HcsECNEd6UTJZnztgOLw" aggregation="composite" association="_M-2cMECNEd6UTJZnztgOLw"/>
+  </packagedElement>
+</uml:Profile>

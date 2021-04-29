@@ -1,0 +1,38 @@
+operation Component F_maxClientConnects(th_maxConnects : Integer) : Boolean{
+
+	if(not self.hasStereotype("PaRunTInstance")) return false;
+	
+	if(self.getProvideds().size() >= th_maxConnects)
+		return true;
+	return false;
+}
+
+operation Component F_maxSupplierConnects(th_maxConnects : Integer) : Boolean{
+	
+	if(not self.hasStereotype("PaRunTInstance")) return false;
+	
+	if(self.getRequireds().size() >= th_maxConnects){
+		return true;
+	}
+	return false;
+}
+
+operation Component F_numMsgsIn(th_maxMsgs : Integer) : Boolean{
+	
+	//finds the list of critical messages into every interactions, which own the critical component	
+	if(not self.getCriticalMessages4BlobControllerAP(th_maxMsgs).isEmpty())
+		return true;
+	return false;
+}
+
+operation Component F_numMsgsOut(th_maxMsgs : Integer) : Boolean{
+	if(not self.getCriticalLifeline4BlobContainerAP(th_maxMsgs).isEmpty())
+		return true;
+	return false;
+}
+
+operation Component F_maxNetUtil(th_maxNetUtil : Real) : Boolean{
+	if(not self.getNodesWithNetworkUsageGreaterThan(th_maxNetUtil).isEmpty())
+		return true;
+	return false;
+}

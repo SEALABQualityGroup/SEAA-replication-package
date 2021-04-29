@@ -1,0 +1,11 @@
+operation ArchitecturalInteraction F_T(th_SthReq : Real) : Boolean {
+	if(self.throughput < th_SthReq)
+		return true;
+	return false;
+}
+
+operation ArchitecturalInteraction F_RT(th_SrtReq : Real) : Boolean {
+	if(self.responseTime > th_SrtReq)
+		return true;
+	return false;
+}

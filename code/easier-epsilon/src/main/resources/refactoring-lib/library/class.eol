@@ -1,0 +1,151 @@
+operation Class moveInterfacesRealizationFrom(class : Class, op : Operation) {
+	var listOfUsedProvidedInterfaces : List(Interface) = class.getInterfaceRealizations().asSequence();
+	for(intRealization in listOfUsedProvidedInterfaces){
+		self.createInterfaceRealization(intRealization.name, intRealization.getContract());
+	}
+}
+
+//recupero la lista delle interfacce richieste
+operation Class getAllUsedIntefacesRequiredsBy( op : Operation ) : List(Interface){
+	var returnValue : List(Interface) = new List(Interface);
+	var listOfUsage = self.getUsageRelations();
+	var listOfRequireds = self.getRequireds();
+	for (reqInterface in listOfRequireds){
+		for(usage in self.getNearestPackage().getUsageRelations()){
+			//TODO
+		}
+	}
+	return returnValue;
+}
+
+/*operation Class getRequireds(){
+	
+	return null;
+}*/
+
+operation Class applySessionFacade() : Boolean{
+	
+	var mapIntMes = self.getRemoteMesIntoInteractions(); //mapp di interaction e mes
+	var mapRemCompFacade : Map(Class, List(Class)) = new Map(Class, List(Class));
+	"**********APPLY SessionFacade****************".println();
+	for(int in mapIntMes.keySet()){
+		for(mes in mapIntMes.get(int)){
+			if(mes.hasStereotype("GaCommStep")){
+				var op = mes.getSignature(); //operazione remota
+				var class = op.getClass_(); //Classe remoto
+				if( mapRemCompFacade.keySet().isEmpty() or not mapRemCompFacade.containsKey(class) ){ //verifico se il Classe e' stato considerato
+					
+					var listOfClass : Sequence(Class) = new Sequence(Class);
+					
+					// pto 1 create L_F e R_F
+					var localFacade : Class = self.createNewClass(); //creo il localfacade
+					localFacade.setName("LocalFacadeWith_"+class.getName()); 
+					var remoteFacade : Class = class.createNewClass();
+					remoteFacade.setName("RemoteFacadeWith_"+self.getName());
+					
+					//pto 2 create the public operation within L_F and R_F
+					var parameterNames : List(String) = new List(String);
+					var parameterTypes : List(Type) = new List(Type);
+					var opF_LF = localFacade.createOwnedOperation("opFacade", parameterNames, parameterTypes);
+					var opF_RF = remoteFacade.createOwnedOperation("opFacade", parameterNames, parameterTypes);
+					
+					//pto3 clone ops belong class
+					var op_Class = class.getOwnedOperations();
+					for(op in op_Class){
+						localFacade.createOwnedOperation(op.getName(), op.getOwnedParameters(), op.getOwnedTypes());
+					}
+					
+					//pto4 connect L_F con R_F
+					
+					//pto 5 clone the association between self and class
+										
+					var opRemoteFacadeInterface : Interface = new Interface();
+					remoteFacade.getNearestPackage().addElement(opRemoteFacadeInterface);
+					
+					remoteFacade.getProvideds().add(opRemoteFacadeInterface);
+					opRemoteFacadeInterface.setName("opFacade_Interface");
+					
+					localFacade.getRequireds().add(opRemoteFacadeInterface);
+					localFacade.getProvideds().add(opRemoteFacadeInterface);
+					
+					listOfClass.add(localFacade);
+					listOfClass.add(remoteFacade);
+					
+					//------------------DEPLOY-------------------------
+					for(node in self.getNodes()){
+						localFacade.deployOn(node);
+					}
+					for(node in class.getNodes()){
+						remoteFacade.deployOn(node);
+					}
+					var localFacadeLf = int.createLifelineOf(localFacade);
+					var remoteFacadeLf = int.createLifelineOf(remoteFacade);
+					
+					listOfClass.add(localFacadeLf);
+					listOfClass.add(remoteFacadeLf);
+					
+					mapRemCompFacade.put(class, listOfClass);
+				}
+				var localFacade = mapRemCompFacade.get(class).first();
+				var remoteFacade = mapRemCompFacade.get(class).second();
+				
+				//TODO
+				//Qui non bisogna cambiare il meccanismo
+				var listOfUsedInterface = op.getUsedInterfaces(); //interfacce usate da op
+				for(interface in listOfUsedInterface){
+					("interfaccia: "+interface).println();
+					//var newInterface : Interface = interface.cloneInterfaceRealization();
+					
+					localFacade.allRealizedInterfaces().add(interface);
+					remoteFacade.getAllUsedInterfaces().add(interface);
+				}
+					
+				//----------------DYNAMIC---------------------------------
+				var localFacadeLf = mapRemCompFacade.get(class).third();
+				var remoteFacadeLf = mapRemCompFacade.get(class).fourth();
+				
+				var besLf : BehaviorExecutionSpecification = new BehaviorExecutionSpecification;
+				int.getFragments().add(besLf);
+				besLf.setName("BesLifeline");
+				
+				var messageEnd : ExecutionOccurrenceSpecification = new ExecutionOccurrenceSpecification;
+				int.getFragments().add(messageEnd);
+				messageEnd.setName(mes.getName()+"_End");
+				
+				var mesSelf2Lf = int.createMessage(mes.getName());
+				
+				var sendMOS : MessageOccurrenceSpecification = new MessageOccurrenceSpecification;
+				var receiveMOS : MessageOccurrenceSpecification = new MessageOccurrenceSpecification;
+				int.getFragments().add(sendMOS);
+				int.getFragments().add(receiveMOS);
+				
+				mesSelf2Lf.setSendEvent(sendMOS);
+				mesSelf2Lf.setReceiveEvent(receiveMOS);
+				
+				besLf.start = mesSelf2Lf.getSendEvent();
+				besLf.finish = messageEnd;
+				
+				localFacadeLf.getCoveredBys().add(besLf);
+				localFacadeLf.getCoveredBys().add(mesSelf2Lf.getReceiveEvent());
+				
+				int.getComponentLifeline(self).getCoveredBys().add(mesSelf2Lf.getSendEvent());
+
+				remoteFacadeLf.getCoveredBys().add(mes.getSendEvent());
+				int.getComponentLifeline(self).removeInteractionFragment(mes.getSendEvent());
+			}
+		}
+	}	
+	
+	"**********APPLY SessionFacade****************".println();
+	return false;
+}
+
+operation Class createNewClass() : Class{
+	
+	var selfPackage = self.getNearestPackage(); //recupero il package contenitore dell'operazione critica
+	
+	var class : Class = new Class(); //creo il componente splittato
+	selfPackage.addElement(class); //aggiungo il componente splittato al package del componente sorgente
+	
+	return class;
+}

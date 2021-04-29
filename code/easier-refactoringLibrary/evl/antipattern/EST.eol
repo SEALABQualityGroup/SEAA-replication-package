@@ -1,0 +1,18 @@
+operation Component F_numRemMsgs(th_maxRemMsgs : Integer) : Boolean{
+	
+	if(self.countRemoteMessages(th_maxRemMsgs))
+		return true;	
+	return false;
+}
+
+
+operation Component F_maxNetUtil(th_minNetUtil : Real) : Boolean{
+	return false;
+}
+
+
+operation Component F_numRemInst(th_maxRemInst : Integer) : Boolean{
+	if(self.countRemoteInstances(th_maxRemInst))
+		return true;
+	return false;
+}

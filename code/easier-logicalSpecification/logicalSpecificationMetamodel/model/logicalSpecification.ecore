@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="logicalSpecification" nsURI="http://it.univaq.disim.seagroup/logicalSpecification"
+    nsPrefix="logicalSpecification">
+  <eClassifiers xsi:type="ecore:EClass" name="NamedElement" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Refactoring" eSuperTypes="#//NamedElement">
+    <eOperations name="cloneRefactoring" eType="#//Refactoring"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actions" upperBound="-1"
+        eType="#//Action" containment="true" eOpposite="#//Action/refactoring"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pre" eType="#//PreCondition"
+        containment="true" eOpposite="#//PreCondition/refactoring"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="post" eType="#//PostCondition"
+        containment="true" eOpposite="#//PostCondition/refactoring"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lola4rapsRoot" eType="#//LoLa4RAPSRoot"
+        eOpposite="#//LoLa4RAPSRoot/refactorings"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="cost" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"
+        defaultValueLiteral="0.0" derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="numOfChanges" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble" defaultValueLiteral="0.0"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Action" eSuperTypes="#//NamedElement">
+    <eOperations name="execute" lowerBound="1"/>
+    <eOperations name="log" lowerBound="1"/>
+    <eOperations name="setParameters" lowerBound="1"/>
+    <eOperations name="createPreCondition" lowerBound="1"/>
+    <eOperations name="createPostCondition" lowerBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="numOfChanges" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble" defaultValueLiteral="0.0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="cost" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"
+        defaultValueLiteral="0.0"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refactoring" eType="#//Refactoring"
+        eOpposite="#//Refactoring/actions"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+        eType="#//Parameter" containment="true" eOpposite="#//Parameter/action"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pre" eType="#//PreCondition"
+        containment="true" eOpposite="#//PreCondition/action"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="post" eType="#//PostCondition"
+        containment="true" eOpposite="#//PostCondition/action"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="model" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SingleValuedParameter" eSuperTypes="#//Parameter">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="existsOperator" upperBound="-1"
+        eType="#//ExistsOperator" eOpposite="#//ExistsOperator/element"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MultipleValuedParameter" eSuperTypes="#//Parameter">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="forAllOperator" upperBound="-1"
+        eType="#//ForAllOperator" eOpposite="#//ForAllOperator/collection"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="existsOperator" upperBound="-1"
+        eType="#//ExistsOperator" eOpposite="#//ExistsOperator/collection"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Parameter" abstract="true" eSuperTypes="#//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="#//TypesEnum"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" eType="#//Action"
+        eOpposite="#//Action/parameters"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="resolvingExpr" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lhsRelationalOperator"
+        upperBound="-1" eType="#//RelationalOperator" eOpposite="#//RelationalOperator/lhs"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rhsRelationalOperator"
+        upperBound="-1" eType="#//RelationalOperator" eOpposite="#//RelationalOperator/rhs"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="antipattern" eType="#//Antipattern"
+        eOpposite="#//Antipattern/parameters"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="TypesEnum">
+    <eLiterals name="UML_OPERATION"/>
+    <eLiterals name="UML_COMPONENT" value="1"/>
+    <eLiterals name="UML_NODE" value="2"/>
+    <eLiterals name="REAL" value="3"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Condition" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditionFormula" lowerBound="1"
+        eType="#//FOLSpecification" containment="true" eOpposite="#//FOLSpecification/condition"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PreCondition" eSuperTypes="#//Condition">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" eType="#//Action"
+        eOpposite="#//Action/pre"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refactoring" eType="#//Refactoring"
+        eOpposite="#//Refactoring/pre"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PostCondition" eSuperTypes="#//Condition">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" eType="#//Action"
+        eOpposite="#//Action/post"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refactoring" eType="#//Refactoring"
+        eOpposite="#//Refactoring/post"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FOLSpecification" eSuperTypes="#//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" eType="#//Condition"
+        eOpposite="#//Condition/conditionFormula"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rootOperator" lowerBound="1"
+        eType="#//Operator" containment="true" eOpposite="#//Operator/folspecification"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="antipattern" eType="#//Antipattern"
+        eOpposite="#//Antipattern/formula"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LogicalOperator" abstract="true" eSuperTypes="#//Operator">
+    <eOperations name="guarantees" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="operator" eType="#//Operator"/>
+    </eOperations>
+    <eOperations name="evaluateOperator" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="operator" eType="#//Operator"/>
+    </eOperations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="VoidOperator" eSuperTypes="#//LogicalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ForAllOperator" eSuperTypes="#//LogicalOperator">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="collection" lowerBound="1"
+        eType="#//MultipleValuedParameter" eOpposite="#//MultipleValuedParameter/forAllOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="argument" lowerBound="1"
+        eType="#//Operator" containment="true" eOpposite="#//Operator/forAlloperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ExistsOperator" eSuperTypes="#//LogicalOperator">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="element" eType="#//SingleValuedParameter"
+        eOpposite="#//SingleValuedParameter/existsOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="collection" lowerBound="1"
+        eType="#//MultipleValuedParameter" eOpposite="#//MultipleValuedParameter/existsOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="argument" eType="#//Operator"
+        containment="true" eOpposite="#//Operator/existsOperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OrOperator" eSuperTypes="#//LogicalOperator">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="arguments" lowerBound="2"
+        upperBound="-1" eType="#//Operator" containment="true" eOpposite="#//Operator/orOperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NotOperator" eSuperTypes="#//LogicalOperator">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="argument" lowerBound="1"
+        eType="#//Operator" containment="true" eOpposite="#//Operator/notOperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AndOperator" eSuperTypes="#//LogicalOperator">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="arguments" lowerBound="2"
+        upperBound="-1" eType="#//Operator" containment="true" eOpposite="#//Operator/andOperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RelationalOperator" abstract="true"
+      eSuperTypes="#//Operator">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="factor" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble" defaultValueLiteral="1.0"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lhs" lowerBound="1" eType="#//Parameter"
+        eOpposite="#//Parameter/lhsRelationalOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rhs" lowerBound="1" eType="#//Parameter"
+        eOpposite="#//Parameter/rhsRelationalOperator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EqualOperator" eSuperTypes="#//RelationalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GreaterOperator" eSuperTypes="#//RelationalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GreaterEqualOperator" eSuperTypes="#//RelationalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LessEqualOperator" eSuperTypes="#//RelationalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LessOperator" eSuperTypes="#//RelationalOperator"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Operator" abstract="true">
+    <eOperations name="evaluateOperator" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="contextualElement" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+    </eOperations>
+    <eOperations name="guarantees" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="op" lowerBound="1" eType="#//Operator"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="folspecification" eType="#//FOLSpecification"
+        eOpposite="#//FOLSpecification/rootOperator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="forAlloperator" eType="#//ForAllOperator"
+        eOpposite="#//ForAllOperator/argument"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="notOperator" eType="#//NotOperator"
+        eOpposite="#//NotOperator/argument"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="andOperator" eType="#//AndOperator"
+        eOpposite="#//AndOperator/arguments"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="orOperator" eType="#//OrOperator"
+        eOpposite="#//OrOperator/arguments"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="existsOperator" eType="#//ExistsOperator"
+        eOpposite="#//ExistsOperator/argument"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Antipattern" eSuperTypes="#//NamedElement">
+    <eOperations name="setParametersForPartialDetection" lowerBound="1"/>
+    <eOperations name="partialDetection" lowerBound="1"/>
+    <eOperations name="setParametersForFullDetection" lowerBound="1"/>
+    <eOperations name="fullDetection" lowerBound="1"/>
+    <eOperations name="log" lowerBound="1"/>
+    <eOperations name="createFormula" lowerBound="1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="lola4rapsRoot" eType="#//LoLa4RAPSRoot"
+        eOpposite="#//LoLa4RAPSRoot/antipatterns"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+        eType="#//Parameter" containment="true" eOpposite="#//Parameter/antipattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="formula" lowerBound="1"
+        eType="#//FOLSpecification" containment="true" eOpposite="#//FOLSpecification/antipattern"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LoLa4RAPSRoot" eSuperTypes="#//NamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refactorings" upperBound="-1"
+        eType="#//Refactoring" containment="true" eOpposite="#//Refactoring/lola4rapsRoot"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="antipatterns" upperBound="-1"
+        eType="#//Antipattern" containment="true" eOpposite="#//Antipattern/lola4rapsRoot"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AddAction" eSuperTypes="#//Action"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DeleteAction" eSuperTypes="#//Action"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MoveAction" eSuperTypes="#//Action"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ChangeAction" eSuperTypes="#//Action"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="model" instanceTypeName="EObject"/>
+  <eSubpackages name="actions" nsURI="http://it.univaq.disim.seagroup/logicalSpecification/actions"
+      nsPrefix="logicalSpecificationActions">
+    <eSubpackages name="UML" nsURI="http://it.univaq.disim.seagroup/logicalSpecification/actions/uml"
+        nsPrefix="logicalSpecificationUMLActions">
+      <eClassifiers xsi:type="ecore:EClass" name="UMLAddAction" abstract="true" eSuperTypes="#//AddAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLDeleteAction" abstract="true"
+          eSuperTypes="#//DeleteAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLMoveAction" abstract="true" eSuperTypes="#//MoveAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLAddNodeAction" eSuperTypes="#//actions/UML/UMLAddAction">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="nodeToAddSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="neighborsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="compsToDeployMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allDeployedElemsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlNodeToAdd" lowerBound="1"
+            eType="#//actions/UML/Node"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlNeighbors" upperBound="-1"
+            eType="#//actions/UML/Node"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlCompsToDeploy" upperBound="-1"
+            eType="#//actions/UML/Component"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlSourcePackage" lowerBound="1"
+            eType="#//actions/UML/Package"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLAddComponentAction" eSuperTypes="#//actions/UML/UMLAddAction">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="componentToAddSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="targetNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="deployedCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlCompToAdd" lowerBound="1"
+            eType="#//actions/UML/Component"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlSourcePackage" lowerBound="1"
+            eType="#//actions/UML/Package"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlTargetNodes" lowerBound="1"
+            upperBound="-1" eType="#//actions/UML/Node"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLAddOperationAction" eSuperTypes="#//actions/UML/UMLAddAction">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="opToAddSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="targetCompSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="targetCompOpsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlOpToAdd" lowerBound="1"
+            eType="#//actions/UML/Operation"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlTargetComp" lowerBound="1"
+            eType="#//actions/UML/Component"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLDeleteNodeAction" eSuperTypes="#//actions/UML/UMLDeleteAction">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="nodeToDelSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlNodeToDel" lowerBound="1"
+            eType="#//actions/UML/Node"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLDeleteComponentAction" eSuperTypes="#//actions/UML/UMLDeleteAction">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="compToDelSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlCompToDel" lowerBound="1"
+            eType="#//actions/UML/Component"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLDeleteOperationAction" eSuperTypes="#//actions/UML/UMLDeleteAction">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="opToDelSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allOpsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlOpToDel" lowerBound="1"
+            eType="#//actions/UML/Operation"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLMoveComponentAction" eSuperTypes="#//actions/UML/UMLMoveAction">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="compToMoveSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="targetNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allArtifactsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allTargetsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allNodesMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allDeployedElemsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlCompToMove" lowerBound="1"
+            eType="#//actions/UML/Component"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlTargetNodes" lowerBound="1"
+            upperBound="-1" eType="#//actions/UML/Node"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlArtifacts" upperBound="-1"
+            eType="#//actions/UML/Artifact"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="UMLMoveOperationAction" eSuperTypes="#//actions/UML/UMLMoveAction">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="opToMoveSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="targetCompSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allOpsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allCompsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allTargetCompOpsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlOpToMove" lowerBound="1"
+            eType="#//actions/UML/Operation"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="umlTargetComp" lowerBound="1"
+            eType="#//actions/UML/Component"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EDataType" name="Component" instanceClassName="org.eclipse.uml2.uml.Component"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="Node" instanceClassName="org.eclipse.uml2.uml.Node"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="Package" instanceClassName="org.eclipse.uml2.uml.Package"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="Operation" instanceClassName="org.eclipse.uml2.uml.Operation"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="Artifact" instanceClassName="org.eclipse.uml2.uml.Artifact"/>
+    </eSubpackages>
+    <eSubpackages name="AEmilia" nsURI="http://it.univaq.disim.seagroup/logicalSpecification/actions/aemilia"
+        nsPrefix="logicalSpecificationAEmiliaActions">
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaAddAction" abstract="true"
+          eSuperTypes="#//AddAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaDeleteAction" abstract="true"
+          eSuperTypes="#//DeleteAction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaMoveAction" abstract="true"
+          eSuperTypes="#//MoveAction"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="ElemType" instanceClassName="metamodel.mmaemilia.ElemType"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="InputInteraction" instanceClassName="metamodel.mmaemilia.InputInteraction"/>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaCloneAEIAction" eSuperTypes="#//actions/AEmilia/AEmiliaAddAction">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourceAEI" lowerBound="1"
+            eType="#//actions/AEmilia/ArchiElemInstance"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="clonedAEI" lowerBound="1"
+            eType="#//actions/AEmilia/ArchiElemInstance"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="listOfInputInteractions"
+            upperBound="-1" eType="#//actions/AEmilia/InputInteraction"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="listOfOutputInteractions"
+            upperBound="-1" eType="#//actions/AEmilia/OutputInteraction"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="listOfNewAttachments"
+            upperBound="-1" eType="#//actions/AEmilia/Attachment"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="aeiToCloneSVP" lowerBound="1"
+            eType="#//SingleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="clonedAeiSVP" lowerBound="1"
+            eType="#//SingleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allOrInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allInLocalInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allOutLocalInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allUniInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allLocalInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allAeisMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allInRemoteInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allOutRemoteInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EDataType" name="ArchiElemInstance" instanceClassName="metamodel.mmaemilia.ArchiElemInstance"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="OutputInteraction" instanceClassName="metamodel.mmaemilia.OutputInteraction"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="Attachment" instanceClassName="metamodel.mmaemilia.Attachment"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="AEmiliaSpecification" instanceClassName="metamodel.mmaemilia.AEmiliaSpecification"/>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaConstChangesAction" eSuperTypes="#//actions/AEmilia/AEmiliaChangeAction">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourceConstInit" eType="#//actions/AEmilia/ConstInit"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="factorOfChange" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="sourceConstInitSVP"
+            lowerBound="1" eType="#//SingleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allConstInitsMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter" containment="true"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaChangeAction" eSuperTypes="#//ChangeAction"/>
+      <eClassifiers xsi:type="ecore:EDataType" name="ConstInit" instanceClassName="metamodel.mmaemilia.Headers.ConstInit"/>
+      <eClassifiers xsi:type="ecore:EClass" name="AEmiliaRemoveClonedAEIAction" eSuperTypes="#//actions/AEmilia/AEmiliaDeleteAction">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourceAEI" lowerBound="1"
+            eType="#//actions/AEmilia/ArchiElemInstance"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="clonedAEI" lowerBound="1"
+            eType="#//actions/AEmilia/ArchiElemInstance"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="listOfInputInteractions"
+            upperBound="-1" eType="#//actions/AEmilia/InputInteraction"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="listOfOutputInteractions"
+            upperBound="-1" eType="#//actions/AEmilia/OutputInteraction"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="listOfNewAttachments"
+            upperBound="-1" eType="#//actions/AEmilia/Attachment"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="aeiToCloneSVP" lowerBound="1"
+            eType="#//SingleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="clonedAeiSVP" lowerBound="1"
+            eType="#//SingleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allOrInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allInLocalInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allOutLocalInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allUniInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allLocalInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allAeisMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allInRemoteInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="allOutRemoteInteractsMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter" containment="true"/>
+      </eClassifiers>
+    </eSubpackages>
+  </eSubpackages>
+  <eSubpackages name="antipatterns" nsURI="http://it.univaq.disim.seagroup/logicalSpecification/antipatterns"
+      nsPrefix="logicalSpecificationAntipatterns">
+    <eSubpackages name="performance" nsURI="http://it.univaq.disim.seagroup/logicalSpecification/antipatterns/performance"
+        nsPrefix="logicalSpecificationPerformanceAntipatterns">
+      <eClassifiers xsi:type="ecore:EClass" name="PerformanceAntipattern" abstract="true"
+          eSuperTypes="#//Antipattern"/>
+      <eClassifiers xsi:type="ecore:EClass" name="BlobPA" eSuperTypes="#//antipatterns/performance/PerformanceAntipattern">
+        <eOperations name="setParametersForPartialDetection" lowerBound="1">
+          <eParameters name="T_maxClientConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSupplierConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSentMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxReceivedMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="setParametersForFullDetection" lowerBound="1">
+          <eParameters name="T_maxClientConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSupplierConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSentMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxReceivedMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minNetUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="createFormula" lowerBound="1"/>
+        <eOperations name="partialDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eParameters name="T_maxClientConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSupplierConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSentMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxReceivedMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="fullDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eParameters name="T_maxClientConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSupplierConnects" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxSentMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxReceivedMsgs" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minNetUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="log" lowerBound="1"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_numClientConnectsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_numSupplierConnectsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_numSentMsgsSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_numReceivedMsgsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_hwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_netUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxClientConnectsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxSupplierConnectsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxSentMsgsSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxReceivedMsgsSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxHwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_minNetUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="contextualElement"
+            lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="CpsPA" eSuperTypes="#//antipatterns/performance/PerformanceAntipattern">
+        <eOperations name="setParametersForPartialDetection" lowerBound="1">
+          <eParameters name="T_maxOpDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="setParametersForFullDetection" lowerBound="1">
+          <eParameters name="T_maxQueueLength" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxOverUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxOpDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="createFormula" lowerBound="1"/>
+        <eOperations name="partialDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eParameters name="T_maxOpDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="fullDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eParameters name="T_maxQueueLength" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxOverUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxOpDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="log" lowerBound="1"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_queueLengthSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_overUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_underUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_opDemandMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxQueueLengthSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxOverUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_minUnderUtilSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxOpDemandMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="contextualElement"
+            lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="PafPA" eSuperTypes="#//antipatterns/performance/PerformanceAntipattern">
+        <eOperations name="setParametersForPartialDetection" lowerBound="1">
+          <eParameters name="T_maxResDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_opProbExec" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="setParametersForFullDetection" lowerBound="1">
+          <eParameters name="T_maxResDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_opProbExec" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minServiceThroughput" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="createFormula" lowerBound="1"/>
+        <eOperations name="partialDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eParameters name="T_maxResDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_opProbExec" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="fullDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eParameters name="T_maxResDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_opProbExec" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minServiceThroughput" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="log" lowerBound="1"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_resDemandMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_opProbExecSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_hwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_serviceThroughputSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxResDemandMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_opProbExecSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxHwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_minServiceThroughputSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="contextualElement"
+            lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="EpPA" eSuperTypes="#//antipatterns/performance/PerformanceAntipattern">
+        <eOperations name="setParametersForPartialDetection" lowerBound="1">
+          <eParameters name="T_maxOverDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_demandsProb" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="setParametersForFullDetection" lowerBound="1">
+          <eParameters name="T_maxOverDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_demandsProb" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxServiceResponseTime" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="createFormula" lowerBound="1"/>
+        <eOperations name="partialDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eParameters name="T_maxOverDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_demandsProb" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="fullDetection" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt">
+          <eParameters name="T_maxOverDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_minUnderDemand" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_demandsProb" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxHwUtil" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+          <eParameters name="T_maxServiceResponseTime" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+        </eOperations>
+        <eOperations name="log" lowerBound="1"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_overDemandMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_underDemandMVP" lowerBound="1"
+            eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_overDemandProbSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_demandSumProbSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_underDemandProbSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_hwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="F_serviceResponseTimeSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxOverDemandMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_minUnderDemandMVP"
+            lowerBound="1" eType="#//MultipleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_demandsProbSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxHwUtilSVP" lowerBound="1"
+            eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="T_maxServiceResponseTimeSVP"
+            lowerBound="1" eType="#//SingleValuedParameter"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="contextualElement"
+            lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+      </eClassifiers>
+    </eSubpackages>
+  </eSubpackages>
+</ecore:EPackage>

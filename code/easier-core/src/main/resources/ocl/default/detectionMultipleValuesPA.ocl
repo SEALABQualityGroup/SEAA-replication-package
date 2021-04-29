@@ -1,0 +1,146 @@
+import mmaemilia : 'http://mmaemilia.ecore'
+
+package mmaemilia
+
+context mmaemilia::Behavior::Action
+--function that computes, given n elements, the array of the absolute values of differences among the factors taken two per times
+def: calcArrayDifferenze(set: Sequence(Real)) : Sequence(Real) =
+let result : Sequence(Real) = Sequence{} in
+if(set -> size() <> 0)then
+	if(set -> size() > 1) then
+		let secondElem : Real = set -> at(set -> indexOf(set -> first()) + 1) in
+		let firstElem : Real = set -> first() in
+		let diff : Real = secondElem - firstElem in		
+		let absValue : Real = diff.abs() in 
+		result -> including(absValue) -> union(calcArrayDifferenze(set -> excluding(firstElem))) -> asSequence()
+	else
+		result -> asSequence()
+	endif
+else
+	result -> asSequence()
+endif	
+
+--function that calculates the average value of a performance index for which you have n values for n slots temporal
+def: calcAveragePerformanceIndex(set: Sequence(Real)) : Real =
+if(set -> size() <> 0)then 
+	set -> sum() / set -> size()
+else
+	0
+endif 
+
+--function that searches an instance of the traffic jam on an array with a single peak
+def: tj(arrayDiff: Sequence(Real), responseTimeUpperBound: Real) : Boolean =
+let max: Sequence(Real) = arrayDiff -> select(value: Real | value > responseTimeUpperBound) -> asSequence() in
+let indexMax: Integer = arrayDiff -> indexOf(max -> first()) in
+let firstSet : Sequence(Real) =  arrayDiff -> select(value: Real | arrayDiff -> indexOf(value) < indexMax) in
+let secondSet : Sequence(Real) =  arrayDiff -> select(value: Real | arrayDiff -> indexOf(value) > indexMax) in
+calcAveragePerformanceIndex(firstSet) < responseTimeUpperBound and calcAveragePerformanceIndex(secondSet) < responseTimeUpperBound
+
+def: constructObservedSequence(array: Sequence(Real), indexes: Sequence(Integer)) : Sequence(Sequence(Real)) =
+let result: Sequence(Sequence(Real)) = Sequence{} in
+if(indexes ->size() <> 0)then
+	let firstPeakIndex: Integer = indexes -> first() in
+	let seq: Sequence(Real) = array -> select(value: Real | array -> indexOf(value) < firstPeakIndex) -> asSequence() in
+	let newArray: Sequence(Real) = array -> select(value: Real | array -> indexOf(value) >= firstPeakIndex) -> asSequence() in
+	result -> including(seq) -> union(constructObservedSequence(newArray, indexes -> excluding(firstPeakIndex))) -> asSequence()
+else
+	result -> including(array) -> asSequence()
+endif
+
+
+--function that checks the presence of an instance of Traffic Jam antipattern, given one or more peak values
+def: trafficJamSearch(arrayDiff: Sequence(Real), responseTimeUpperBound: Real) : Boolean =
+if(arrayDiff -> one(value: Real | value > responseTimeUpperBound))then --esiste un solo picco
+	tj(arrayDiff, responseTimeUpperBound)
+else --esistono piu' valori di picco, cerco traffic jam in una sequenza di finestre
+	let peaks: Sequence(Real) = arrayDiff -> select(value: Real | value > responseTimeUpperBound) -> asSequence() in --array dei valori di picco
+	let peaksSucc: Sequence(Real) = peaks -> excluding(peaks -> first()) in --array dei valori di picco escluso il primo
+	let arrayPeaksIndexes: Sequence(Integer) = peaksSucc -> collect(x: Real | arrayDiff -> indexOf(x)) in --indice che i valori di picco hanno nell'array delle differenze parziali
+	let observedSequence: Sequence(Sequence(Real)) = constructObservedSequence(arrayDiff, arrayPeaksIndexes) in
+	observedSequence -> exists(window: Sequence(Real) | tj(window, responseTimeUpperBound))
+endif		
+
+--function that checks whether the performance values for a given action
+--generate an instance of Traffic Jam antipattern
+def: trafficJamAntipattern(action: Behavior::Action) : Boolean =
+let responseTimeUpperBound : Real = 2 in --<threshold numerical value> in
+let responseTimeDistr : Sequence(Real) = action.actRespTimeDistr -> 
+										collect(x:String | x.toReal()) in
+if (responseTimeDistr -> size() <> 0) then
+	let arrayDiff : Sequence(Real) = calcArrayDifferenze(responseTimeDistr) in
+	if(arrayDiff -> exists(value: Real | value > responseTimeUpperBound)) then 
+--if true, "could" be an instance of traffic jam if false there is not
+		trafficJamSearch(arrayDiff, responseTimeUpperBound)
+	else
+		false
+	endif
+else
+	false
+endif
+
+--function that checks if the performance values in a specific
+--action generates an instance of The Ramp antipattern
+def: theRampAntipattern(action: Behavior::Action) : Boolean = 
+let responseTimeUpperBound : Real = 0 in--<threshold numerical value> in
+let throughtputUpperBound : Real = 0 in--<threshold numerical value> in
+let responseTimeDistr : Sequence(Real) = action.actRespTimeDistr -> 
+									collect(x:String | x.toReal()) in
+let throughtputDistr : Sequence(Real) = action.actThDistr -> 
+									collect(x:String | x.toReal()) in
+if(responseTimeDistr -> size() <> 0 and throughtputDistr -> size() <> 0) then 
+calcAveragePerformanceIndex(calcArrayDifferenze(responseTimeDistr)) 
+											> responseTimeUpperBound and 
+calcAveragePerformanceIndex(calcArrayDifferenze(throughtputDistr)) 
+											> throughtputUpperBound
+else
+	false
+endif
+
+-------------------------------------------------CHECK MULTIPLE-VALUES ANTIPATTERNS----------------------------------------------------------------
+
+--invariant which determines the presence of instances of the Traffic Jam antipattern in the analyzed model
+inv trafficJamAntipattern:
+let responseTimeUpperBound : Real = 8 in --<threshold numerical value> in
+let responseTimeDistr : Sequence(Real) = self.oclAsType(Behavior::Action).actRespTimeDistr -> collect(x:String | x.toReal())->asSequence() in
+if (responseTimeDistr -> size() <> 0) then
+	let arrayDiff : Sequence(Real) = calcArrayDifferenze(responseTimeDistr) in
+	if(arrayDiff -> exists(value: Real | value > responseTimeUpperBound)) then 
+--if true, "could" be an instance of traffic jam if false there is not
+		trafficJamSearch(arrayDiff, responseTimeUpperBound)
+	else
+		false
+	endif
+else
+	false
+endif
+
+--invariant which determines the presence of instances of the Ramp antipattern in the analyzed model
+inv theRampAntipattern:
+let responseTimeUpperBound : Real = 0 in--<threshold numerical value> in
+let throughtputUpperBound : Real = 0 in--<threshold numerical value> in
+let responseTimeDistr : Sequence(Real) = self.oclAsType(Behavior::Action).actRespTimeDistr -> 	collect(x:String | x.toReal()) in
+let throughtputDistr : Sequence(Real) = self.oclAsType(Behavior::Action).actThDistr -> collect(x:String | x.toReal()) in
+if(responseTimeDistr -> size() <> 0 and throughtputDistr -> size() <> 0) then 
+calcAveragePerformanceIndex(calcArrayDifferenze(responseTimeDistr)) > responseTimeUpperBound and 
+calcAveragePerformanceIndex(calcArrayDifferenze(throughtputDistr))  > throughtputUpperBound
+else
+	false
+endif
+
+
+--invariant which determines the presence of instances of the Traffic Jam antipattern in the analyzed model
+--inv trafficJamAntipattern:
+--Behavior::Action.allInstances() -> exists(action: Behavior::Action 
+--									| trafficJamAntipattern(action))
+
+--invariant which determines the presence of instances of the Ramp antipattern in the analyzed model
+--inv theRampAntipattern:
+--Behavior::Action.allInstances() -> exists(action: Behavior::Action 
+--									| theRampAntipattern(action))
+
+
+endpackage
+
+
+
+

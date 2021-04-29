@@ -1,0 +1,139 @@
+/******** DESIGN **************/
+operation th_maxMsgs() : Real{
+	var th_maxMsgs : Real = 3;
+	return th_maxMsgs;
+}
+
+/*operation th_numReceivedMsgs() : Real{
+	var th_maxReceivedMsgs : Real = 2.25;
+	return th_maxReceivedMsgs;
+}*/
+
+operation th_numReceivedMsgs() : List(Real){
+	var th_maxReceivedMsgs : List(Real);
+	th_maxReceivedMsgs.add(1.21); // access greenhouse interaction
+	th_maxReceivedMsgs.add(1.64);//2.64); //change settings 
+	return th_maxReceivedMsgs;
+}
+
+/*operation th_numSentMsgs() : Real{
+	var th_maxSentMsgs : Real = 2.56;
+	return th_maxSentMsgs;
+}*/
+
+operation th_numSentMsgs() : List(Real){
+	var th_numSentMsgs : List(Real);
+	th_numSentMsgs.add(1.58); // access greenhouse interaction
+	th_numSentMsgs.add(2.53);//3.53); //change settings 
+	return th_numSentMsgs;
+}
+
+operation th_maxRemMsgs() : Real{
+	var th_maxRemMsgs : Real = 2.56;
+	return th_maxRemMsgs;
+}
+
+operation th_maxRemInst() : Real{
+	var th_maxRemInst : Real = 1; 
+	return th_maxRemInst;
+}
+
+operation th_maxClientConnects() : Real{
+	var th_maxClientConnects : Real = 1.9818;
+	return th_maxClientConnects;
+}
+
+operation th_maxSupplierConnects() : Real{
+	var th_maxSupplierConnects : Real = 2.7272;
+	return th_maxSupplierConnects;
+}
+
+operation th_maxExF() : Real{
+	var th_maxExF : Real = 2;
+	return th_maxExF;
+}
+	
+/******** PERFORMANCE **************/
+
+operation th_maxResDemand() : List(Real){
+	var th_maxResDemand : List( Real ) = new List( Real );
+	th_maxResDemand.add(0.5);
+	th_maxResDemand.add(0.25);
+	th_maxResDemand.add(2557.50); // CPU
+	th_maxResDemand.add(922.50); // I/O
+	return th_maxResDemand;
+}
+
+operation th_minResDemand() : List(Real){	
+	var th_minResDemand : List( Real ) = new List( Real );
+	th_minResDemand.add(1136.67); // CPU
+	th_minResDemand.add(410.0); // I/O
+	return th_minResDemand;
+}
+
+operation th_maxOpResDemand() : List(Real){
+	var th_maxOpResDemand : List( Real ) = new List( Real );
+	th_maxOpResDemand.add(2557.50); // CPU
+	th_maxOpResDemand.add(922.50); // I/O
+	return th_maxOpResDemand;
+}
+
+operation th_minOpResDemand() : List(Real){	
+	var th_minOpResDemand : List( Real ) = new List( Real );
+	th_minOpResDemand.add(1136.67); // CPU
+	th_minOpResDemand.add(410.0); // I/O
+	return th_minOpResDemand;
+}
+
+/*operation th_maxHwUtil() : Real{
+	//Hw Utilization
+	var th_maxHwUtil : Real = 0.85;
+	return th_maxHwUtil;
+}*/
+
+operation th_maxHwUtil() : Sequence(Real){
+	//Hw Utilization
+	var th_maxHwUtil : Sequence(Real);
+	th_maxHwUtil.add(0.6445); //max
+	th_maxHwUtil.add(0.1548); //min
+	/*
+	th_maxHwUtil.add(0.4619); //all
+	th_maxHwUtil.add(0.2753); //maxCPU
+	th_maxHwUtil.add(0.2052); //minCPU
+	th_maxHwUtil.add(0.6445); //maxDISK
+	th_maxHwUtil.add(0.1548); //minDISK
+*/
+	
+	return th_maxHwUtil;
+}
+
+operation th_maxNetUtil() : Real{	
+	//Network utilization
+	var th_maxNetUtil : Real = 0.65;
+	return th_maxNetUtil;
+}
+
+operation th_minNetUtil() : Real{
+	var th_minNetUtil : Real = 0.5;
+	return th_minNetUtil;
+}
+
+operation th_SrtReq() : Real{	
+	var th_SrtReq : Real = 10.1410; //40.1410; //response time
+	return th_SrtReq;
+}
+
+operation th_SthReq() : Real{	
+	var th_SthReq = 0.1075; //throughput
+	return th_SthReq;
+}
+
+operation th_maxQL() : Real {
+	var th_maxQL : Real = 1.24; //queue lenght
+	return th_maxQL;
+}
+
+operation th_probExecEp() : Real {
+	var th_probExecEp : Real = 1;
+	return th_probExecEp;
+}

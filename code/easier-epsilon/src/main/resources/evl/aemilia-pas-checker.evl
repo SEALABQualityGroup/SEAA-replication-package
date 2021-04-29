@@ -1,0 +1,51 @@
+import "library/action_process.eol";
+import "library/action.eol";
+import "library/archi_elem_instance.eol";
+import "library/architectural_interaction.eol";
+import "library/attachment.eol";
+import "library/const_init.eol";
+import "library/elem_type.eol";
+import "library/HELPER.eol";
+import "library/metric_functions.eol";
+import "library/thresholds_FTA.eol";
+
+
+/*********************************************************************************************
+ *																							 *
+ *	 								Pipe and Filter 										 *
+ *							Antipattern Detection and Validation					 		 *
+ *										reviewed											 *
+ *********************************************************************************************/
+ 
+ 
+context ArchitecturalInteraction {
+	critique PaF {
+		check: not (self.isServiceExpOrInf() and
+				self.checkOpResDemand(th_maxOpResDemand()) and
+				self.F_T(th_SthReq()))
+		message : "PaF on: " + self.name
+		fix {
+			title : "Clone"
+			do {
+				self.cloneArchiElemInstance(); 
+			}
+		}
+		fix {
+			title : "Delete clone"
+			do {
+				self.deleteDuplicatedArchiElemInstance();
+			}
+		}
+		fix {
+			title : " Change a const"
+			do {
+				self.changeConstant();
+			}
+		}
+	}
+	critique EP {
+		check: not (self.isServiceExpOrInf() and
+				self.unbalancedOpResDemand(th_maxOpResDemand().first(), th_minOpResDemand().first()) and
+				self.F_RT(th_SrtReq()))
+	}
+}

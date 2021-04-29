@@ -1,0 +1,169 @@
+import "operations.eol";
+
+pre
+{
+	var modelMessages = UML!MessageOccurrenceSpecification.all();
+	"Begin Transformation...".println();
+}
+
+post
+{
+	/*
+	var tasks = LQN!TaskType.all().select(i | i.replication > 1);
+	for(task in tasks)
+	{
+		task.name.println();
+		task.setFanIn();
+		task.setFanOut();
+	}
+	*/
+	
+	"Done!!".println();	
+}
+
+rule Model2Schema 
+	transform uml: UML!Model
+	to lqn: LQN!LqnModelType
+	{	
+		lqn.name = uml.name;
+		lqn.processor ::= UML!Node.all();
+	}
+
+// @Assumption: A Node deploys a single Artifact that has only one Manifestation;
+rule Node2Processor
+	transform node: UML!Node
+	to proc: LQN!ProcessorType 
+	{	
+		/* 
+		 * This guard is needed to avoid the following situations: 
+		 * - A <<GaExecHost>> Node without deployments
+         * - A <<GaExecHost>> Node deploying elements that are not interacting
+		 * - Nodes that are not instance of the GaExecHost stereotype
+		 */
+		guard {
+			var deployed = node.getDeployed();
+			var interacting = new Sequence();
+
+			if(deployed.notEmpty())
+				interacting = deployed.select(i | i.isInteracting());
+
+			return node.checkStereotypeApplication("GaExecHost") and interacting.notEmpty();
+		}
+			
+
+		// Gets the object representing the "GaExecHost" stereotype
+		var stereotype = node.checkAndGetStereotype("GaExecHost");
+		var resTag = node.getValue(stereotype, "resMult");
+		var speedFactor = node.getValue(stereotype, "speedFactor");
+					
+		var tasks = node.getDeployed();
+		
+		var sources = tasks.collect(i | i.getSources()).flatten;
+			
+		if(sources.notEmpty()) 
+			tasks.addAll(sources);
+					
+		proc.name = node.name;
+		proc.task ::= tasks;
+		proc.multiplicity = resTag.asBigInteger(); 
+		proc.speedFactor = speedFactor;
+	}
+
+
+rule Actor2Task
+	transform actor: UML!Actor
+	to task: LQN!TaskType
+	{
+		var lifelines = actor.getLifelines();
+		var beses = lifelines.collect(i | i.getElements("BehaviorExecutionSpecification")).flatten;
+	
+		task.name = actor.name;
+		task.scheduling = LQN!TaskSchedulingType#ref;
+		
+		task.replication = "1".asBigInteger();	
+		task.entry ::= beses;
+	}
+
+rule Component2Task
+	transform component: UML!Component
+	to task: LQN!TaskType
+	{		
+	
+		component.println("cmpnt: ");
+	
+		var lifelines = component.getLifelines();	
+		var beses = lifelines.collect(i | i.getElements("BehaviorExecutionSpecification")).flatten;
+
+		/* Same artifact deployed on two different nodes representing the same processor
+		var nodes = UML!Node.all.select(i | i.getDeployed().includes(component));
+		var replication = nodes.size().asString();
+		*/
+		
+		// Same node different artifacts deploying the same component
+		var artifacts = component.getArtifacts();
+		var artifactsSize = artifacts.size().asString();
+		
+		task.name = component.name;
+		task.entry ::= beses;
+		// task.replication = replication.asBigInteger();	
+		task.multiplicity = artifactsSize.asBigInteger();
+	}
+
+rule BES2Entry
+	transform bes: UML!BehaviorExecutionSpecification
+	to entry: LQN!EntryType
+	{	
+		guard: bes.isAllowed()
+		
+		var messages = bes.getMessages();
+		// Gets only the messages that are sent
+		messages = messages.select(i | i.isSend() and i.message.messageSort <> UML!MessageSort#reply);	
+		
+		// If msgs is empty, then the BES is a sink 
+		if(messages.isEmpty())
+			messages.add(bes.start);
+	
+		entry.name = bes.name;					
+		entry.entryPhaseActivities = new LQN!PhaseActivities;
+		entry.entryPhaseActivities.activity ::= messages;
+	} 
+	
+rule Message2Activity
+	transform msgo: UML!MessageOccurrenceSpecification
+	to actv: LQN!ActivityPhasesType
+	{
+		guard {
+			var message = msgo.message;
+			return message.checkStereotypeApplication("GaStep");
+		}
+		
+		var message = msgo.message;
+		// Get Stereotype Tags value
+		var stereotype = message.checkAndGetStereotype("GaStep");
+		var execTime = message.getValue(stereotype, "execTime").first;
+		var rep = message.getValue(stereotype, "rep");						
+		var hostDemandMean = execTime.asDouble() * rep.asDouble(); 
+					
+		actv.name = message.name;
+		actv.phase = "1".asBigInteger();
+		actv.hostDemandMean = hostDemandMean;
+		/**
+	 	 * Builds the synchCall object getting the target Lifeline
+		 */	
+		if(msgo.isSend())
+		{		
+			var call = new LQN!ActivityMakingCallType;		
+			var lifeline = message.receiveEvent.covered;
+			
+			// Gets the BES starting with the message
+			var bes = lifeline.first.getElements("BehaviorExecutionSpecification");
+
+			// Gets the target BES				
+			bes = bes.selectOne(i | i.start == message.receiveEvent and
+				i.finish.isTypeOf(MessageOccurrenceSpecification));
+			
+			call.dest = bes.name;
+			call.callsMean = rep;
+			actv.synchCall = Sequence{call};
+		}
+	}

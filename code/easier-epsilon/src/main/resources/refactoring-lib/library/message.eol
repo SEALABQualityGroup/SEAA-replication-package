@@ -1,0 +1,60 @@
+operation Message getReceiveLifeline() : Lifeline{
+	var interaction = self.getOwner(); //interaction
+	var lifeline = interaction.getLifeline(self.getReceiveEvent());
+	if(lifeline.isUndefined()){
+		showError("Method: getReceiveLifeline() in interaction.eol");
+		return null;
+	}
+	
+	return lifeline;
+}
+
+operation Message isReturn() : Boolean{
+	if( self.getMessageSort().asString().equals("reply") ){
+		
+		return true;
+	}
+	return false;
+}
+
+operation Message notReturn() : Boolean{
+	return not self.isReturn();
+}
+
+operation Message getUseCase() : UseCase{
+	var returnValue;
+	returnValue = self.getInteraction().getUseCase();
+	return returnValue;
+}
+
+
+operation Message getBES() : BehaviorExecutionSpecification{
+	var mos_receive = self.getReceiveEvent();
+	var bes = BehaviorExecutionSpecification.allInstances->selectOne(iterator | iterator.getStart() == mos_receive);
+	return bes;
+}
+
+operation Message getEOS() : ExecutionOccurrenceSpecification{
+	var bes = self.getBES();
+	var eos = bes.getFinish();
+	return eos;
+}
+
+operation Message resolveDevice() : Device {
+	//self.receiveEvent.covered.represents.first().type; // This is the artifact on the lifeline
+	if(not self.receiveEvent.covered.represents.first().type.isTypeOf(Artifact))
+		return null;
+	return self.receiveEvent.covered.represents.first().type.getDeploymentDevice();
+}
+
+operation Message getNodesWithNetworkUsageGreaterThan(th_maxNetUtil : Real) : Sequence(Node){
+	var returnValue : Sequence(Node) = new Sequence(Node);
+	if(self.resolveDevice().isDefined() and self.resolveDevice().hasStereotype("GaExecHost")) {
+		var commPaths = self.resolveDevice().getNetworkUsage().keySet();
+		for(cp in commPaths){
+			if(node.getNetworkUsage().get(cp)->exists(iterator | iterator.asReal() >= th_maxNetUtil))
+				returnValue.add(node);
+		}
+	}
+	return returnValue;
+}

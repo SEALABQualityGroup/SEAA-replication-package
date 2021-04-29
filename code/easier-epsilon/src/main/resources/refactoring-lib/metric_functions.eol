@@ -1,0 +1,865 @@
+/*********************************************************************************************
+ *																							 *
+ *										DESIGN												 *
+ *																							 *
+ *********************************************************************************************/
+
+operation Message F_probExec() : Boolean{
+	if(self.getMessageKind().asString() <> "found"){
+		var intOperand = self.getSendEvent().getOwner();
+		
+		if(not self.hasStereotype("GaStep") and not self.hasStereotype("GaAcqStep"))
+			return false;
+		if(intOperand.isUndefined() or (intOperand.isDefined() and not intOperand.isTypeOf(InteractionOperand)))
+			return true; //probalita' uguale ad 1
+		if(intOperand.hasStereotype("GaStep")){
+			if(intOperand.getValue(intOperand.getStereotype("GaStep"), "prob").isDefined() and intOperand.getValue().asReal == 1.0){
+				return true; //probabilita' uguale a 1
+			}
+		}
+	}
+	return false;
+}
+
+operation UML!Operation F_probExec() : Boolean{
+	info("UML!Operation F_probExec() : Boolean");
+	var listOfMes = self.getAllOwnMessages();
+	info(self.name);
+	info(listOfMes.asString);
+	var listOfIntOperands = self.getOwnerInteractionOperands();
+	
+	if(not self.hasStereotype("GaStep"))
+		return false;
+	
+	
+	if(listOfMes.isEmpty()){
+		log("F_probExec of [" + self.name + "] equal to [1] --> [false]");
+		return false;
+	}
+	if(listOfIntOperands.isEmpty()){
+		log("F_probExec of [" + self.name + "] equal to [1] --> [true]");
+		return true; 
+	}
+
+	for(int in listOfIntOperands){
+		if( int.hasStereotype("GaStep") and (int.getValue(int.getStereotype("GaStep"), "prob").asReal() == 1) ){
+			log("F_probExec of [" + self.name + "] equal to [1] --> [true]");		
+			return true;
+		}
+	}
+	log("F_probExec of [" + self.name + "] equal to [1] --> [false]");
+	return false;
+}
+
+operation UML!Operation F_probExec4EP() : Boolean{
+	info("UML!Operation F_probExec4EP() : Boolean");
+	
+	if(not self.hasStereotype("GaStep"))
+		return false;
+	
+	var listOfMes = self.getAllOwnMessages();
+
+	if(listOfMes.isEmpty())
+		return false;
+		
+	if(self.retrieveOperation().isDefined()){
+		info("Number of messages of [" + self.owner.name + "] --> [" + self.retrieveOperation().size()+"]");
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+operation UML!Component F_probExec() : Boolean {
+	info("UML!Component F_probExec() : Boolean");
+	info("self--> " + self.name);
+	var opGreater = self.getOperationsWithResDemandGreaterOrEqual(th_maxResDemand());
+	info("opGreater --> " + opGreater.asString());
+	
+	if(opGreater.isUndefined() or opGreater.isEmpty()){
+		return false;
+	}
+	
+	var opLess = self.getOperationsWithResDemandLessThan(th_minResDemand());
+	info("opLess --> " + opLess.asString());
+	
+	for (opG in opGreater){
+		var opGInteractionOperands = opG.getOwnerInteractionOperands();
+		info("opG --> " + opG.asString());
+		info("opGInteractionOperands --> " + opGInteractionOperands.asString());
+		for(opL in opLess){
+			for(opLInteractionOperand in opL.getOwnerInteractionOperands()){
+				for(opGInteractionOperand in opGInteractionOperands){
+					var opGInteractionOperandStereotype = opGInteractionOperand.getStereotype("GaStep");
+					var opLInteractionOperandStereotype = opLInteractionOperand.getStereotype("GaStep");
+					if(opGInteractionOperandStereotype.isDefined() and opLInteractionOperandStereotype.isDefined()){
+						if( (opGInteractionOperand.getValue(opGInteractionOperandStereotype, "prob").asReal() + 
+								opLInteractionOperand.getValue(opLInteractionOperandStereotype, "prob").asReal() ) == 1 )
+								info("F_probExec of [" + self.name + "] equal to [1] --> [true]");
+								return true;
+					}
+				}
+			}
+		}
+	}
+	log("F_probExec of [" + self.name + "] equal to [1] --> [false]");
+	return false;
+}
+
+operation UML!Component F_numClientConnects(th_numClientConnects : Real) : Boolean{
+	log("F_numClientConnects of [" + self.name + "] --> " + self.getRequireds().size());
+	
+	//if(not self.hasStereotype("PaRunTInstance")) 
+	//	return false;
+   	
+   	if(self.getRequireds().size().asReal() >= th_numClientConnects){
+		return true;
+	}
+	
+	return false;
+}
+
+operation UML!Component F_numMsgsIn(th_numReceivedMsgs : List(Real)) : Boolean{
+	log("F_numMsgsIn of [" + self.name + "]--> " + self.getCriticalLifeline4BlobContainerAP(th_numReceivedMsgs).size());
+
+	if(self.getCriticalLifeline4BlobContainerAP(th_numReceivedMsgs).isDefined() and self.getCriticalLifeline4BlobContainerAP(th_numReceivedMsgs).notEmpty())
+		return true;
+	return false;
+}
+
+operation UML!Component F_numMsgsOut(th_numSentMsgs : List(Real)) : Boolean{
+	log("F_numMsgsOut of [" + self.name + "]--> " + self.getCriticalLifeline4BlobControllerAP(th_numSentMsgs));
+	
+	if(self.getCriticalLifeline4BlobControllerAP(th_numSentMsgs).isDefined() and not self.getCriticalLifeline4BlobControllerAP(th_numSentMsgs).isEmpty())
+		return true;
+	return false;
+}
+
+operation UML!Component F_numSupplierConnects(th_numSupplierConnects : Real) : Boolean{
+	log("F_numSupplierConnects of [" + self.name + "] --> " + self.getProvideds().size());
+	
+	//if(not self.hasStereotype("PaRunTInstance")){
+	//	return false;
+	//}
+	
+	if(self.getProvideds().size().asReal() >= th_numSupplierConnects){
+		return true;
+	}
+	return false;
+}
+
+operation Component F_numRemMsgs(th_maxRemMsgs : Real) : Boolean{
+	if(self.countRemoteMessages(th_maxRemMsgs)){
+		return true;
+	}		
+	return false;
+}
+
+operation Classifier F_numRemMsgs(th_maxRemMsgs : Integer) : Boolean{
+	if(self.countRemoteMessages(th_maxRemMsgs))
+		return true;
+		
+	return false;
+}
+
+operation Component F_numRemInst(th_maxRemInst : Integer) : Boolean{
+	if(self.countRemoteInstances(th_maxRemInst))
+		return true;
+	return false;
+}
+
+operation Classifier F_numRemInst(th_maxRemInst : Integer) : Boolean{
+	if(self.countRemoteInstances(th_maxRemInst))
+		return true;
+	return false;
+}
+
+operation Component F_numExF(th_maxExF : Integer ) : Boolean{
+	if(//self.hasStereotype("PaRunTInstance") and 
+		not self.getUsedFormat().isEmpty()){
+		for(int in self.getUsedFormat().keySet()){
+			if(self.getUsedFormat().get(int).keySet().size() >= th_maxExF ){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*********************************************************************************************
+ *																							 *
+ *									PERFORMANCE												 *
+ *																							 *
+ *********************************************************************************************/
+operation Node F_resDemandDiskGreaterOrEqualThan( th_maxResDemandDisk : Real ) : Boolean{
+	
+	var turnback : Boolean = false;
+	
+	var criticOperation = self.getDiskCriticOperation();
+	
+	if(criticOperation.isUndefined() or criticOperation.getAppliedStereotypes().isUndefined() ){
+		showError("Context: Node, Method: F_resDemandDiskGreaterOrEqualThan() in metrics_functions.eol");
+		return false;
+	}
+	
+	if(not criticOperation.hasStereotype("GaStep")){
+		("the opearion ["+self.getName()+"] is not correctly stereotyped").println();
+		showError("Method: F_resDemandDiskGreaterOrEqualThan() in metrics_functions.eol");
+		return false;
+	}
+	var servCount = criticOperation.getTag("GaStep", "servCount");
+	
+	var i : Integer = 0;
+	
+	if(servCount->second().asReal() >= th_maxResDemandDisk ){
+		return true;
+	}
+	return false;	
+}
+
+operation Node F_resDemandCpuGreaterOrEqualThan( th_maxResDemandCpu : Real ) : Boolean{
+	
+	var turnback : Boolean = false;
+	
+	var criticOperation = self.getCpuCriticOperation();
+	
+	info("criticOperation of ["+self.getName()+"] --> "+criticOperation);
+	
+	if(criticOperation.isUndefined() or criticOperation.getAppliedStereotypes().isUndefined() ){
+		showError("Context: Node, Method: F_resDemandCpuGreaterOrEqualThan() in metrics_functions.eol");
+		return false;
+	}
+	
+	if(not criticOperation.hasStereotype("GaStep")){
+		showError("the opearion ["+self.getName()+"] is not correctly stereotyped");
+		showError("Method: F_resDemandCpuGreaterOrEqualThan() in metrics_functions.eol");
+		return false;
+	}
+	
+	var servCount = criticOperation.getTag("GaStep", "servCount");
+	
+	info("servCount of ["+self.getName()+"] --> "+servCount).println();
+	info("th_maxResDemandCpu --> "+th_maxResDemandCpu);
+	
+	if(servCount->first().asReal() >= th_maxResDemandCpu ){
+		return true;
+	}
+	
+	return turnback;	
+}
+
+operation Operation F_resDemandGreaterOrEqualThan( th_maxResDemand : List(Real) ) : Boolean{
+	
+	var turnback : Boolean = false;
+	
+	if(self.isUndefined() or self.getAppliedStereotypes().isUndefined() ){
+		showError("Method: F_resDemandGreaterOrEqualThan() in metrics_functions.eol");
+	}
+	
+	var appliedStereotypes = self.getAppliedStereotypes();
+	
+	var gaStep = self.getStereotype('GaStep');
+	var servCount = self.getValue(gaStep, 'servCount');
+	
+	var i : Integer = 0;
+	
+	for(demand in servCount){
+		if(demand.asReal() >= th_maxResDemand.at(i).asReal() ){ //al primo demand > della soglia relativa ritorna true
+			turnback = true;
+			break;
+		}
+		i = i+1;
+	}
+	
+	return turnback;	
+}
+
+operation Operation F_resDemandCpuGreaterOrEqualThan( th_maxCpuResDemand : Real ) : Boolean{
+	
+	var turnback : Boolean = false;
+	
+	if(self.isUndefined() or self.getAppliedStereotypes().isUndefined() ){
+		showError("Method: F_resDemandGreaterOrEqualThan() in metrics_functions.eol");
+	}
+	
+	var servCount = self.getTag("GaStep", "servCount");
+	
+	if(servCount->first().asReal() >= th_maxCpuResDemand ){ //al primo demand > della soglia relativa ritorna true
+		if(debug()){
+			("servCount of ["+self.getName()+"] -->"+servCount).println();	
+			("th_maxCpuResDemand -->"+th_maxCpuResDemand).println();	
+		}
+		return true;
+	}
+	return false;	
+}
+
+operation Operation F_resDemandDiskGreaterOrEqualThan( th_maxDiskResDemand : Real ) : Boolean{
+	
+	var turnback : Boolean = false;
+	
+	if(self.isUndefined() or self.getAppliedStereotypes().isUndefined() ){
+		showError("Method: F_resDemandGreaterOrEqualThan() in metrics_functions.eol");
+	}
+	
+	var servCount = self.getTag("GaStep", "servCount");
+	
+	if(servCount->second().asReal() >= th_maxDiskResDemand ){ //al primo demand > della soglia relativa ritorna true
+		return true;
+	}
+	
+	return false;	
+}
+
+operation Operation F_resDemandCpuLesserThan( th_minResDemandCpu : Real ) : Boolean{
+	var turnback : Boolean = false;
+	
+	if(self.isUndefined() or self.getAppliedStereotypes().isUndefined() ){
+		("the operation is undefined").println();
+		showError("Method: F_resDemandLesserThan() in metrics_functions.eol");
+	}
+	
+	var servCount = self.getTag("GaStep", "servCount");
+	
+	if(servCount->first().asReal() < th_minResDemandCpu ){ //al primo demand < della soglia relativa ritorna true
+		return true;
+	}
+	return false;	
+}
+
+operation Operation F_resDemandDiskLesserThan( th_minResDemandDisk : Real ) : Boolean{
+	var turnback : Boolean = false;
+	
+	if(self.isUndefined() or self.getAppliedStereotypes().isUndefined() ){
+		("the operation is undefined").println();
+		showError("Method: F_resDemandLesserThan() in metrics_functions.eol");
+	}
+	
+	var servCount = self.getTag("GaStep", "servCount");
+	
+	if(servCount->second().asReal() < th_minResDemandDisk ){ //al primo demand < della soglia relativa ritorna true
+		return true;
+	}
+	return false;	
+}
+
+operation Operation F_resDemandLessThan( th_minResDemand : List(Real) ) : Boolean{
+	info("F_resDemandLessThan( th_minResDemand : List(Real) ) : Boolean");
+	info(self.name);
+	var turnback : Boolean = false;
+	
+	if(self.isUndefined() or self.getAppliedStereotypes().isUndefined() ){
+		info("the element is undefined");
+		showError("Method: F_resDemandLesserThan() in metrics_functions.eol");
+	}
+	
+	//var appliedStereotypes = self.getAppliedStereotypes();
+	//var gaStep = self.getStereotype('GaStep');
+	var servCount = self.getTag("GaStep", "servCount");
+	
+	var i : Integer = 0;
+	for(demand in servCount){
+		info("demand.asReal() --> " + demand.asString());
+		if(demand.asReal() < th_minResDemand.at(i) ){ //al primo demand < della soglia relativa ritorna true
+			turnback = true;
+			break;
+		}
+		i = i+1;
+	}
+	info("turnback --> " + turnback);
+	return turnback;	
+}
+
+operation UML!Operation F_resDemand(th_maxResDemand : List(Real)) : Boolean{
+	info("UML!Operation F_resDemand(th_maxResDemand : List(Real)) : Boolean");
+	var turnback : Boolean = false;
+	
+	if(not self.hasStereotype("GaStep"))
+		return false;
+	
+	var servCount = self.getTag("GaStep", "servCount");
+	
+	var i : Integer = 0;
+	if(servCount.isDefined() and servCount.size() == 0){
+		turnback = false;
+	}else{
+		for(demand in servCount){
+			if(demand.asReal() >= th_maxResDemand.at(i) ){ //al primo demand non > della soglia relativa ritorna true
+				turnback = true;
+				break;
+			}
+			i = i+1;
+		}
+	}
+	log("F_resDemand of [" + self.name + "] greater than ["+ th_maxResDemand +"] --> ["+ turnback +"]");
+	return turnback;	
+}
+
+
+operation Message F_resDemand(th_maxResDemand : Real) : Boolean{
+
+	var turnback : Boolean = false;
+	
+	if(self.hasStereotype("GaStep")){
+		var gaStep = self.getStereotype("GaStep");
+		var servCount = self.getValue(gaStep, "servCount");
+		for(demand in servCount){
+			if(demand.asReal() < th_maxResDemand.at(i) ){ //al primo demand non > della soglia relativa ritorna false
+				turnback = false;
+				break;
+			}
+			i = i+1;
+		}
+	}
+	return turnback;	
+}
+
+operation UML!Component F_resDemand(th_maxOpResDemand : List( Real ), th_minResDemand : List( Real )) : Boolean{
+	info("UML!Component F_resDemand(th_maxOpResDemand : List( Real ), th_minResDemand : List( Real )) : Boolean");
+	/*if(not self.hasStereotype("PaRunTInstance") ) 
+		return false;*/
+		
+	var opHeavy = self.getOperationsWithResDemandGreaterOrEqual(th_maxOpResDemand);
+	var opLightweight = self.getOperationsWithResDemandLessThan(th_minResDemand);
+	
+	log("F_resDemand of [" + self.name + "] --> opHeavy: [" + opHeavy.size() + "]  and opLightweight [" + opLightweight.size() + "]");
+	
+	//ho almeno un'operazione con un utilizzazione maggiore ed una con un'utilizzazione minore
+	//delle threshold
+	if(opHeavy.notEmpty() and opLightweight.notEmpty()){
+		return true;
+	}
+	return false;
+}
+
+operation UML!Message F_resDemand(th_maxResDemand : Real, operator : String) : Boolean{
+	if(self.hasStereotype('GaStep') ){
+		var resDemand = self.getValue(self.getStereotype("GaStep"), "servCount");
+		if( resDemand.isDefined()) {
+			for(demand in resDemand){
+				if(operator.equals("geq")) {
+					if(demand.asReal() >= th_maxResDemand )
+						return true;
+				} else if(operator.equals("leq")) {
+					if(demand.asReal() <= th_maxResDemand )
+						return true;
+				} else
+					return false;
+			}
+		} else
+			return false;
+	}
+	return false;
+}
+
+
+operation Message F_probExec(th_prob : Real, operator : String) : Boolean{
+	if(self.hasStereotype('GaAcqStep') ){
+		var prob = self.getValue(self.getStereotype("GaAcqStep"), "prob");
+		if( prob.isDefined()) {
+			if(operator.equals("eq")) {
+				if(prob.asReal() = th_prob )
+					return true;
+			} else if(operator.equals("geq")) {
+				if(prob.asReal() >= th_prob )
+					return true;
+			} else if(operator.equals("leq")) {
+				if(prob.asReal() <= th_prob )
+					return true;
+			} else
+				return false;
+		} else
+			return false;
+	}
+	return false;
+}
+
+
+operation Component F_resDemand(th_maxOpResDemand : List( Real ), th_minResDemand : List( Real )) : Boolean{
+	//if(not self.hasStereotype("PaRunTInstance") ) 
+	//	return false;
+				
+	var opGreater = self.getOperationsWithResDemandGreaterOrEqual(th_maxOpResDemand);
+	var opLess = self.getOperationsWithResDemandLesserThan(th_minResDemand);
+	
+	if(opGreater.notEmpty() and opLess.notEmpty()){
+		return true;
+	}
+	return false;
+}
+
+operation UML!Operation F_T(th_SthReq : Real) : Boolean{
+	info("Operation F_T(th_SthReq : Real) : Boolean");
+	var listOfUseCases : List(UseCase) = self.getUseCases(); 
+	if(listOfUseCases.isEmpty()){
+		return false; 
+	}
+	var listOfUseCaseWithThroughputLessThanThreshold : List(UseCase) = new List(UseCase);
+	for(useCase in listOfUseCases){
+		
+		if(useCase.hasStereotype('GaScenario')){
+			var throughput = useCase.getValue(useCase.getStereotype('GaScenario'), "throughput")->first();
+			if(throughput.isDefined() and throughput.asReal() < th_SthReq){
+				listOfUseCaseWithThroughputLessThanThreshold.add(useCase);
+			}
+		}
+	}
+	log("F_T of [" + self.name + "] with throughput less than [" + th_SthReq +"] --> [" + listOfUseCaseWithThroughputLessThanThreshold.size() + "]");
+	return listOfUseCaseWithThroughputLessThanThreshold.notEmpty();
+}
+
+/*
+operation Message F_T() : Boolean{
+	var th_SthReq = 0.9; //throughput
+	var useCase : UseCase = self.getUseCase();
+	
+	if(useCase.hasStereotype('GaScenario')){
+		var throughput = useCase.getValue(useCase.getStereotype('GaScenario'), "throughput")->first();
+		if(throughput.isDefined() and throughput.asReal() < th_SthReq){
+			return true;	
+		}
+	}
+	
+	return false;
+}
+
+operation Message F_T() : Real{
+	var th_SthReq = 0.9; //throughput
+	var useCase : UseCase = self.getUseCase();
+	
+	if(useCase.hasStereotype('GaScenario')){
+		var throughput = useCase.getValue(useCase.getStereotype('GaScenario'), "throughput")->first();
+		if(throughput.isDefined() ){
+			return throughput.asReal();	
+		}
+	}
+	
+	return 0;
+}
+
+operation Operation F_T() : Boolean{
+	var th_SthReq = 0.9; //throughput
+	var listOfUseCases : List(UseCase) = self.getUseCases(); 
+	
+	var listOfUseCaseWithThroughputLessThanThreshold : List(UseCase) = new List(UseCase);
+	
+	for(useCase in listOfUseCases){
+		if(useCase.hasStereotype('GaScenario')){
+			var throughput = useCase.getValue(useCase.getStereotype('GaScenario'), "throughput")->first();
+			if(throughput.isDefined() and throughput.asReal() < th_SthReq){
+				listOfUseCaseWithThroughputLessThanThreshold.add(useCase);	
+			}
+		}
+	}
+	return listOfUseCaseWithThroughputLessThanThreshold.isEmpty();
+}*/
+
+/*
+operation Message F_maxHwUtil(th_maxHwUtil : Real) : Boolean{
+	var node = self.resolveDevice();
+	if(node.isDefined() and node.hasStereotype("GaExecHost")) {
+		var values : Bag(Real) = self.resolveDevice().getValue(self.resolveDevice().getStereotype("GaExecHost"), "utilization").collect(u|u.asReal());
+		var max : Real = values.max();
+		return max >= th_maxHwUtil;
+	}
+	else
+		return false;
+}*/
+
+
+operation Message F_maxHwUtil(th_maxHwUtil : Real, operator : String) : Boolean{
+	var lf = self.getReceiveLifeline();
+	if(lf.isDefined()) {
+		if(lf.getRepresents().isDefined()) 
+			if(lf.getRepresents().getType().isDefined())
+				//if(lf.getRepresents().getType().println("TYPE: ").isTypeOf(Artifact))
+				if(lf.getRepresents().getType().isTypeOf(Artifact))
+					return lf.getRepresents().getType().F_maxHwUtil(th_maxHwUtil, operator);
+	} return false;
+}
+
+operation UML!Operation F_maxHwUtil(th_maxHwUtil : Real) : Boolean{
+	info("UML!Operation F_maxHwUtil(th_maxHwUtil : Real) : Boolean");
+	var listOfProcessNode : List(Node) = new List(Node);
+	
+	listOfProcessNode = self.getProcessNodes();
+	info(listOfProcessNode.asString());
+		
+	if(listOfProcessNode.isEmpty()){
+		return false; //non ci sono nodi con lo stereotipo giusto o la classe non è deployata
+	}	
+	var listOfProcessNodeWithUtilizationGreater : List(Node) = new List(Node);
+	
+	for(node in listOfProcessNode){
+		if(node.hasStereotype('GaExecHost') ){
+			var utilization = node.getValue(node.getStereotype('GaExecHost'), 'utilization')->first();
+	 		if( utilization.isDefined() and utilization.asReal() >= th_maxHwUtil ){
+				listOfProcessNodeWithUtilizationGreater.add(node);
+			}
+		}
+	}
+	log("F_maxHwUtil of [" + self.name + "] with HW Utilization greater than [" + th_maxHwUtil +"] --> [" + listOfProcessNodeWithUtilizationGreater.size() + "]");
+	return not listOfProcessNodeWithUtilizationGreater.isEmpty();
+}
+
+operation UML!Component F_maxHwUtil(th_maxHwUtil : Real) : Boolean{
+	log("F_maxHwUtil of [" + self.name + "] with HW Utilization greater than [" + th_maxHwUtil +"] --> [" + self.getNodesWithUtilizationGreaterThan(th_maxHwUtil).size() + "]");
+	return self.getNodesWithUtilizationGreaterThan(th_maxHwUtil).notEmpty();	
+}
+
+
+operation Device F_maxHwUtil(th_maxHwUtil : Real, operator : String) : Boolean {
+	if(self.hasStereotype("GaExecHost") ){
+		var utilization = self.getMaxUtilization();//self.getValue(self.getStereotype('GaExecHost'), 'utilization')->collect(u|u.asReal())->max().println("MAX UTILIZATION OF DEVICE "+self.getName()+": ");
+		if( utilization.isDefined()) {
+			utilization.asReal();
+			if(operator.equals("geq")) {
+				if(utilization.asReal() >= th_maxHwUtil )
+					return true;
+			} else if(operator.equals("leq")) {
+				if(utilization.asReal() <= th_maxHwUtil )
+					return true;
+			} else
+				return false;
+		} else
+			return false;
+	}
+	return false;
+	/*
+	var utilization = self.getUtilization();
+	if(utilization.isUndefined()){
+		return false;
+	}else{
+		if( utilization.asReal() >= th_maxHwUtil){
+			if ( self.getNeighboursWithLowUtilization().isUndefined() or self.getNeighboursWithLowUtilization().isEmpty() ){
+				return false;			
+			}
+			return true;
+		}
+	}
+	return false;*/
+}
+
+operation Node F_maxCpuUtil(th_maxCpuUtil : Real) : Boolean {
+	var maxCpuUtilization = self.getMaxCpuUtilization();
+	if(maxCpuUtilization.isUndefined()){
+		return false;
+	}else{
+		if( maxCpuUtilization.asReal() >= th_maxCpuUtil){
+			if(debug()){
+				("self.getNeighboursWithLowCpuUtilization(th_maxHwUtil()->third()).isUndefined() --> " + self.getNeighboursWithLowCpuUtilization(th_maxHwUtil()->third()).isUndefined() ).println();
+				("self.getNeighboursWithLowCpuUtilization(th_maxHwUtil()->third()).isEmpty() --> " + self.getNeighboursWithLowCpuUtilization(th_maxHwUtil()->third()).isEmpty() ).println();
+				("self.getNeighboursWithLowCpuUtilization --> " + self.getNeighboursWithLowCpuUtilization(th_maxHwUtil()->third()) ).println();
+			}
+			
+			if ( self.getNeighboursWithLowCpuUtilization(th_maxHwUtil()->first()).isUndefined() and self.getNeighboursWithLowCpuUtilization(th_maxHwUtil()->first()).isEmpty() ){
+				return false;			
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+operation Node F_maxDiskUtil(th_maxDiskUtil : Real) : Boolean {
+	
+	var maxDiskUtilization = self.getMaxDiskUtilization();
+	if(maxDiskUtilization.isUndefined()){
+		return false;
+	}else{
+		if( maxDiskUtilization.asReal() >= th_maxDiskUtil){
+			if ( self.getNeighboursWithLowDiskUtilization(th_maxHwUtil()->at(4)).isUndefined() or self.getNeighboursWithLowDiskUtilization(th_maxHwUtil()->at(4)).isEmpty() ){
+				return false;			
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+operation Node F_maxQL(th_maxQL : Real) : Boolean {
+	
+	if(self.hasStereotype("RtUnit") and
+		self.getTag("RtUnit", "queueSize").isDefined() and 
+			self.getTag("RtUnit", "queueSize").asReal() > th_maxQL ){
+		info("queueSize of ["+self.getName()+"] --> "+self.getTag("RtUnit", "queueSize").asReal()).println();
+		info("queueSize threshold --> "+th_maxQL);
+		
+		return true;
+	}
+	return false;
+}
+
+
+operation Message F_maxNetUtil(th_maxNetUtil : Real) : Boolean{
+	if(self.getNodesWithNetworkUsageGreaterThan(th_maxNetUtil).notEmpty())
+		return true;
+	return false;
+}
+
+operation Component F_maxNetUtil(th_maxNetUtil : Real) : Boolean{
+	if(self.getNodesWithNetworkUsageGreaterThan(th_maxNetUtil).notEmpty())
+		return true;
+	return false;
+}
+
+operation Classifier F_maxNetUtil(th_maxNetUtil : Real) : Boolean{
+	if(not self.getNodesWithNetworkUsageGreaterThan(th_maxNetUtil).isEmpty())
+		return true;
+	return false;
+}
+
+operation Component F_minNetUtil(th_minNetUtil : Real) : Boolean{
+	if(not self.getNodesWithNetworkUsageLesserThan(th_minNetUtil).isEmpty())
+		return true;
+	return false;
+}
+
+//TODO da rivedere
+operation UML!Component F_RT(th_SrtReq : Real) : Boolean {
+	info("UML!Component F_RT(th_SrtReq : Real) : Boolean");
+	var opGreater = self.getOperationsWithResDemandGreaterOrEqual(th_maxResDemand());
+	var opLess = self.getOperationsWithResDemandLesserThan(th_minResDemand());
+
+	var opG_Messages : Sequence(Message) = new Sequence(Message);
+	var messageList : List(Operation) = new List(Operation);
+	var operationMap : Map(UseCase, List(Message)) = new Map(UseCase, List(Message));
+	
+	for (opG in opGreater){
+		var opG_Interactions = opG.getAllInteractions();
+		for(int in opG_Interactions){
+			for(mes in opG.getMessagesIn(int) ){
+				//verifico se il mes e' contenuto in un alternative fragment (AF)
+				//TODO capire se c'e' un modo migliore per individuare un AF
+				if( mes.getSendEvent().getOwner().getOwner().isTypeOf(CombinedFragment) )
+					opG_Messages.add(mes); //lista di mes che rappresentano la opG e sono contenuti in un AF
+			}
+		}
+	}
+	for(opL in opLess){
+		var opL_Interactions = opL.getAllInteractions();
+		info("opL_Interactions --> " + opL_Interactions.asString);
+		for(int in opL_Interactions){
+			for(mes in opL.getMessagesIn(int) ){
+				//verifico se il mes e' contenuto in un alternative fragment (AF)
+				//TODO capire se c'e' un modo migliore per individuare un AF
+				var opL_InteractionOperand = mes.getSendEvent().getOwner();
+				for(opG_Message in opG_Messages){
+					var opG_InteractionOperand = opG_Message.getSendEvent().getOwner();
+					if( opL_InteractionOperand.getOwner().isTypeOf(CombinedFragment) and
+							opL_InteractionOperand.getOwner() == opG_InteractionOperand.getOwner() and 
+								opL_InteractionOperand <> opG_InteractionOperand){
+						if( opL_InteractionOperand.hasStereotype("GaStep") and opG_InteractionOperand.hasStereotype("GaStep") and 
+								( opL_InteractionOperand.getValue(opL_InteractionOperand.getStereotype("GaStep"), "prob").asReal() + 
+									opG_InteractionOperand.getValue(opG_InteractionOperand.getStereotype("GaStep"), "prob").asReal() == 1)
+						){
+							messageList.add(opG_Message);
+							messageList.add(mes);
+						}											
+					}	
+				}
+			}
+			if(messageList.notEmpty()){
+				operationMap.put(int.getUseCase(), messageList.clone());
+			}
+			messageList.clear();
+		}
+	}
+	
+	var criticalUCs : List(UseCase) = new List(UseCase);
+	info("operationMap --> " + operationMap.asString);
+	for(uc in operationMap.keySet()){	
+		if(uc.getValue(uc.getStereotype("GaScenario"), "respT")->first().asReal() >= th_SrtReq )
+			criticalUCs.add(uc);
+	}
+	info(criticalUCs.asString);
+	log("F_RT of [" + self.name + "] with Response Time greater than [" + th_SrtReq +"] --> [" + criticalUCs.size() + "]");
+	return criticalUCs.notEmpty();
+}
+
+
+operation test_F_RT() {
+
+	"$$$$$$$$$$$$$".println();
+
+	for(uc in UML!UseCase.allInstances){
+		uc.getValue(uc.getStereotype("GaScenario"), "respT").println();
+	}
+	
+	"$$$$$$$$$$$$$".println();
+}
+
+operation UML!Operation F_RT(th_SrtReq : Real) : Boolean{
+	return self.getUseCases()->exists(iterator | iterator.hasStereotype("GaScenario") and iterator.getValue(iterator.getStereotype("GaScenario"), "respT")->first().asReal() > th_SrtReq );
+}
+
+operation Message F_RT(th_SrtReq : Real) : Boolean {
+	if(self.getOwner().getOwner().hasStereotype("GaScenario")) {
+		var values : Bag(Real) = self.getOwner().getOwner().getValue(self.getOwner().getOwner().getStereotype("GaScenario"), "respT").collect(rt|rt.asReal());
+		var mean : Real = getMeanValue(values);
+		return mean > th_SrtReq;
+	}
+	else
+		return false;
+}
+
+
+operation UseCase F_RT(th_rt : Real, operator : String) : Boolean {
+	if(self.hasStereotype("GaScenario") ){
+		var meanRT = self.getMeanRT();
+		if( meanRT.isDefined()) {
+			meanRT.asReal();
+			if(operator.equals("geq")) {
+				if(meanRT.asReal() >= th_rt )
+					return true;
+			} else if(operator.equals("leq")) {
+				if(meanRT.asReal() <= th_rt )
+					return true;
+			} else
+				return false;
+		} else
+			return false;
+	}
+	return false;
+}
+
+
+operation UseCase F_T(th_through : Real, operator : String) : Boolean {
+	if(self.hasStereotype("GaScenario") ){
+		var meanThrough = self.getMeanThroughput();
+		if( meanThrough.isDefined()) {
+			meanThrough.asReal();
+			if(operator.equals("geq")) {
+				if(meanThrough.asReal() >= th_through )
+					return true;
+			} else if(operator.equals("leq")) {
+				if(meanThrough.asReal() <= th_through )
+					return true;
+			} else
+				return false;
+		} else
+			return false;
+	}
+	return false;
+}
+
+
+
+operation Message F_T(th_SthReq : Real) : Boolean {
+	if(self.getOwner().getOwner().hasStereotype("GaScenario")) {
+		var values : Bag(Real) = self.getOwner().getOwner().getValue(self.getOwner().getOwner().getStereotype("GaScenario"), "throughput").collect(t|t.asReal())
+																						.println("THROUGHPUT OF USECASE "+self.getOwner().getOwner().getName()+": ");
+		var mean : Real = getMeanValue(values);//.println("MEAN THROUGHPUT OF USECASE "+self.getOwner().getOwner().getName()+": ");
+		return mean < th_SthReq;
+	}
+	else
+		return false;
+}
+
+operation getMeanValue(values : Bag(Real)) : Real {
+	var res : Real = new Native("java.lang.Double")("0.0");
+	if(values.size() > 0)
+		res = values.sum() / values.size();
+	return res;
+}

@@ -1,0 +1,525 @@
+// Function that allows you to clone an AEmilia Architectural Element Instance
+operation ArchitecturalInteraction cloneArchiElemInstance() : ArchiElemInstance {
+	var current : ArchiElemInstance = self.takeFromInstance();
+
+	if(current.isDefined()) {
+		var clone : ArchiElemInstance := new ArchiElemInstance;
+	
+		clone.instanceName := current.instanceName + "_Cloned";
+		for(actual_param in current.actualParam) {
+			clone.actualParam.add(actual_param);
+		}
+		clone.TypeOf := current.TypeOf;
+		clone.throughput := current.throughput;
+		clone.utilization := current.utilization;
+		clone.responseTime := current.responseTime;
+		for(instance in current.instanceUtilDistr) {
+			clone.instanceUtilDistr.add(instance);
+		}
+		for(instance in current.instanceThDistr) {
+			clone.instanceThDistr.add(instance);
+		}
+		for(instance in current.InstanceResTimeDistr) {
+			clone.InstanceResTimeDistr.add(instance);
+		}
+		clone.queueLength := current.queueLength;
+		clone.serviceTime := current.serviceTime;
+		for(class in current.classes) {
+			var temp = WorkloadClass;
+			clone.classes.add(current.class.createWorkloadClass(temp));
+		}		
+		clone.elem := new Elem;
+		clone.elem.behaviorDecl := new Behavior;
+		
+		for(equation in current.elem.behaviorDecl.equations) {
+			var behEq = new BehavEquation;
+			behEq.name = equation.name;
+			behEq.bHeader := equation.bHeader.createBehavHeader(behEq.bHeader);
+			behEq.pt := equation.pt.createProcessTermGeneral(behEq.pt);
+			
+			clone.elem.behaviorDecl.equations.add(behEq);
+		}
+
+		if(current.selector.isDefined()) {
+			clone.selector := current.selector.createExpressionGeneral(clone.selector);
+		}
+		var archi_topology : ArchiTopology = current.selectArchiTopology();
+		archi_topology.aeiDecl.add(clone);
+		
+		for(attachment in current.scanAttachment(clone)) {
+			archi_topology.attDecl.add(attachment);
+		}
+		
+		archi_topology.aiDecl.add(self.cloneArchitecturalInteraction(clone));	
+		
+		return clone;
+	} 
+}
+
+// Function used for select the ArchiTopology element in order to put the clone inside it
+operation ArchiElemInstance selectArchiTopology() : ArchiTopology {
+	var result : ArchiTopology;
+	for(i in ArchiTopology.allInstances()) {
+		for(j in i.aeiDecl) {
+			if(j.instanceName = self.instanceName) {
+				 return i;
+			}
+		}
+	}	
+	return result;
+}
+
+// Function that allows you to create a WorkloadClass element
+operation WorkloadClass createWorkloadClass(current : WorkloadClass) : WorkloadClass {
+	current := new WorkloadClass;
+	current.workloadID = self.workloadID;
+	current.throughput = self.throughput;
+	current.residenceTime = self.residenceTime;
+	current.utilization = self.utilization;
+	current.queueLength = self.queueLength;
+	current.serviceTime = self.serviceTime;
+	current.EReference0 := self.EReference0.createWorkloadClass(current.EReference0);
+	current.EReference1:= self.EReference1.createWorkloadClass(current.EReference1);
+	current.timeUnits = self.timeUnits;
+	
+	return current;
+}
+
+// Function that allows you to create a BehavHeader element
+operation BehavHeader createBehavHeader(current : BehavHeader) : BehavHeader {
+	current := new BehavHeader;
+	current.left := new LeftSide;
+	
+	for(init_var in self.left.initVar) {
+		var temp = VarInit;
+		current.left.initVar.add(self.left.init_var.createVarInit(temp));
+	}
+	for(var_def in self.left.varDef) {
+		var temp = Var;
+		current.left.varDef.add(self.left.var_def.createVar(temp));
+	}
+	
+	current.right := new RightSide; 
+	
+	for(local_def in self.right.localDef) {
+		var temp = Local;
+		current.right.localDef.add(self.right.local_def.createLocal(temp));
+	}
+	
+	return current;
+}
+
+// Function that allows you to create a VarInit element
+operation VarInit createVarInit(current : VarInit) : VarInit {
+	current := new VarInit;
+	current.name = self.name;
+	current.initVarExpr := self.initVarExpr.createExpressionGeneral(current.initVarExpr);
+	current.initVarType := self.initVarType.createNormal(current.initVarType);
+	
+	return current;
+}
+
+// Function that allows you to create a Var element
+operation Var createVar(current : Var) : Var {
+	current := new Var;
+	current.name = self.name;
+	current.varType := self.varType.createNormal(current.varType);
+	
+	return current;
+}
+
+// Function that allows you to create a Local element
+operation Local createLocal(current : Local) : Local {
+	current := new Local;
+	current.name = self.name;
+	current.localType := self.localType.createNormal(current.localType);
+	
+	return current;
+}
+
+// Function used to check if the element has a Special or a Normal Datatype
+operation DataType checkDataType(current : DataType) : DataType {
+	current := self.createDataType(current);
+	return current;
+}
+
+// Function that allows you to create a Normal element
+operation Normal createDataType(current : Normal) : Normal {
+	current := new Normal;
+	current.`var` := self.`var`.createConst(current.`var`);
+	
+	return current;
+	
+}
+
+// Function that allows you to create a Special element
+operation Special createDataType(current : Special) : Special {
+	current := new Special;
+	current.type = self.type;
+	
+	return current;
+}
+
+// Function that allows you to create a Const element
+operation Const createConst(current : Const) : Const {
+	current := new Const;
+	current.name = self.name;
+	current.constantData := self.constantData.checkDataType(current.constantData);
+	
+	return current;
+}
+
+operation ProcessTerm createProcessTermGeneral(current : ProcessTerm) : ProcessTerm {
+	current := self.createProcessTerm(current);
+	return current;
+}
+
+// Function that allows you to create a ProcessTerm element
+operation ProcessTerm createProcessTerm(current : ProcessTerm) : ProcessTerm {
+	current := new ProcessTerm;
+	current.condition := self.condition.createExpressionGeneral(current.condition);
+	
+	return current;
+}
+
+// Function that allows you to create an ActionProcess element
+operation ActionProcess createProcessTerm(current : ActionProcess) : ActionProcess {
+	current := new ActionProcess;
+	current.condition := self.condition.createExpressionGeneral(current.condition);
+	current.act := self.act.createAction(current.act);
+	current.process := self.process.createProcessTermGeneral(current.process);
+	
+	return current;
+}
+
+// Function that allows you to create a BehavProcess element
+operation BehavProcess createProcessTerm(current : BehavProcess) : BehavProcess {
+	current := new BehavProcess;
+	current.condition := self.condition.createExpressionGeneral(current.condition);
+	//if(self.eqCall.isDefined()) {
+	//	current.eqCall := self.eqCall.createBehavEquation(current.eqCall);
+	//}
+	
+	for(expr in self.exprs) {
+		var temp;
+		var temp1 = Expression;
+		temp1 = expr.createExpressionGeneral(temp);
+		current.exprs.add(temp1);
+	}
+	
+	return current;
+}
+
+// Function that allows you to create a ChoiceProcess element
+operation ChoiceProcess createProcessTerm(current : ChoiceProcess) : ChoiceProcess {
+	current := new ChoiceProcess;
+	current.condition := self.condition.createExpressionGeneral(current.condition);
+	
+	for(process in self.processes) {
+		var temp;
+		var temp1 = ProcessTerm;
+		temp1 = process.createProcessTermGeneral(temp);
+		current.processes.add(temp1);
+	}
+	
+	return current;
+}
+
+// Function that allows you to create a BehavEquation element
+operation BehavEquation createBehavEquation(current : BehavEquation) : BehavEquation {
+	current := new BehavEquation;
+	current.name = self.name;
+	if(self.bHeader.isDefined()) {
+		current.bHeader := self.bHeader.createBehavHeader(current.bHeader);
+	}
+	if(self.pt.isDefined()) {
+		current.pt := self.pt.createProcessTermGeneral(current.pt);
+	}
+	
+	return current;
+}
+
+// Function that allows you to create an ActionType element
+operation Action checkTypeOfActionType(current : Action) : ActionType {
+	if(self.type.isTypeOf(ActionType)) {
+		current.type := new ActionType;
+		//current.type = self.type;
+	}
+	if(self.type.isTypeOf(ActionInput)) {
+		current.type := new ActionInput;
+		current.type.`var` = self.type.`var`;
+	}
+	if(self.type.isTypeOf(ActionOutput)) {
+		current.type := new ActionOutput;
+		current.type.exprOutput := self.type.exprOutput.createExpressionGeneral(current.type.exprOutput);
+	}
+	return current.type;
+}
+
+// Function used to check if the element is a LocalInteraction, InputInteraction or OutputInteraction
+operation Action checkTypeOfLocalInteraction(current : Action) : LocalInteraction {
+	if(self.is.isTypeOf(LocalInteraction)) {
+		current.is := new LocalInteraction;
+	} 
+	else {
+		if(self.is.isTypeOf(InputInteraction)) {
+			current.is := new InputInteraction;
+		}
+		else {
+			if(self.is.isTypeOf(OutputInteraction)) {
+				current.is := new OutputInteraction;
+			}	
+		}
+	}
+	current.is.intName = self.is.intName;
+	current.is.type = self.is.type;
+	
+	return current.is;
+}
+
+// Function that allows you to create a LocalInteraction element
+operation LocalInteraction createLocalInteraction(current : LocalInteraction) : LocalInteraction {
+	current := new LocalInteraction;
+	current.intName = self.intName;
+	current.interactionType = self.interactionType;
+	
+	return current;
+}
+
+// Function that allows you to create an InputInteraction element
+operation InputInteraction createLocalInteraction(current : InputInteraction) : InputInteraction {
+	current := new InputInteraction;
+	current.intName = self.intName;
+	current.interactionType = self.interactionType;
+	
+	return current;
+}
+
+// Function that allows you to create an OutputInteraction element
+operation OutputInteraction createLocalInteraction(current : OutputInteraction) : OutputInteraction {
+	current := new InputInteraction;
+	current.intName = self.intName;
+	current.interactionType = self.interactionType;
+	
+	return current;
+}
+
+// Function that allows you to create an ActionRate element
+operation Action checkTypeOfRate(current : Action) : ActionRate {
+	if(self.rate.isTypeOf(RateExp)) {
+		current.rate := new RateExp;
+		current.rate.expr = self.rate.expr;
+	}
+	if(self.rate.isTypeOf(RateInf)) {
+		current.rate := new RateInf;
+		current.rate.inf_priority = self.rate.inf_priority;
+		current.rate.inf_weight = self.rate.inf_weight;
+	}
+	if(self.rate.isTypeOf(RatePas)) {
+		current.rate := new RatePas;
+		current.rate.priority := new IdentExpr;
+		current.rate.priority.name = self.rate.priority.name;
+		current.rate.priority.type = self.rate.priority.type;
+		current.rate.weight := new IdentExpr;
+		current.rate.weight.name = self.rate.weight.name;
+		current.rate.weight.type = self.rate.weight.type;
+	}
+	return current.rate;
+}
+
+// Function that allows you to create an Action element
+operation Action createAction(current : Action) : Action {
+   current := new Action;
+   current.name = self.name;
+   current.actThroughtput = self.actThroughtput;
+   current.actUtilization = self.actUtilization;
+   current.actResponseTime  = self.actResponseTime;
+   current.belongs = self.belongs;
+   current.actThDistr = self.actThDistr;
+   current.actRespTimeDistr = self.actRespTimeDistr;
+   current.actUtilDistr = self.actUtilDistr;
+   current.elem = self.elem;
+   current.type := self.checkTypeOfActionType(current);
+   current.is := self.checkTypeOfLocalInteraction(current);
+   current.rate := self.checkTypeOfRate(current);
+   
+   return current;
+}
+
+operation Expression createExpressionGeneral(current : Expression) : Expression {
+	current := self.createExpression(current);
+	return current;
+}
+
+// Function that allows you to create a ListExpr element
+operation ListExpr createExpression(current : ListExpr) : ListExpr {
+	current := new ListExpr;
+	
+	for(list_operand in self.list_operands) {
+		var temp;
+		var temp1 = Expression;
+		temp1 = list_operand.createExpressionGeneral(temp);
+		current.list_operands.add(temp1);
+	}
+	
+	return current;
+}
+
+// Function that allows you to create an ArrayExpr element
+operation ArrayExpr createExpression(current : ArrayExpr) : ArrayExpr {
+	current := new ArrayExpr;
+	
+	for(array_operand in self.array_operands) {
+		var temp;
+		var temp1 = Expression;
+		temp1 = array_operand.createExpressionGeneral(temp);
+		current.array_operands.add(temp1);
+	}
+	
+	return current;
+}
+
+// Function that allows you to create a RecordExpr element
+operation RecordExpr createExpression(current : RecordExpr) : RecordExpr {
+	current := new RecordExpr;
+	
+	for(record_operand in self.record_operands) {
+		var temp;
+		var temp1 = Expression;
+		temp1 = record_operand.createExpressionGeneral(temp);
+		current.record_operands.add(temp1);
+	}
+	
+	return current;
+}
+
+// Function that allows you to create an IdentExpr element
+operation IdentExpr createExpression(current : IdentExpr) : IdentExpr {
+	current := new IdentExpr;
+	current.name = self.name;
+	current.type = self.type;
+	
+	return current;
+}
+
+// Function that allows you to create a MathFunctions element
+operation MathFunctions createExpression(current : MathFunctions) : MathFunctions {
+	current := new MathFunctions;
+	current.name = self.name;
+	current.leftExprMath := self.leftExprMath.createExpressionGeneral(current);
+	current.rightExprMath := self.rightExprMath.createExpressionGeneral(current);
+	
+	return current;
+}
+
+// Function that allows you to create a RelationalExpr element
+operation RelationalExpr createExpression(current : RelationalExpr) : RelationalExpr {
+	current := new RelationalExpr;
+	current.operator = self.operator;
+	current.leftExprRel := self.leftExprRel.createExpressionGeneral(current);
+	current.rightExprRel := self.rightExprRel.createExpressionGeneral(current);
+	
+	return current;
+}
+
+// Function that allows you to create an ArithExpr element
+operation ArithExpr createExpression(current : ArithExpr) : ArithExpr {
+	current := new ArithExpr;
+	current.operator = self.operator;
+	current.leftExprArith := self.leftExprArith.createExpressionGeneral(current);
+	current.rightExprArith := self.rightExprArith.createExpressionGeneral(current);
+	
+	return current;
+}
+
+// Function that allows you to create a Pseudo_random_num_gen element
+operation Pseudo_random_num_gen createExpression(current : Pseudo_random_num_gen) : Pseudo_random_num_gen {
+	current := new Pseudo_random_num_gen;
+	current.name = self.name;
+	current.firstNumGenOp := self.firstNumGenOp.createExpressionGeneral(current);
+	current.secondNumGenOp := self.secondNumGenOp.createExpressionGeneral(current);
+	current.thirdNumGenOp := self.thirdNumGenOp.createExpressionGeneral(current);
+	
+	return current;
+}
+
+// Function that allows you to create a BooleanExpr element
+operation BooleanExpr createExpression(current : BooleanExpr) : BooleanExpr {
+	current := new BooleanExpr;
+	current.operator = self.operator;
+	current.leftExprBool := self.leftExprBool.createExpressionGeneral(current);
+	current.rightExprBool := self.rightExprBool.createExpressionGeneral(current);
+	
+	return current;
+}
+ 
+// Function that allows you to delete a clone of an AEmilia Architectural Element Instance
+operation ArchitecturalInteraction deleteDuplicatedArchiElemInstance() : Boolean {
+	var current : ArchiElemInstance = self.takeFromInstance();
+	
+	if(current.isDefined()) {
+		if(checkDuplicatedArchiElemInstance(current)) {
+			for(attachment in deleteAttachment(current)) {
+				delete attachment;
+			}
+			delete self.selectArchitecturalInteraction();
+			delete selectDuplicatedArchiElemInstance(current);
+			for(attachment in selectAttachment(current)) {
+				attachment.end.isInput.type = InteractionType#UNI;
+			}
+			return true;
+		}
+		return false;
+	}
+	return false;
+} 
+
+// Function that check if a clone of an AEmilia Architectural Element Instance exists
+operation checkDuplicatedArchiElemInstance(current : ArchiElemInstance) : Boolean {
+	return ArchiElemInstance.allInstances -> 
+		exists(aei : ArchiElemInstance|aei.instanceName = current.instanceName + "_Cloned");
+		//select(aei : ArchiElemInstance|aei.instanceName.endsWith('_Cloned'));
+}
+
+// Function that selects a clone of an AEmilia Architectural Element Instance
+operation selectDuplicatedArchiElemInstance(current : ArchiElemInstance) : ArchiElemInstance {
+	return ArchiElemInstance.allInstances -> 
+		selectOne(aei : ArchiElemInstance|aei.instanceName = current.instanceName + "_Cloned");
+}
+
+/*
+Support function that determines, given an instance of an architectural element, the set of instances which is connected
+from its attachment relative to its output interactions
+*/
+operation ArchiElemInstance appFunction() : Set(ArchiElemInstance) {
+	return Attachment.allInstances() ->
+		select(a1:Attachment | a1.start.fromInstance.instanceName = self.instanceName) ->
+			collect(a1:Attachment | a1.end.toInstance) -> asSet();
+}
+
+/*
+Recursive function that, from an architectural element instance, returns the set of all instances it
+reachable browsing all attachments from those related to its output interactions 
+*/
+operation nextInstances(set: Set(ArchiElemInstance), names: Set(String)) : Set(ArchiElemInstance) {
+	var resultSet : Set(ArchiElemInstance) = set;
+	var emptySet : Set(ArchiElemInstance) = Set{};
+	if (set.isEmpty()) {
+		return resultSet;
+	}
+	else {
+		var app : Set(ArchiElemInstance) = set -> collect(x: ArchiElemInstance | self.checkName(emptySet, x, names)) -> asSet();
+		var addedNames : Set(String) = set -> collect(y: ArchiElemInstance | y.instanceName) -> asSet();
+		return resultSet -> includingAll(nextInstances(app, names -> includingAll(addedNames))) -> asSet();
+	}
+}
+
+// Supporting function 
+operation checkName(emptySet : Set(ArchiElemInstance), x : ArchiElemInstance, names : Set(String)) : Set(ArchiElemInstance) {
+	if (names -> includes(x.instanceName)) {
+		return emptySet;
+	}
+	else {
+		return x.appFunction();
+	}	
+}

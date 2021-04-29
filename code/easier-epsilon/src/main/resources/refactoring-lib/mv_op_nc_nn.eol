@@ -1,0 +1,52 @@
+//Move an Operation to new Component that is deployed on a New Node
+
+//libraries
+
+import "library/artifact.eol";
+import "library/association.eol";
+//import "library/class.eol";
+import "library/classifier.eol";
+import "library/component.eol";
+import "library/element.eol";
+import "library/interaction.eol";
+import "library/interactionFragment.eol";
+import "library/interactionOperand.eol";
+import "library/combinedFragment.eol";
+import "library/interface.eol";
+import "library/lifeline.eol";
+import "library/manifestation.eol";
+import "library/message.eol";
+import "library/node.eol";
+import "library/operation.eol";
+import "library/package.eol";
+
+
+//HELPER
+import "library/HELPER.eol";
+
+("moving -->" + self.getName() + " to --> " + targetComp.getName() + " on -> " + targetNode.getName()).println();
+
+//static
+var sourceComponent : Component = self.getOwner();
+		
+targetComp.cloneAppliedStereotypesFrom(sourceComponent); //clono gli stessi stereotipi del componente sorgente	
+targetComp.moveInterfacesRealizationFrom(sourceComponent, self);
+	
+var listOfUsedProvidedInterfaces : List(Interface) = sourceComponent.getAllUsedIntefacesRequiredsBy(self);
+	
+//deploy
+targetComp.deployOn(targetNode);
+
+if(sourceComponent.getNodes().isEmpty()){
+	sourceComponent.getName().println("[ERROR] The Component is not deployed !!!");
+}
+
+targetNode.clone(sourceComponent.getNodes()->first()); //shall resolve the missed stereotypes
+	
+targetComp.moveOperation(self); //sposta l'operazione sul componente appena creato
+	
+//dynamic
+self.dynamicFixing(sourceComponent);
+
+"done".println();
+

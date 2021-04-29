@@ -1,0 +1,198 @@
+operation Interaction hasOperation(op : Operation) : Boolean {
+	for(message in self.message){
+		if(message.signature == op){
+			return true;
+		}
+	}
+	return false;
+}
+
+operation Interaction hasComponent(component : Component) : Boolean {
+	for(property in self.ownedAttribute){
+		if(property.type == component){
+			return true;
+		}
+	}
+	return false;
+}
+
+operation Interaction getIndexOf(fragment : InteractionFragment, indexOf) : Integer{
+	//var indexOf : Integer = self.getFragments()->indexOf(fragment);
+	
+	return self.getFragments()->indexOf(fragment);
+}
+
+operation Interaction getIndexOf(op : Operation) : List(Integer){
+	var returnValue : List(Integer) = new List(Integer);
+	for (mes in self.getMessages()) { 
+		
+		if( mes.getSignature() == op ){
+			returnValue.add(self.getIndexOf(mes.getSendEvent()));
+		}
+	}
+	return returnValue;
+}
+
+operation Interaction addFragmentAt(fragment : InteractionFragment, indexOf : Integer){
+	self.getFragments().add(indexOf,fragment);
+}
+
+operation Interaction removeLifelineOf(component : Component) {
+	self.getLifelines().remove(component.getLifeline(self));
+}
+
+
+operation Interaction getClassifierLifeline(classifier : Classifier) : Lifeline{
+	
+	var lifelines = Lifeline.allInstances->select(lf | lf.getInteraction() == self);
+	
+	for(lf in lifelines){
+		if(lf.getRepresents().getType() == classifier)
+			return lf;
+	}
+}
+
+/*
+
+********** Must be used getLifelineOf(type) ***************
+ 
+operation Interaction getComponentLifeline(component : Component) : Lifeline{
+	for(lf in self.getLifelines()){
+		var represents = lf.getRepresents();
+		for(property in component.getAllInteractionProperties())
+			if(property == represents)
+				return lf;
+	}
+	return null;
+}*/
+
+operation Interaction getClassLifeline(class : Class) : Lifeline{
+	var lifelines = Lifeline.allInstances->select(lf | lf.getInteraction() == self);
+	for(lf in lifelines){
+		if(lf.getRepresents().getType() == class)
+			return lf;
+	}
+}
+
+operation Interaction getUseCase() : UseCase{
+	return self.getNamespace();
+}
+
+
+//messaggi in uscita da una lifeline
+operation Interaction getOutcomingMessageOf(component : Component) : Sequence(Message){
+	var returnValue : Sequence(Message) = new Sequence(Message);
+	var componentLfs = component.getLifelines(self);
+	if(componentLfs.isUndefined()){
+		showError("Method: getOutcomingMessageOf in interaction.eol");
+		return null;
+	}
+	for (mes in self.getMessages().select(m|m.hasStereotype("GaAcqStep"))) {
+		if(not mes.isReturn() and componentLfs.exists(l|l.getCoveredBys()->exists(iterator | iterator == mes.getSendEvent()))){
+			returnValue.add(mes);
+		}
+	}
+	return returnValue;
+}
+
+//messaggi in entrata ad una lifeline
+operation Interaction getIncomingMessageOf(component : Component) : Sequence(Message){
+	var returnValue : Sequence(Message) = new Sequence(Message);
+	var componentLfs = component.getLifelines(self);
+	if(componentLfs.isUndefined()){
+		showError("Method: getIncomingMessageOf() in interaction.eol");
+		return null;
+	}
+	for (mes in self.getMessages().select(m|m.hasStereotype("GaAcqStep"))) {
+		if(not mes.isReturn() and componentLfs.exists(l|l.getCoveredBys()->exists(iterator | iterator == mes.getReceiveEvent()))){
+			returnValue.add(mes);
+		}
+	}
+	return returnValue;
+}
+
+/*operation Interaction getMessageOf(classifier : Classifier) : Sequence(Message){
+	var returnValue : Sequence(Message) = new Sequence(Message);
+	var classifierLf = self.getClassifierLifeline(classifier);
+	for (mes in self.getMessages()) { 
+		if( classifierLf.getCoveredBys()->exists(iterator | iterator == mes.getSendEvent()) ){
+			returnValue.add(mes);
+		}
+	}
+	return returnValue;
+}*/
+
+operation Interaction getLifeline(mos : MessageOccurrenceSpecification) : Lifeline{
+	return Lifeline.allInstances->selectOne(lf | lf.namespace == self and 
+			lf.getCoveredBys()->exists(iterator | iterator == mos));
+}
+
+operation Interaction getLifelineOf(component : Component) : Lifeline {
+	return Lifeline.allInstances->selectOne(lf | lf.namespace == self and 
+			lf.getRepresents().getType() == component);
+}
+
+operation Interaction getLifelineOf(component : Any) : Lifeline {
+	return Lifeline.allInstances->selectOne(lf | lf.namespace == self and 
+			lf.getRepresents().getType() == component);
+}
+
+operation Interaction createLifelineOf(component : Component) : Lifeline {
+	var lifeline = self.createLifeline(component.getName()+"_Lifeline");
+	var componentRepresents = self.createOwnedAttribute(component.getName(), component);
+	lifeline.setRepresents(componentRepresents);
+	return lifeline;
+}
+
+operation Interaction createLoopFragmentAt(index : Integer) : CombinedFragment{
+	var loopFragment : CombinedFragment = new CombinedFragment();
+	self.addFragmentAt(loopFragment, index);
+	loopFragment.setName("LoopFragment_Decomposition");
+	//loopFragment.setInteractionOperand(Native("InteractionOperatorKind").LOOP);
+	var operand = loopFragment.createOperand(loopFragment.getName()+"_Operand");
+	var guard = operand.createGuard(operand.getName()+"_Guard");
+	return loopFragment;
+}
+
+operation Interaction createMessage(from : Lifeline, to : Lifeline, signature : Operation) : Message{
+	var mes = self.createMessage(signature.getName());
+	mes.setSignature(signature);
+	
+	var mes_sendMOS : MessageOccurrenceSpecification = new MessageOccurrenceSpecification;
+	self.getFragments().add(mes_sendMOS);
+	mes_sendMOS.setName(mes.getName()+"__sendMOS");
+	mes_sendMOS.setMessage(mes);
+	mes.setSendEvent(mes_sendMOS);
+	from.getCoveredBys().add(mes.getSendEvent());
+	
+	var mes_receiveMOS : MessageOccurrenceSpecification = new MessageOccurrenceSpecification;
+	self.getFragments().add(mes_receiveMOS);
+	mes_receiveMOS.setName(mes.getName()+"__receiveMOS");
+	mes_receiveMOS.setMessage(mes);
+	mes.setReceiveEvent(mes_receiveMOS);
+	to.getCoveredBys().add(mes.getReceiveEvent());
+	
+	var mes_besLf : BehaviorExecutionSpecification = new BehaviorExecutionSpecification;
+	mes_besLf.setName(mes.getName()+"__bes");
+	self.getFragments().add(mes_besLf);
+	to.getCoveredBys().add(mes_besLf);
+	
+	var mes_eos : ExecutionOccurrenceSpecification = new ExecutionOccurrenceSpecification;
+	mes_eos.setName(mes.getName()+"__eos");
+	mes_eos.setExecution(mes_besLf);
+	self.getFragments().add(mes_eos);
+	mes_besLf.start = mes.getSendEvent();
+	mes_besLf.finish = mes_eos;
+	to.getCoveredBys().add(mes_eos);
+
+	return mes;
+}
+
+operation Interaction getInteractionUses() : Sequence(InteractionUse){
+	
+	return self.allOwnedElements()->select(iterator | iterator.isTypeOf(InteractionUse)).asSequence();
+
+}
+
+
+

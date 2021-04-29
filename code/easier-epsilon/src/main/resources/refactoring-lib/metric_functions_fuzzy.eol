@@ -1,0 +1,678 @@
+/**************************************************************************************************
+*
+* the following methods implement the approach presented by 
+* Arcelli et al. in 'Performance-Based Software Model Refactoring in Fuzzy Contexts' at FASE 2015
+* @url https://link.springer.com/chapter/10.1007%2F978-3-662-46675-9_10
+*
+* @author : Daniele Di Pompeo (daniele.dipompeo@univaq.it)
+*
+***************************************************************************************************/
+
+
+operation UML!Operation F_probExec_fuzzy() : Real{
+
+	var msgs = Message.all->select(msg | msg.hasStereotype("GaStep") and msg.getTag("GaStep", "prob").isDefined());
+	
+	
+	
+	var probs : Sequence(Real);
+	
+	for(msg in msgs){
+		probs.add(msg.getTag("GaStep", "prob" ).asReal());
+	}
+	
+	var upperBound = probs.max();
+	var lowerBound = probs.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 1;
+	}
+	
+	var listOfMes = self.getAllOwnMessages();
+	
+	var fValue : Real = 0.0;
+	
+	//it considers the first operands as the final value
+	//it requires an improvement
+	for(m in listOfMes){
+		if( m.hasStereotype("GaStep") ){
+			
+			fValue = m.getTag("GaStep", "prob").asReal();
+			
+			fValue = m.getInteraction().getExecProb() * fValue; 
+			break;
+		}
+	}
+	return 1-( (upperBound - fValue) / (upperBound - lowerBound));
+}
+
+operation UML!Operation F_resDemand_fuzzy() : Real{
+	//info("UML!Operation F_resDemand_fuzzy() : Real");	
+	
+	var msgs = Message.all->select(m | m.hasStereotype("GaStep"));
+	
+	var execTimes : Sequence(Real);
+	
+	for(m in msgs){
+		execTimes.add(m.getTag("GaStep", "execTime")->first().asReal());
+	}
+	
+	var upperBound = execTimes.max();
+	var lowerBound = execTimes.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 1;
+	}
+	
+	var selfMessages = self.getAllOwnMessages();
+	
+	var fValue : Real = 0.0;
+
+	//it considers the first message with GaStep tag as the final service demand	
+	for(msg in selfMessages){
+		if(msg.hasStereotype("GaStep")){
+			fValue = msg.getTag("GaStep", "execTime")->first().asReal();
+		}	
+		if(fValue <> 0){
+			break;
+		}	
+	}
+	
+	if(fValue == 0){
+		//log("The operation has any set demands. Returns to avoid negative values.");
+		return 0;
+	}
+		
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+	
+}
+
+
+operation UML!Operation F_T_fuzzy() : Real{
+	info("Operation F_T_fuzzy() : Real");
+	
+	var useCases = UseCase.all->select(uc | uc.hasStereotype("GaScenario"));
+	
+	var throughputs : Sequence(Real);
+	for(uc in useCases){
+		
+		throughputs.add(uc.getTag("GaScenario", "throughput")->first().asReal());
+	}
+	
+	var upperBound = throughputs.max();
+	var lowerBound = throughputs.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}	
+	
+	
+	var listOfUseCases : List(UseCase) = self.getUseCases(); 
+	if(listOfUseCases.isEmpty()){
+		//log("the operation " + self.getName() +" is not in any use cases. Returns 0.");
+		return 0; 
+	}
+	
+	var fValue : Real = 0.0;
+	
+	//it considers the first use case with GaSscenario tag as the final throughput value
+	for(useCase in listOfUseCases){
+		
+		if(useCase.hasStereotype('GaScenario')){
+			fValues = useCase.getTag('GaScenario', "throughput")->first();
+			break;
+		}
+	}
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+}
+
+operation UML!Operation F_maxHwUtil_fuzzy() : Real{
+	info("UML!Operation F_maxHwUtil(th_maxHwUtil : Real) : Boolean");	
+	
+	var nodes = Node.all->select(n | n.hasStereotype("GaExecHost") and n.getTag("GaExecHost", "utilization")->first().isDefined());
+		
+	var utils : Sequence(Real);
+	
+	for(n in nodes){
+		//if(n.getTag("GaExecHost", "utilization")->first().isDefined() )
+			utils.add(n.getTag("GaExecHost", "utilization")->first().asReal());
+	}
+	
+	var upperBound = utils.max();
+	var lowerBound = utils.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}
+	
+	var listOfProcessNode : List(Node) = self.getProcessNodes();
+	if(listOfProcessNode.isEmpty()){
+		//log("The operation is not deployed or any node shows a GaExecHost stereotype");
+		return 0; 
+	}
+	
+	var fValue : Real = 0.0;	
+	
+	for(node in listOfProcessNode){
+		if(node.getTag('GaExecHost', 'utilization')->first().isDefined()){
+			fValue = node.getTag('GaExecHost', 'utilization')->first().asReal();
+	 		break;
+	 	}
+	}
+	
+	if(fValue == 0){
+		//log("The operation has any set node with utilization. Returns 0 to avoid negative values.");
+		return 0;
+	}
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+}
+
+
+operation UML!Node F_maxQL_fuzzy() : Real {
+
+	if(not self.hasStereotype("RtUnit") or not self.getTag("RtUnit", "queueSize").isDefined()){
+		return 0;
+	}
+	
+	var nodes = Node.all->select(n | n.hasStereotype("RtUnit") and n.getTag("RtUnit", "queueSize").isDefined());
+	
+	var queueLengths : Sequence(Real);
+	
+	for(n in nodes){
+		queueLengths.add(n.getTag("RtUnit", "queueSize").asReal());
+	}
+	
+	var upperBound = queueLengths.max();
+	var lowerBound = queueLengths.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}
+	
+	return 1 - ( (upperBound - self.getTag("RtUnit", "queueSize").asReal()) / (upperBound - lowerBound)  );
+}
+
+
+operation UML!Node F_maxHwUtil_fuzzy() : Real {
+	if(not self.hasStereotype("GaExecHost") or not self.getTag("GaExecHost", "utilization")->first().isDefined())
+		return 0;
+	
+	var nodes = Node.all->select(n | n.hasStereotype("GaExecHost") and n.getTag("GaExecHost", "utilization")->first().isDefined());
+		
+	var utils : Sequence(Real);
+	
+	for(n in nodes){
+		//if(n.getTag("GaExecHost", "utilization")->first().isDefined() )
+			utils.add(n.getTag("GaExecHost", "utilization")->first().asReal());
+	}
+	
+	var upperBound = utils.max();
+	var lowerBound = utils.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}
+	
+	return 1 - ( (upperBound - self.getTag("GaExecHost", "utilization")->first().asReal()) / (upperBound - lowerBound)  );
+	
+}
+
+operation UML!Component F_resDemand_fuzzy() : Real{
+	//info("UML!Component F_resDemand(th_maxOpResDemand : List( Real ), th_minResDemand : List( Real )) : Boolean");
+	/*if(not self.hasStereotype("PaRunTInstance") ) 
+		return false;*/
+
+	var msgs = Message.all->select(m | m.hasStereotype("GaStep"));
+	
+	var execTimes : Sequence(Real);
+	
+	for(m in msgs){
+		execTimes.add(m.getTag("GaStep", "execTime")->first().asReal());
+	}
+	
+	var upperBound = execTimes.max();
+	var lowerBound = execTimes.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 1;
+	}		
+	
+	var selfOperations = self.getOperations();
+	
+	var fValue : Real = 0.0;
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+	
+	/*var opHeavy = self.getOperationsWithResDemandGreaterOrEqual(th_maxOpResDemand);
+	var opLightweight = self.getOperationsWithResDemandLessThan(th_minResDemand);
+	
+	log("F_resDemand of [" + self.name + "] --> opHeavy: [" + opHeavy.size() + "]  and opLightweight [" + opLightweight.size() + "]");
+	
+	//ho almeno un'operazione con un utilizzazione maggiore ed una con un'utilizzazione minore
+	//delle threshold
+	if(opHeavy.notEmpty() and opLightweight.notEmpty()){
+		return true;
+	}
+	return false;*/
+}
+
+operation UML!Component F_probExec_fuzzy() : Boolean {
+	//list of lifelines
+	var lfs = self.getLifelines();
+	return lfs.isEmpty();
+}
+
+operation UML!Component F_maxHwUtil_fuzzy() : Real{
+
+	var nodes = Node.all->select(n | n.hasStereotype("GaExecHost") and n.getTag("GaExecHost", "utilization")->first().isDefined());
+	
+	if(nodes.isEmpty())
+		return 0;
+		
+	var utils : Sequence(Real);
+	
+	for(n in nodes){
+		utils.add(n.getTag("GaExecHost", "utilization")->first().asReal());
+	}
+	
+	var upperBound = utils.max();
+	var lowerBound = utils.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}
+
+	var selfNodes = self.getNodes();
+	
+	selfNodes = selfNodes->select(n | n.getTag('GaExecHost', 'utilization')->first().isDefined());
+	
+	if(selfNodes.isEmpty())
+		return 0;
+	
+	var fValue : Real = 0.0;
+	
+	for(n in selfNodes){
+		fValue = n.getTag('GaExecHost', 'utilization')->first().asReal();
+	 	break;
+	}
+
+	//it avoids negative values	
+	if(fValue == 0)
+		return 0;
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+}
+
+
+operation UML!Component F_RT_fuzzy() : Real {
+
+	var useCases = UseCase.all->select(uc | uc.hasStereotype("GaScenario") and uc.getTag("GaScenario", "respT")->first().isDefined());
+	
+	if(useCases.isEmpty())
+		return 0;
+	
+	var respTs : Sequence(Real);
+	for(uc in useCases){
+		respTs.add(uc.getTag("GaScenario", "respT")->first().asReal());
+	}
+	
+	var upperBound = respTs.max();
+	var lowerBound = respTs.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}	
+	
+	
+	var listOfUseCases : List(UseCase) = self.getUseCases(); 
+	if(listOfUseCases.isEmpty()){
+		return 0; 
+	}
+	
+	var fValue : Real = 0.0;
+	
+	//it considers the first use case with GaSscenario tag as the final throughput value
+	for(useCase in listOfUseCases){
+		if(useCase.hasStereotype('GaScenario')){
+			fValues = useCase.getTag('GaScenario', "respT")->first();
+			break;
+		}
+	}
+	
+	//it avoids negative values	
+	if(fValue == 0)
+		return 0;
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+}
+
+operation UML!Component F_numSupplierConnects_fuzzy() : Real{
+	
+	var cmps = Component.all;
+	
+	var upperBound : Real = cmps->first().getProvideds();
+	var lowerBound : Real = cmps->first().getProvideds();
+	
+	//retrieves the upper and lower bounds of the numbero of provided
+	//interface. Basically, it seeks the maximum and minimum number
+	//of interfaces, respectively.
+	for(c in cmps){
+		var i = c.getProvideds().asReal();
+		if(i >= upperBound)
+			upperBound = i;
+		else if(i <= lowerBound)
+			lowerBound = i;
+	}
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}	
+	
+	var fValue = self.getProvideds().size().asReal();
+	
+	//it avoids negative values	
+	if(fValue == 0)
+		return 0;
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+
+}
+
+operation UML!Component F_numClientConnects_fuzzy() : Real{
+	var cmps = Component.all;
+	
+	var upperBound : Real = cmps->first().getProvideds();
+	var lowerBound : Real = cmps->first().getProvideds();
+	
+	//retrieves the upper and lower bounds of the numbero of provided
+	//interface. Basically, it seeks the maximum and minimum number
+	//of interfaces, respectively.
+	for(c in cmps){
+		var i = c.getRequireds().asReal();
+		if(i >= upperBound)
+			upperBound = i;
+		else if(i <= lowerBound)
+			lowerBound = i;
+	}
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}	
+	
+	var fValue = self.getRequireds().size().asReal();
+	
+	//it avoids negative values	
+	if(fValue == 0)
+		return 0;
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+}
+
+operation UML!Component F_numMsgsIn_fuzzy() : Real{
+	
+	var lfs = Lifeline.all;
+		
+	if(lfs.isEmpty())
+		return 0;
+	
+	var msgs = Message.all;	
+	var first = msgs->select(mes : Message | mes.notReturn() and mes.getReceiveEvent().getCovereds()->first().getRepresents().getType() == lfs->first().getRepresents().getType()).size();
+	var upperBound : Real = first;
+	var lowerBound : Real = first;
+	
+	for(l in lfs){
+		var numMsg = msgs->select(mes : Message | mes.notReturn() and mes.getReceiveEvent().getCovereds()->first().getRepresents().getType() == l->first().getRepresents().getType()).size();
+		if(numMsg >= upperBound)
+			upperBound = numMsg;
+		else if (numMsg <= lowerBound)
+			lowerBound = numMsg;
+	}	
+	
+	if(upperBound == lowerBound){
+		return 0;
+	}	
+	
+	var selfLfs = self.getLifelines();
+	
+	if(selfLfs.isEmpty())
+		return 0;
+	
+	var fValue ; Real = 0.0;
+	for(slf in selfLfs){
+		fValue = msgs->select(mes : Message | mes.notReturn() and mes.getReceiveEvent().getCovereds()->first().getRepresents().getType() == slf->first().getRepresents().getType()).size();
+	}
+	
+	//it avoids negative values	
+	if(fValue == 0)
+		return 0;
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+}
+
+operation UML!Component F_numMsgsOut_fuzzy() : Real{
+	var lfs = Lifeline.all;
+		
+	if(lfs.isEmpty())
+		return 0;
+	
+	var msgs = Message.all;	
+	var first = msgs->select(mes : Message | mes.notReturn() and mes.getSendEvent().getCovereds()->first().getRepresents().getType() == lfs->first().getRepresents().getType()).size();
+	var upperBound : Real = first;
+	var lowerBound : Real = first;
+	
+	for(l in lfs){
+		var numMsg = msgs->select(mes : Message | mes.notReturn() and mes.getSendEvent().getCovereds()->first().getRepresents().getType() == l->first().getRepresents().getType()).size();
+		if(numMsg >= upperBound)
+			upperBound = numMsg;
+		else if (numMsg <= lowerBound)
+			lowerBound = numMsg;
+	}	
+	
+	if(upperBound == lowerBound){
+		return 0;
+	}	
+	
+	var selfLfs = self.getLifelines();
+	
+	if(selfLfs.isEmpty())
+		return 0;
+	
+	var fValue ; Real = 0.0;
+	for(slf in selfLfs){
+		fValue = msgs->select(mes : Message | mes.notReturn() and mes.getSendEvent().getCovereds()->first().getRepresents().getType() == slf->first().getRepresents().getType()).size();
+	}
+	
+	//it avoids negative values	
+	if(fValue == 0)
+		return 0;
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+}
+
+
+operation UML!Component F_maxNetUtil_fuzzy() : Real{
+
+
+	var paths = CommunicationPath.all->select(p | p.hasStereotype("GaCommChannel") and p.getTag("GaCommChannel","utlization")->first().isDefined());
+	
+	if(paths.isEmpty())
+		return 0;
+	
+	var utils : Sequence(Real);
+	
+	for(p in paths){
+		utils.add(p.getTag("GaCommChannel","utlization")->first().asReal());
+	}
+
+	var upperBound = utils.max();
+	var lowerBound = utils.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}
+
+	var selfNodes = self.getNodes();
+	
+	if(selfNodes.isEmpty())
+		return 0;
+	
+	var selfCPs : Sequence(CommunicationPath);
+	
+	for(n in selfNodes){
+		selfCPs.add(n.getCommunicationPaths()->select(p | p.hasStereotype("GaCommChannel") and p.getTag("GaCommChannel","utlization")->first().isDefined()));
+	}
+	
+	if(selfCPs.isEmpty())
+		return 0;
+	
+	var fValue : Real = 0.0;
+	for(cp in selfCPS){
+		var netUsage = cp.getValue(cp.getStereotype("GaCommChannel"),"utlization");  //error in magicDraw's exporting
+		if(netUsage.isDefined())
+			fValue = netUsage;
+	}
+
+	//it avoids negative values	
+	if(fValue == 0)
+		return 0;
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+}
+
+
+operation UML!Component F_numRemMsgs_fuzzy() : Real{
+	
+	var seqOfMes = Message.all->select(m | m.hasStereotype("GaStep") and not m.isReturn());
+
+	var cmps = Component.all;
+	
+	var remMsgs : Sequence(Real);
+	
+	var numRemMsg : Integer = 0;
+	for(c in cmps){
+		numRemMsg = 0;
+		for(mes in seqOfMes){
+			var lf = mes.getReceiveLifeline(); //lifeline destinataria
+			var component = lf.getRepresents().getType(); //componente
+							
+			if(component.isTypeOf(Component) and component.isRemote(c) ){ // i due componenti sono remoti
+				numRemMsg = numRemMsg + 1;
+			}	
+		}
+		remMsgs.add(numRemMsg);
+	}
+	
+	var upperBound = remMsgs.max();
+	var lowerBound = remMsgs.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}
+	
+	remMsgs.clear();
+	numRemMsg = 0;
+	for(mes in seqOfMes){
+		var lf = mes.getReceiveLifeline(); //lifeline destinataria
+		var component = lf.getRepresents().getType(); //componente
+						
+		if(component.isTypeOf(Component) and component.isRemote(self) ){ // i due componenti sono remoti
+			numRemMsg = numRemMsg + 1;
+		}
+		remMsgs.add(numRemMsg);	
+	}
+	
+	if(remMsg.isEmpty())
+		return 0;
+	
+	var fValue : Real = remMsg.random().asReal();
+	
+	//it avoids negative values	
+	if(fValue == 0.0)
+		return 0.0;
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+}
+
+
+operation UML!Component F_numRemInst_fuzzy() : Real{
+	
+	var seqOfMes = Message.all->select(m | m.hasStereotype("GaStep") and not m.isReturn());
+
+	var cmps = Component.all;
+	
+	var remInsts : Sequence(Real);
+	
+	var numRem : Integer = 0;
+	for(c in cmps){
+		numRem = 0;
+		var lfs = c.getLifelines(); //lifeline destinataria
+		for (lf in lfs){
+			var component = lf.getRepresents().getType(); //componente
+			if(component.isTypeOf(Component) and component.isRemote(self) ){ // i due componenti sono remoti
+				numRem = numRem + 1;
+			}	
+		}
+		remInsts.add(numRem);
+	}
+	
+	var upperBound = remInsts.max();
+	var lowerBound = remInsts.min();
+	
+	if(upperBound == lowerBound){
+		//log("Upper and Lower Bounds have the same value. Returns 1.");
+		return 0;
+	}
+	
+	remInsts.clear();
+	var numRem = 0;
+	for(c in cmps){
+		numRem = 0;
+		var lfs = c.getLifelines(); //lifeline destinataria
+		for(ls in lfs){
+			var component = lf.getRepresents().getType(); //componente
+			if(component.isTypeOf(Component) and component.isRemote(self) ){ // i due componenti sono remoti
+				numRem = numRem + 1;
+			}
+			remInsts.add(numRem);	
+		}
+	}
+	
+	if(remMsg.isEmpty())
+		return 0;
+	
+	var fValue : Real = remMsg.random().asReal();
+	
+	//it avoids negative values	
+	if(fValue == 0.0)
+		return 0.0;
+	
+	return 1 - ( (upperBound - fValue) / (upperBound - lowerBound)  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

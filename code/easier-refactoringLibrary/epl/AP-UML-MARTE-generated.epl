@@ -1,0 +1,800 @@
+import "../evl/metric_functions.eol";
+import "../evl/thresholds_BGCS.eol";
+import "../evl/library/artifact.eol";
+import "../evl/library/association.eol";
+import "../evl/library/classifier.eol";
+import "../evl/library/component.eol";
+import "../evl/library/element.eol";
+import "../evl/library/interaction.eol";
+import "../evl/library/interactionFragment.eol";
+import "../evl/library/interactionOperand.eol";
+import "../evl/library/combinedFragment.eol";
+import "../evl/library/interface.eol";
+import "../evl/library/lifeline.eol";
+import "../evl/library/manifestation.eol";
+import "../evl/library/message.eol";
+import "../evl/library/node.eol";
+import "../evl/library/operation.eol";
+import "../evl/library/package.eol";
+import "../evl/library/HELPER.eol";
+
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand()) and (mainRole.F_T(th_SthReq()) or mainRole.F_maxHwUtil(th_maxHwUtil()->first())))
+		onmatch {
+		log("--------------");
+		log("pattern PaF");
+		log("moveOpLC on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.moveToLessCriticalOwner();
+		log("--------------");
+		log("");
+	}
+}
+
+pattern CPS
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth()) and mainRole.F_resDemandDiskGreaterOrEqualThan(th_maxResDemand()->second())) or
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxCpuUtil(th_maxHwUtil()->second()) and mainRole.F_resDemandCpuGreaterOrEqualThan(th_maxResDemand()->first()))
+		onmatch {
+		log("--------------");
+		log("pattern CPS");
+		log("moveCompLN on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->fourth()).println();
+			("F_maxDiskUtil --> "+mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.redeployOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}
+
+pattern Blob
+	mainRole : Component { 
+		match : 
+			(mainRole.F_numSupplierConnects(th_maxSupplierConnects()) and mainRole.F_numMsgsIn(th_numReceivedMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))) or
+			(mainRole.F_numClientConnects(th_maxClientConnects()) and mainRole.F_numMsgsOut(th_numSentMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil())))
+		onmatch {
+		log("--------------");
+		log("pattern Blob");
+		log("moveCompNN on");
+		log("mainRole --> "+mainRole.getName());
+						
+		if(debug()){
+			"######### DEBUG ##########".println();
+			("F_numSupplierConnects --> "+mainRole.getProvideds().size()).println();
+			("th_maxSupplierConnects --> "+th_maxSupplierConnects()).println();
+			
+			("F_numMsgsIn --> "+mainRole.getCriticalLifeline4BlobContainerAP(th_numReceivedMsgs())).println();
+			("th_numReceivedMsgs --> "+th_numReceivedMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+			
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		
+		mainRole.deployOnNewNode();
+		log("--------------");
+		log("");
+	}
+}
+
+
+/*pattern Blob_dataContainer
+	mainRole : Component {  
+		match : 
+			mainRole.F_numSupplierConnects(th_maxSupplierConnects()) and mainRole.F_numMsgsIn(th_numReceivedMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))
+		onmatch {
+		log("--------------");
+		log("pattern Blob_dataContainer");
+		log("moveToNewComponentDeployedOnNewNode on");
+		log("mainRole --> "+mainRole.getName());
+				
+		if(not debug()){
+			"######### DEBUG ##########".println();
+			("F_numSupplierConnects --> "+mainRole.getProvideds().size()).println();
+			("th_maxSupplierConnects --> "+th_maxSupplierConnects()).println();
+			
+			("F_numMsgsIn --> "+mainRole.getCriticalLifeline4BlobContainerAP(th_numReceivedMsgs())).println();
+			("th_numReceivedMsgs --> "+th_numReceivedMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+			
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		mainRole.moveToNewComponentDeployedOnNewNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern Blob_dataContainer
+	mainRole : Component { 
+		match : 
+			mainRole.F_numSupplierConnects(th_maxSupplierConnects()) and mainRole.F_numMsgsIn(th_numReceivedMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))
+		onmatch {
+		log("--------------");
+		log("pattern Blob_dataContainer");
+		log("moveToNewComponentDeployedOnNearLessUsedNode on");
+		log("mainRole --> "+mainRole.getName());
+						
+		if(debug()){
+			"######### DEBUG ##########".println();
+			("F_numSupplierConnects --> "+mainRole.getProvideds().size()).println();
+			("th_maxSupplierConnects --> "+th_maxSupplierConnects()).println();
+			
+			("F_numMsgsIn --> "+mainRole.getCriticalLifeline4BlobContainerAP(th_numReceivedMsgs())).println();
+			("th_numReceivedMsgs --> "+th_numReceivedMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+			
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		
+		mainRole.moveToNewComponentDeployedOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern Blob_dataContainer
+	mainRole : Component { 
+		match : 
+			mainRole.F_numSupplierConnects(th_maxSupplierConnects()) and mainRole.F_numMsgsIn(th_numReceivedMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))
+		onmatch {
+		log("--------------");
+		log("pattern Blob_dataContainer");
+		log("redeployOnNearLessUsedNode on");
+		log("mainRole --> "+mainRole.getName());
+						
+		if(debug()){
+			"######### DEBUG ##########".println();
+			("F_numSupplierConnects --> "+mainRole.getProvideds().size()).println();
+			("th_maxSupplierConnects --> "+th_maxSupplierConnects()).println();
+			
+			("F_numMsgsIn --> "+mainRole.getCriticalLifeline4BlobContainerAP(th_numReceivedMsgs())).println();
+			("th_numReceivedMsgs --> "+th_numReceivedMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+			
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		
+		mainRole.redeployOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern Blob_dataContainer
+	mainRole : Component { 
+		match : 
+			mainRole.F_numSupplierConnects(th_maxSupplierConnects()) and mainRole.F_numMsgsIn(th_numReceivedMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))
+		onmatch {
+		log("--------------");
+		log("pattern Blob_dataContainer");
+		log("moveToLessCriticalComponent on");
+		log("mainRole --> "+mainRole.getName());
+						
+		if(debug()){
+			"######### DEBUG ##########".println();
+			("F_numSupplierConnects --> "+mainRole.getProvideds().size()).println();
+			("th_maxSupplierConnects --> "+th_maxSupplierConnects()).println();
+			
+			("F_numMsgsIn --> "+mainRole.getCriticalLifeline4BlobContainerAP(th_numReceivedMsgs())).println();
+			("th_numReceivedMsgs --> "+th_numReceivedMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+			
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		
+		mainRole.moveToLessCriticalComponent();
+		log("--------------");
+		log("");
+	}
+}*/
+
+
+
+/*pattern Blob_dataContainer
+	mainRole : Component { 
+		match : 
+			mainRole.F_numSupplierConnects(th_maxSupplierConnects()) and mainRole.F_numMsgsIn(th_numReceivedMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))
+		onmatch {
+		log("--------------");
+		log("pattern Blob_dataContainer");
+		log("reduceNumberOfSupplierConnects on");
+		log("mainRole --> "+mainRole.getName());
+						
+		if(debug()){
+			"######### DEBUG ##########".println();
+			("F_numSupplierConnects --> "+mainRole.getProvideds().size()).println();
+			("th_maxSupplierConnects --> "+th_maxSupplierConnects()).println();
+			
+			("F_numMsgsIn --> "+mainRole.getCriticalLifeline4BlobContainerAP(th_numReceivedMsgs())).println();
+			("th_numReceivedMsgs --> "+th_numReceivedMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+			
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		mainRole.reduceNumberOfSupplierConnects(th_maxSupplierConnects());
+		log("--------------");
+		log("");
+	}
+}
+
+pattern Blob_Controller
+	mainRole : Component { 
+		match : 
+			mainRole.F_numClientConnects(th_maxClientConnects()) and mainRole.F_numMsgsOut(th_numSentMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))
+		onmatch {
+		log("--------------");
+		log("pattern Blob_Controller");
+		log("moveToNewComponentDeployedOnNewNode on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){	
+			"######### DEBUG ##########".println();
+			("F_numClientConnects --> "+mainRole.getRequireds().size().asReal()).println();
+			("th_maxClientConnects --> "+th_maxClientConnects()).println();
+			
+			("F_numMsgsOut (# of Lifeline) --> "+mainRole.getCriticalLifeline4BlobControllerAP(th_numSentMsgs()).size()).println();
+			("th_maxClientConnects --> "+th_numSentMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+	
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		mainRole.moveToNewComponentDeployedOnNewNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern Blob_Controller
+	mainRole : Component { 
+		match : 
+			mainRole.F_numClientConnects(th_maxClientConnects()) and mainRole.F_numMsgsOut(th_numSentMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))
+		onmatch {
+		log("--------------");
+		log("pattern Blob_Controller");
+		log("moveToNewComponentDeployedOnNearLessUsedNode on");
+		log("mainRole --> "+mainRole.getName());
+				
+		if(debug()){
+			"######### DEBUG ##########".println();
+			("F_numClientConnects --> "+mainRole.getRequireds().size().asReal()).println();
+			("th_maxClientConnects --> "+th_maxClientConnects()).println();
+			
+			("F_numMsgsOut --> "+mainRole.getCriticalLifeline4BlobControllerAP(th_numSentMsgs()).size()).println();
+			("th_maxClientConnects --> "+th_numSentMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+			
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		
+		mainRole.moveToNewComponentDeployedOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern Blob_Controller
+	mainRole : Component { 
+		match : 
+			mainRole.F_numClientConnects(th_maxClientConnects()) and mainRole.F_numMsgsOut(th_numSentMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))
+		onmatch {
+		log("--------------");
+		log("pattern Blob_Controller");
+		log("redeployOnNearLessUsedNode on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){		
+			"######### DEBUG ##########".println();
+			
+			("F_numClientConnects --> "+mainRole.getRequireds().size().asReal()).println();
+			("th_maxClientConnects --> "+th_maxClientConnects()).println();
+			
+			("F_numMsgsOut --> "+mainRole.getCriticalLifeline4BlobControllerAP(th_numSentMsgs()).size()).println();
+			("th_maxClientConnects --> "+th_numSentMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+	
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		
+		mainRole.redeployOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern Blob_Controller
+	mainRole : Component { 
+		match : 
+			mainRole.F_numClientConnects(th_maxClientConnects()) and mainRole.F_numMsgsOut(th_numSentMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))
+		onmatch {
+		log("--------------");
+		log("pattern Blob_Controller");
+		log("moveToLessCriticalComponent on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"######### DEBUG ##########".println();
+			("F_numClientConnects --> "+mainRole.getRequireds().size().asReal()).println();
+			("th_maxClientConnects --> "+th_maxClientConnects()).println();
+			
+			("F_numMsgsOut --> "+mainRole.getCriticalLifeline4BlobControllerAP(th_numSentMsgs()).size()).println();
+			("th_maxClientConnects --> "+th_numSentMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+			
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		mainRole.moveToLessCriticalComponent();
+		log("--------------");
+		log("");
+	}
+}*/
+/*
+pattern Blob_Controller
+	mainRole : Component { 
+		match : 
+			mainRole.F_numClientConnects(th_maxClientConnects()) and mainRole.F_numMsgsOut(th_numSentMsgs()) and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_maxNetUtil(th_maxNetUtil()))
+		onmatch {
+		log("--------------");
+		log("pattern Blob_Controller");
+		log("moveCompNN on");
+		log("mainRole --> "+mainRole.getName());
+				
+		if(not debug()){
+			"######### DEBUG ##########".println();
+			("F_numClientConnects --> "+mainRole.getRequireds().size().asReal()).println();
+			("th_maxClientConnects --> "+th_maxClientConnects()).println();
+			
+			("F_numMsgsOut --> "+mainRole.getCriticalLifeline4BlobControllerAP(th_numSentMsgs()).size()).println();
+			("th_maxClientConnects --> "+th_numSentMsgs()).println();
+			
+			("F_maxHwUtil --> "+mainRole.F_maxHwUtil(th_maxHwUtil()->first())).println();
+			("th_maxHwUtil --> "+th_maxHwUtil()).println();
+			
+			("F_maxNetUtil --> "+mainRole.F_maxNetUtil(th_maxNetUtil())).println();
+			("th_maxHwUtil --> "+th_maxNetUtil()).println();
+			"######### DEBUG ##########".println();
+		}
+		
+		mainRole.deployOnNewNode();
+		log("--------------");
+		log("");
+	}
+}
+/*
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand()) and (mainRole.F_T(th_SthReq()) or mainRole.F_maxHwUtil(th_maxHwUtil()->first())))
+		onmatch {
+		log("--------------");
+		log("pattern Paf");
+		log("moveToNewOwnerDeployedOnNewNode on");
+		log("mainRole --> "+ mainRole.getName());
+		
+		mainRole.moveToNewOwnerDeployedOnNewNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand()) and (mainRole.F_T(th_SthReq()) or mainRole.F_maxHwUtil(th_maxHwUtil()->first())))
+		onmatch {
+		log("--------------");
+		log("pattern PaF");
+		log("moveToNewOwnerDeployedOnNearLessUsedNode on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.moveToNewOwnerDeployedOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand()) and (mainRole.F_T(th_SthReq()) or mainRole.F_maxHwUtil(th_maxHwUtil()->first())))
+		onmatch {
+		log("--------------");
+		log("pattern PaF");
+		log("redeployOnNearLessUsedNode on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.redeployOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}*//*
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand()) and (mainRole.F_T(th_SthReq()) or mainRole.F_maxHwUtil(th_maxHwUtil()->first())))
+		onmatch {
+		log("--------------");
+		log("pattern PaF");
+		log("moveOpLC on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.moveToLessCriticalOwner();
+		log("--------------");
+		log("");
+	}
+}/*
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand()) and (mainRole.F_T(th_SthReq()) or mainRole.F_maxHwUtil(th_maxHwUtil()->first())))
+		onmatch {
+		log("--------------");
+		log("pattern Paf");
+		log("moveToNewNode on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.moveToNewNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern PaF
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_probExec() and mainRole.F_resDemand(th_maxResDemand()) and (mainRole.F_T(th_SthReq()) or mainRole.F_maxHwUtil(th_maxHwUtil()->first())))
+		onmatch {
+		log("--------------");
+		log("pattern PaF");
+		log("decomposition on");
+		log("mainRole --> " + mainRole.getName());
+		mainRole.decomposition();
+		log("--------------");
+		log("");
+	}
+}*/
+/*
+pattern CPS_CPU
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxCpuUtil(th_maxHwUtil()->second()) and mainRole.F_resDemandCpuGreaterOrEqualThan(th_maxResDemand()->first()))
+		onmatch {
+		log("--------------");
+		log("pattern CPS_CPU");
+		log("moveToNewComponentDeployedOnNewNode on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->second()).println();
+			("F_maxCpuUtil --> "+mainRole.F_maxCpuUtil(th_maxHwUtil()->second())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			("F_resDemandCpuGreaterOrEqualThan --> "+mainRole.F_resDemandCpuGreaterOrEqualThan(th_maxResDemand())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.moveToNewComponentDeployedOnNewNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern CPS_CPU
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxCpuUtil(th_maxHwUtil()->second()) and mainRole.F_resDemandCpuGreaterOrEqualThan(th_maxResDemand()->first()))
+		onmatch {
+		log("--------------");
+		log("pattern CPS_CPU");
+		log("moveToNewComponentDeployedOnNearLessUsedNode on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->second()).println();
+			("F_maxCpuUtil --> "+mainRole.F_maxCpuUtil(th_maxHwUtil()->second())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.moveToNewComponentDeployedOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}*//*
+pattern CPS_CPU
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxCpuUtil(th_maxHwUtil()->second()) and mainRole.F_resDemandCpuGreaterOrEqualThan(th_maxResDemand()->first()))
+		onmatch {
+		log("--------------");
+		log("pattern CPS_CPU");
+		log("moveCompLN on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->second()).println();
+			("F_maxCpuUtil --> "+mainRole.F_maxCpuUtil(th_maxHwUtil()->second())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.redeployOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}/*
+pattern CPS_CPU
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxCpuUtil(th_maxHwUtil()->second()) and mainRole.F_resDemandCpuGreaterOrEqualThan(th_maxResDemand()->first()))
+		onmatch {
+		log("--------------");
+		log("pattern CPS_CPU");
+		log("redeployOnNewNode on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->second()).println();
+			("F_maxCpuUtil --> "+mainRole.F_maxCpuUtil(th_maxHwUtil()->second())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.redeployOnNewNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern CPS_CPU
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxCpuUtil(th_maxHwUtil()->second()) and mainRole.F_resDemandCpuGreaterOrEqualThan(th_maxResDemand()->first()))
+		onmatch {
+		lgo("--------------");
+		log("pattern CPS_CPU");
+		log("moveToLessCriticalComponent on");
+		log("mainRole --> "+mainRole.getName());
+		
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->second()).println();
+			("F_maxCpuUtil --> "+mainRole.F_maxCpuUtil(th_maxHwUtil()->second())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.moveToLessCriticalComponent();
+		log("--------------");
+		log("");
+	}
+}
+pattern CPS_DISK
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth()) and mainRole.F_resDemandDiskGreaterOrEqualThan(th_maxResDemand()->second()))
+		onmatch {
+		log("--------------");
+		log("pattern CPS_DISK");
+		log("moveToNewComponentDeployedOnNewNode on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->fourth()).println();
+			("F_maxDiskUtil --> "+mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.moveToNewComponentDeployedOnNewNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern CPS_DISK
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth()) and mainRole.F_resDemandDiskGreaterOrEqualThan(th_maxResDemand()->second()))
+		onmatch {
+		log("--------------");
+		log("pattern CPS_DISK");
+		log("moveToNewComponentDeployedOnNearLessUsedNode on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->fourth()).println();
+			("F_maxDiskUtil --> "+mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.moveToNewComponentDeployedOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}*/
+/*
+pattern CPS_DISK
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth()) and mainRole.F_resDemandDiskGreaterOrEqualThan(th_maxResDemand()->second()))
+		onmatch {
+		log("--------------");
+		log("pattern CPS_DISK");
+		log("moveCompLN on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->fourth()).println();
+			("F_maxDiskUtil --> "+mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.redeployOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}
+
+/*
+pattern CPS_DISK
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth()) and mainRole.F_resDemandDiskGreaterOrEqualThan(th_maxResDemand()->second()))
+		onmatch {
+		log("--------------");
+		log("pattern CPS_DISK");
+		log("redeployOnNewNode on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->fourth()).println();
+			("F_maxDiskUtil --> "+mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.redeployOnNewNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern CPS_DISK
+	mainRole : Node { 
+		match : 
+			(mainRole.F_maxQL(th_maxQL()) and mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth()) and mainRole.F_resDemandDiskGreaterOrEqualThan(th_maxResDemand()->second()))
+		onmatch {
+		log("--------------");
+		log("pattern CPS_DISK");
+		log("moveToLessCriticalComponent on");
+		log("mainRole --> "+mainRole.getName());
+		if(debug()){
+			"************* DEBUG ***********".println();
+			("th_maxHwUtil --> "+th_maxHwUtil()->fourth()).println();
+			("F_maxDiskUtil --> "+mainRole.F_maxDiskUtil(th_maxHwUtil()->fourth())).println();
+			("th_maxQL --> "+th_maxQL()).println();
+			("F_maxQL --> "+mainRole.F_maxQL(th_maxQL())).println();
+			"************* DEBUG ***********".println();
+		}
+		mainRole.moveToLessCriticalComponent();
+		log("--------------");
+		log("");
+	}
+}*/
+/*
+pattern ExtensiveProcessingAP
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_resDemand(th_maxOpResDemand()) and mainRole.F_probExec4EP() and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_RT(th_SrtReq())))
+		onmatch {
+		log("--------------");
+		log("pattern ExtensiveProcessingAP");
+		log("moveToNewComponentDeployedOnNewNode on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.moveToNewComponentDeployedOnNewNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern ExtensiveProcessingAP
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_resDemand(th_maxOpResDemand()) and mainRole.F_probExec4EP() and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_RT(th_SrtReq())))
+		onmatch {
+		log("--------------");
+		log("pattern ExtensiveProcessing");
+		log("moveToNewComponentDeployedOnNearLessUsedNode on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.moveToNewComponentDeployedOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern ExtensiveProcessingAP
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_resDemand(th_maxOpResDemand()) and mainRole.F_probExec4EP() and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_RT(th_SrtReq())))
+		onmatch {
+		log("--------------");
+		log("pattern ExtensiveProcessingAP");
+		log("redeployOnNearLessUsedNode on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.redeployOnNearLessUsedNode();
+		log("--------------");
+		log("");
+	}
+}
+pattern ExtensiveProcessingAP
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_resDemand(th_maxOpResDemand()) and mainRole.F_probExec4EP() and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_RT(th_SrtReq())))
+		onmatch {
+		log("--------------");
+		log("pattern ExtensiveProcessingAP");
+		log("moveToLessCriticalComponent on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.moveToLessCriticalComponent();
+		log("--------------");
+		log("");
+	}
+}
+pattern ExtensiveProcessingAP
+	mainRole : Operation { 
+		match : 
+			(mainRole.F_resDemand(th_maxOpResDemand()) and mainRole.F_probExec4EP() and (mainRole.F_maxHwUtil(th_maxHwUtil()->first()) or mainRole.F_RT(th_SrtReq())))
+		onmatch {
+		log("--------------");
+		log("pattern ExtensiveProcessingAP");
+		log("moveToNewNode on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.moveToNewNode();
+		log("--------------");
+		log("");
+	}
+}
+
+pattern EmptySemiTruck
+	mainRole : Component { 
+		match : 
+			mainRole.F_numRemMsgs(th_maxRemMsgs()) and (mainRole.F_maxNetUtil(th_minNetUtil()) or mainRole.F_numRemInst(th_maxRemInst()))
+		onmatch {
+		log("--------------");
+		log("pattern EmptySemiTruck");
+		log("applySessionFacade on");
+		log("mainRole --> "+mainRole.getName());
+		mainRole.applySessionFacade();
+		log("--------------");
+		log("");
+	}
+}*/

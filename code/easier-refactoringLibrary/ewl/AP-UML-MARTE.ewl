@@ -1,0 +1,198 @@
+import "../evl/metric_functions.eol";
+
+//libraries
+import "../evl/library/element.eol";
+import "../evl/library/package.eol";
+
+import "../evl/library/classifier.eol";
+import "../evl/library/class.eol";
+import "../evl/library/component.eol";
+
+import "../evl/library/operation.eol";
+import "../evl/library/interaction.eol";
+import "../evl/library/interactionFragment.eol";
+import "../evl/library/interactionOperand.eol";
+import "../evl/library/artifact.eol";
+import "../evl/library/manifestation.eol";
+import "../evl/library/node.eol";
+import "../evl/library/lifeline.eol";
+import "../evl/library/interface.eol";
+import "../evl/library/message.eol";
+
+//thresholds
+import "../evl/thresholds.eol";
+
+/*********************************************************************************************
+ *																							 *
+ *	 								Pipe and Filter 										 *
+ *							Antipattern Detection and Validation					 		 *
+ *																							 *
+ *********************************************************************************************/
+
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(_th_maxResDemand()) and (not self.F_T(_th_SthReq()) or not self.F_maxHwUtil(_th_maxHwUtil())))
+	title : "Move it to a new Component deployed to a new Node"
+	do{
+		self.moveToNewOwnerDeployedOnNewNode();
+	}
+}
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(_th_maxResDemand()) and (not self.F_T(_th_SthReq()) or not self.F_maxHwUtil(_th_maxHwUtil())))
+	title : "Move it to a new Component deployed to the less used neighbour Node"
+	do{
+		self.moveToNewOwnerDeployedOnNearLessUsedNode();
+	}
+}
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(_th_maxResDemand()) and (not self.F_T(_th_SthReq()) or not self.F_maxHwUtil(_th_maxHwUtil())))
+	title : "Redeploy its owning Component to the less used neighbour Node"
+	do{
+		self.redeployOnNearLessUsedNode();
+	}
+}
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(_th_maxResDemand()) and (not self.F_T(_th_SthReq()) or not self.F_maxHwUtil(_th_maxHwUtil())))
+	title : "Change its owning Component to the one with the lowest demand"
+	do{
+		self.moveToLessCriticalOwner();
+	}
+}
+wizard PaF{
+	guard :
+		self.isTypeOf(Operation) and (self.F_probExec() and self.F_resDemand(_th_maxResDemand()) and (not self.F_T(_th_SthReq()) or not self.F_maxHwUtil(_th_maxHwUtil())))
+	title : "Decomposition"
+	do{
+		self.decomposition();
+	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 							Concurrent Processing Systems 								 *
+ *							Antipattern Detection and Validation			     			 *
+ *																							 *
+ *********************************************************************************************/
+ 
+wizard CPS{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL) and self.F_maxHwUtil(_th_maxHwUtil()))
+	title : "Move it to a new Component deployed to a new Node"
+	do{
+		self.moveToNewComponentDeployedOnNewNode();
+	}
+}
+wizard CPS{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL) and self.F_maxHwUtil(_th_maxHwUtil()))
+	title : "Move it to a new Component deployed to the less used neighbour Node"
+	do{
+		self.moveToNewComponentDeployedOnNearLessUsedNode();
+	}
+}
+wizard CPS{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL) and self.F_maxHwUtil(_th_maxHwUtil()))
+	title : "Redeploy its owning Component to the less used neighbour Node"
+	do{
+		self.redeployOnNearLessUsedNode();
+	}
+}
+wizard CPS{
+	guard :
+		self.isTypeOf(Node) and (self.F_maxQL(th_maxQL) and self.F_maxHwUtil(_th_maxHwUtil()))
+	title : "Change its owning Component from to the one with the lowest demand"
+	do{
+		self.moveToLessCriticalComponent();
+	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 								ExtensiveProcessing										 *
+ *							Antipattern Detection and Validation					 		 *
+ *																							 *
+ *********************************************************************************************/
+  
+wizard ExtensiveProcessingPA{
+	guard :
+		self.isTypeOf(Component) and (self.F_resDemand(th_maxResDemand, th_minResDemand) and self.F_probExec() and (self.F_maxHwUtil(_th_maxHwUtil())) or self.F_RT(th_SrtReq))
+	title : "Move it to a new Component deployed to a new Node"
+	do{
+		self.moveToNewComponentDeployedOnNewNode();
+	}
+}
+wizard ExtensiveProcessingPA{
+	guard :
+		self.isTypeOf(Component) and (self.F_resDemand(th_maxResDemand, th_minResDemand) and self.F_probExec() and (self.F_maxHwUtil(_th_maxHwUtil())) or self.F_RT(th_SrtReq))
+	title : "Move it to a new Component deployed to the less used neighbour Node"
+	do{
+		self.moveToNewComponentDeployedOnNearLessUsedNode();
+	}
+}
+wizard ExtensiveProcessingPA{
+	guard :
+		self.isTypeOf(Component) and (self.F_resDemand(th_maxResDemand, th_minResDemand) and self.F_probExec() and (self.F_maxHwUtil(_th_maxHwUtil())) or self.F_RT(th_SrtReq))
+	title : "Redeploy its owning Component to the less used neighbour Node"
+	do{
+		self.redeployOnNearLessUsedNode();
+	}
+}
+wizard ExtensiveProcessingPA{
+	guard :
+		self.isTypeOf(Component) and (self.F_resDemand(th_maxResDemand, th_minResDemand) and self.F_probExec() and (self.F_maxHwUtil(_th_maxHwUtil())) or self.F_RT(th_SrtReq))
+	title : "Change its owning Component from to the one with the lowest demand"
+	do{
+		self.moveToLessCriticalComponent();
+	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *								Blob Controller & Container									 *
+ *							Antipattern Detection and Validation							 *
+ *																							 *
+ *********************************************************************************************/
+ 
+wizard Blob_Controller{
+	guard :
+		self.isTypeOf(Component) and (self.F_numClientConnects(th_maxConnects) and self.F_numMsgsIn(th_maxMsgs) and (self.F_maxHwUtil(_th_maxHwUtil()) or self.F_maxNetUtil(th_maxNetUtil)))
+	title : "Reduce Client Connects"
+	do{
+		self.reduceNumberOfClientConnects(th_maxConnects);
+	}
+}
+wizard Blob_dataContainer{
+	guard :
+		self.isTypeOf(Component) and (self.F_numSupplierConnects(th_maxConnects) and self.F_numMsgsOut(th_maxMsgs) and (self.F_maxHwUtil(_th_maxHwUtil()) or self.F_maxNetUtil(th_maxNetUtil)))
+	title : "Reduce Supplier Connects"
+	do{
+		self.reduceNumberOfSupplierConnects();
+	}
+}
+
+ /*********************************************************************************************
+ *																							 *
+ *	 								Empty Semi-Trucks 										 *
+ *							Antipattern Detection and Validation					 		 *
+ *																							 *
+ *********************************************************************************************/
+wizard EmptySemiTruck{
+	guard :
+		self.isTypeOf(Component) and self.F_numRemMsgs(th_maxRemMsgs) and (self.F_maxNetUtil(th_minNetUtil) or self.F_numRemInst(th_maxRemInst))
+	title : "Apply Session Facade Pattern"
+	do{
+		self.applySessionFacade();
+	}
+}
+wizard TowerOfBabel{
+	guard :
+		self.isTypeOf(Component) and self.F_numExF(th_maxExF) and self.F_maxHwUtil(_th_maxHwUtil())
+	title : "Apply the most used format"
+	do{
+		self.applyStandardFormat();
+	}
+}

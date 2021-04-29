@@ -1,0 +1,320 @@
+operation Component F_resDemand(th_maxOpResDemand : List( Real ), th_minResDemand : List( Real )) : Boolean{
+	if(not self.hasStereotype("PaRunTInstance") ) 
+		return false;
+				
+	var opGreater = self.getOperationsWithResDemandGreaterOrEqual(th_maxOpResDemand);
+	var opLesser = self.getOperationsWithResDemandLesserThan(th_minResDemand);
+	
+	//ho almeno un'operazione con un utilizzazione maggiore ed una con un'utilizzazione minore
+	//delle threshold
+	if(not opGreater.isEmpty() and not opLesser.isEmpty()){
+		return true;
+	}
+	return false;
+}
+
+
+//TODO da rivedere
+operation Component F_probExec() : Boolean {
+	
+	var opGreater = self.getOperationsWithResDemandGreaterOrEqual(th_maxResDemand);
+	var opLesser = self.getOperationsWithResDemandLesserThan(th_minResDemand);
+	
+	for (opG in opGreater){
+		var opGInteractionOperands = opG.getOwnerInteractionOperands();
+		
+		for(opL in opLesser){
+			for(opLInteractionOperand in opL.getOwnerInteractionOperands()){
+				for(opGInteractionOperand in opGInteractionOperands){
+					if( (opGInteractionOperand.getValue(opG.getStereotype("GaStep"), "prob").asReal() + 
+					opLInteractionOperand.getValue(opG.getStereotype("GaStep"), "prob").asReal() ) == 1 )
+						return true;
+				}
+			}
+		}
+	}
+	
+	return false;
+}
+
+operation Component F_responseTime(th_SrtReq : Real) : Boolean {
+	var opGreater = self.getOperationsWithResDemandGreaterOrEqual(th_maxResDemand);
+	var opLesser = self.getOperationsWithResDemandLesserThan(th_minResDemand);
+
+	var opG_Messages : Sequence(Message) = new Sequence(Message);
+	var messageList : List(Operation) = new List(Operation);
+	var operationMap : Map(UseCase, List(Message)) = new Map(UseCase, List(Message));
+	
+	for (opG in opGreater){
+		var opG_Interactions = opG.getAllInteractions();
+		for(int in opG_Interactions){
+			for(mes in opG.getMessagesIn(int) ){
+				//verifico se il mes e' contenuto in un alternative fragment (AF)
+				//TODO capire se c'e' un modo migliore per individuare un AF
+				if( mes.getSendEvent().getOwner().getOwner().isTypeOf(CombinedFragment) )
+					opG_Messages.add(mes); //lista di mes che rappresentano la opG e sono contenuti in un AF
+			}
+		}
+	}
+	
+	for(opL in opLesser){
+		var opL_Interactions = opL.getAllInteractions();
+		for(int in opL_Interactions){
+			for(mes in opL.getMessagesIn(int) ){
+				//verifico se il mes e' contenuto in un alternative fragment (AF)
+				//TODO capire se c'e' un modo migliore per individuare un AF
+				var opL_InteractionOperand = mes.getSendEvent().getOwner();
+				for(opG_Message in opG_Messages){
+					var opG_InteractionOperand = opG_Message.getSendEvent().getOwner();
+					if( opL_InteractionOperand.getOwner().isTypeOf(CombinedFragment) and
+							opL_InteractionOperand.getOwner() == opG_InteractionOperand.getOwner() and 
+								opL_InteractionOperand <> opG_InteractionOperand){
+						if( opL_InteractionOperand.hasStereotype("GaStep") and opG_InteractionOperand.hasStereotype("GaStep") and 
+								( opL_InteractionOperand.getValue(opL_InteractionOperand.getStereotype("GaStep"), "prob").asReal() + 
+									opG_InteractionOperand.getValue(opG_InteractionOperand.getStereotype("GaStep"), "prob").asReal() == 1)
+						){
+							messageList.add(opG_Message);
+							messageList.add(mes);
+						}											
+					}	
+				}
+			}
+			if(not messageList.isEmpty()){
+				operationMap.put(int.getUseCase(), messageList.clone());
+			}
+			messageList.clear();
+		}
+	}
+	var criticalUCs : List(UseCase) = new List(UseCase);
+	for(uc in operationMap.keySet()){	
+		if(uc.getValue(uc.getStereotype("GaScenario"), "respT")->first().asReal() >= th_SrtReq )
+			criticalUCs.add(uc);
+	}
+	if(not criticalUCs.isEmpty()){
+		return true;
+	}
+	return false;
+}
+
+/*
+	Dato il componente prendo tutte le lifeline 
+	che hanno almeno un numero di sendMessage >= numberOfOperation
+
+operation Component hasAtLeastOperation(numberOfOperation : Integer) : List(Lifeline){
+	var listOfLifelines = self.getComponentLifeline();
+	var returnValue : List(Lifeline) = new List(lifeline);
+	var listOfMessages;
+	
+	--var numberOfSplitting = UserInput.promptInteger("Indicami il numero di splitting da fare ( default = 1 )", 1);
+	--var percentageOfReduction = UserInput.promptInteger("Indicami la percentuale di riduzione (default 0.5)", 50);
+	
+	for(lifeline in listOfLifelines){
+		listOfMessages = lifeline.hasAtLeastSendMessage();
+		if ( listOfMessages.size() >= numberOfOperation  ){
+			for(message in listOfMessages){		
+				if(self.ownedOperation->exists(
+						property : Property | property == message.getSignature()) ){			
+					returnValue.add(lifeline);
+				}
+			}
+		}
+	}
+	return returnValue;
+}
+
+/*
+	Data una lifeline ritorno i sendMessaggi
+operation Lifeline hasAtLeastSendMessage() : List(Message){
+	var listOfInteractionFrgs = self.getCoveredBys();
+	
+	var listOfMesOccurenceSpec : List(MessageOccurenceSpecification) = new List(MessageOccurenceSpecification);
+	var returnValue : List(Message) = new List(Message);
+	
+	//recupero tutti i MessageOccurrenceSpecification
+	for ( interactionFrg in listOfInteractionFrgs){
+		if( interactionFrg.isTypeOf(MessageOccurrenceSpecification) )
+			listOfMesOccurenceSpec.add(interactionFrg);
+	}
+		
+	//identifico i message che sono nella lista dei MessageOccurrenceSpecification	
+	for(mesOccurrenceSpec in listOfMesOccurenceSpec){
+		for(mes in Message.allInstances){
+			if(mes.getSendEvent == mesOccurrenceSpec)
+				returnValue.add(mes);
+		}
+	}
+	return returnValue;
+}
+
+/*
+	Dato il componente recupero la lista di lifeline che lo identificano
+operation Component getComponentLifeline() : List(Lifeline){
+	var componentProperties = self.getProperty();
+	var listOfLifeLine : List(Lifeline) = new List(Lifeline);
+	
+	for(lifeline in Lifeline.allInstances){
+		if( componentProperties.size() > 0 and 
+				componentProperties->exists(property : Property | 
+					lifeline.getRepresents() == property) ){
+			listOfLifeLine.add(lifeline);
+		}
+	}
+	return listOfLifeLine;
+}
+
+
+/*
+ Recupero le corrispondenti properties del componente contenute negli interaction
+operation Component getProperty() : List(Property){
+	var listOfProperties : List(Property) = new List(Property);
+	for(interaction in Interaction.allInstances){
+		listOfProperties.add(interaction.getPropertyByComponent(self));
+	}
+	return listOfProperties;
+}
+
+
+/*
+	Dato il componente resctituisce la lista delle operazioni
+	del componente contenute in un combinedFragment
+operation Component isInAtLeastOneAlternativeFragment () : List(Message){
+	var listOfOperationIntoOperand : List(Message) = new List(Message);
+	for(interaction in Interaction.allInstances){
+		if(interaction.hasPropertyByComponent(self)){
+			if(interaction.hasCombinedFragment()){
+				var listOfCombinedFrgs = interaction.isComponentIntoCombinedFragment(self);
+				if( listOfCombinedFrgs.size() > 0 ){
+					for( combinedFrg in listOfCombinedFrgs ){
+						var listOfOperands = combinedFrg.getOperands();
+						var componentOperations = interaction.getMessagesThatRepresentComponentOperation(self);
+						for (operand in listOfOperands){
+							var listOfMessagesIntoOperand = operand.getFragments();
+							for (cOperation in componentOperations ){
+								if (cOperation.getSendEvent() == operand){
+									listOfOperationIntoOperand.add(cOperation);	
+								}	
+							}
+						}
+					}
+					return listOfOperationIntoOperand;
+				}
+			}
+		}
+	}
+	return null;
+}
+
+
+/*
+	Dato l'interaction verifco se il componente e' in un combined fragment
+operation Interaction isComponentIntoCombinedFragment(component : Component) : List(CombinedFragment){
+	var combinedFrgs = self.getCombinedFragments();
+	var returnValue : List(CombinedFragment) = new List(CombinedFragment);
+	
+	for(combinedFrg in combinedFrgs){
+		var lifeLineIntoCombinedFrg = combinedFrg.getComponentLifeline(component);
+		if(lifeLineIntoCombinedFrg <> null)
+			returnValue.add(combinedFrg);
+	}
+	return returnValue;
+}
+
+
+/*
+	Dato l'interaction verifico se il componente, passato come parametro,
+	e' rappresentato in un combined fragment
+operation Interaction hasComponentInCombinedFragment(component : Component) : Boolean {
+	var combinedFrgs = self.getCombinedFragments();
+	
+	for(combinedFrg in combinedFrgs){
+		if( combinedFrg.getCovereds()->exists(
+				lifeline : Lifeline | lifeline.represents == self.getPropertyByComponent(component))
+		)
+			return true;
+	}
+	
+	return false;
+}
+
+
+/*
+	Dato l' interaction fragment recupero la lifeline che identifica il componente
+operation InteractionFragment getComponentLifeline(component : Component) : Lifeline{
+	for( lifeline in self.getCovereds() ){
+		if(lifeline.getRepresents() == self.getEnclosingInteraction.getPropertyByComponent(component))
+			return lifeline;
+	}
+	return null;
+}
+
+/*
+	Datp un interaction Restituisco la lista dei messaggi che 
+	rappresentano le operazioni di un componente
+operation Interaction getMessagesThatRepresentComponentOperation(component : Component) : List(Message){
+	var returnValue : List(message) = new List(Message);
+	
+	for(message in self.getMessages()){
+		for( ownedOperation in component.ownedOperations ) {
+			if( message.signature == ownedOperation ){
+				returnValue.add(message);
+			}
+		}
+	}
+	return returnValue; 
+}
+
+/*
+	Data l'interaction restituisce la lista dei combinedFragment
+operation Interaction getCombinedFragments() : List(CombinedFragment){
+	var interactionFrg = self.getFragments();
+	var returnValue : List(CombinedFragment) = new List(CombinedFragment);
+
+	for (fragment in interactionFrg){
+		if( fragment.isTypeOf(CombinedFragment) )
+			returnValue.add(fragment);
+	}
+	return returnValue;
+}
+
+/*
+	Dato l'interaction verifico se contiene un combined fragment
+operation Interaction hasCombinedFragment() : Boolean{
+	var interactionFrg = self.getFragments();
+	for (fragment in interactionFrg){
+		if( fragment.isTypeOf(CombinedFragment) )
+			return true;
+	}
+
+	return false;
+
+}
+
+/*
+	Dato l'interaction restituisce la property che identifica il componente
+	passato come paramentro 
+operation Interaction getPropertyByComponent(component : Component) : Property{
+	for(property in self.ownedAttribute)
+		if(property.type == component)
+			return property;
+	return null;
+}
+
+/*
+	Dato l'interaction verifico se possiede la property relativa al componente
+operation Interaction hasPropertyByComponent(component : Component){
+	for(property in self.ownedAttribute)
+		if(property.type == component)
+			return true;
+	return false;
+}
+
+/*
+	Data una lifeline verifico se possiede una determinata proprieta
+	passata come parametro
+operation Lifeline hasRepresents(represented : Property){
+	if(self.represents == represented)
+		return true;	
+	return false;
+
+}
+*/

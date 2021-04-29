@@ -1,0 +1,48 @@
+
+/******** DESIGN **************/
+var th_maxMsgs : Integer = 3;
+var th_maxRemMsgs : Integer = 2;
+var th_maxRemInst : Integer = 1; 
+var th_maxConnects : Integer = 4;
+var th_maxExF : Integer = 2;
+
+/******** PERFORMANCE **************/
+
+//Resource Demand
+
+
+var th_minResDemand : List( Real ) = new List( Real );
+th_minResDemand.add(5); //computation
+th_minResDemand.add(10); //storage
+th_minResDemand.add(3); //bandwidth
+
+//Hw Utilization
+
+
+//Network utilization
+var th_maxNetUtil : Real = 0.9; 
+var th_minNetUtil : Real = 0.5;
+
+
+
+var th_SthReq = 0.9; //throughput
+var th_maxQL : Integer = 130; //queue lenght
+
+
+operation _th_maxResDemand() : List(Real){
+	var th_maxResDemand : List( Real ) = new List( Real );
+	th_maxResDemand.add(15); //computation
+	th_maxResDemand.add(7); //storage
+	th_maxResDemand.add(5); //bandwidth
+	return th_maxResDemand;
+}
+
+operation _th_SthReq() : Real{
+	var th_SrtReq : Real = 15; //response time
+	return th_SrtReq;
+}
+
+operation _th_maxHwUtil() : Real{
+	var th_maxHwUtil : Real = 0.85;
+	return th_maxHwUtil;
+}

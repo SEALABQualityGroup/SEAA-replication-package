@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project name="UML_2_LQN" basedir="." default="LoadModels"> 
+	<target name="LoadModels">
+		<epsilon.emf.loadModel name="UML" modelFile="${input}/${name}.uml" 
+			metamodelUri="http://www.eclipse.org/uml2/5.0.0/UML" read="true" store="false"/>	
+		
+		<epsilon.emf.loadXmlModel name="LQN" modelFile="${output}/${name}.xml" 
+			xsdFile="lqnxsd/lqn.xsd" read="false" store="true"/>	
+		
+		<epsilon.etl src="uml2lqn.etl">
+			<model ref="UML"/>
+			<model ref="LQN"/>
+		</epsilon.etl>
+		
+		<epsilon.storeModel model="LQN"/>	
+	</target>
+	
+	<target name="ChangeRoot" depends="LoadModels">
+		<epsilon.xml.loadModel name="PlainLQN" file="${output}/${name}.xml" 
+			read="true" store="true"/>
+		<epsilon.eol src="changeRoot.eol">
+			<model ref="PlainLQN"/>
+		</epsilon.eol>
+		
+		<epsilon.storeModel model="PlainLQN"/>	
+		<!-- <eclipse.refreshLocal resource="${output}/output.xml" depth="infinite"/> -->	
+	</target>
+	
+	<target name="Solver" depends="ChangeRoot">
+		<exec executable="lqns">
+			<arg value="-P"/>
+			<arg value="cycles=yes"/>
+			<arg value="${output}/${name}.xml"/>
+		</exec>
+	</target>
+	
+	<target name="BackAnnotation" depends="Solver">
+		<epsilon.xml.loadModel name="LQXO" file="${output}/${name}.lqxo" 
+			read="true" store="false"/>
+		<epsilon.eol src="backAnnotation.eol">
+			<model ref="LQXO"/>
+			<model ref="UML"/>
+		</epsilon.eol>
+	</target>	
+</project>

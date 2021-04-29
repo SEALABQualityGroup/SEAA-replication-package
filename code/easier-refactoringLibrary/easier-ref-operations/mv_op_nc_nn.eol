@@ -1,0 +1,61 @@
+//Move an Operation to new Component that is deployed on a New Node
+
+//libraries
+
+import "../evl/library/artifact.eol";
+import "../evl/library/association.eol";
+//import "library/class.eol";
+import "../evl/library/classifier.eol";
+import "../evl/library/component.eol";
+import "../evl/library/element.eol";
+import "../evl/library/interaction.eol";
+import "../evl/library/interactionFragment.eol";
+import "../evl/library/interactionOperand.eol";
+import "../evl/library/combinedFragment.eol";
+import "../evl/library/interface.eol";
+import "../evl/library/lifeline.eol";
+import "../evl/library/manifestation.eol";
+import "../evl/library/message.eol";
+import "../evl/library/node.eol";
+import "../evl/library/operation.eol";
+import "../evl/library/package.eol";
+//HELPER
+import "../evl/library/HELPER.eol";
+
+
+var selfOperation = Operation.all->selectOne(o | o.getName() == targetOperationName);
+
+var newComponent = new Component;
+newComponent.setName(newComponentName); 
+Component.all->first().getNearestPackage().getPackagedElements().add(newComponent);
+
+var newNode = new Node;
+newNode.setName(newNodeName); 
+Node.all->first().getNearestPackage().getPackagedElements().add(newNode);
+
+//("move operation -->" + selfOperation.getName() + " to --> " + newComponent.getName() + " on -> " + newNode.getName()).println();
+
+//static
+var sourceComponent : Component = selfOperation.getOwner();
+		
+newComponent.cloneAppliedStereotypesFrom(sourceComponent); //clono gli stessi stereotipi del componente sorgente	
+newComponent.moveInterfacesRealizationFrom(sourceComponent, selfOperation);
+	
+var listOfUsedProvidedInterfaces : List(Interface) = sourceComponent.getAllUsedIntefacesRequiredsBy(selfOperation);
+	
+//deploy
+newComponent.deployOn(newNode);
+
+if(sourceComponent.getNodes().isEmpty()){
+	sourceComponent.getName().println("[ERROR] The Component is not deployed !!!");
+}
+
+newNode.clone(sourceComponent.getNodes()->first()); //shall resolve the missed stereotypes
+	
+newComponent.moveOperation(selfOperation); //sposta l'operazione sul componente appena creato
+	
+//dynamic
+selfOperation.dynamicFixing(sourceComponent);
+
+//"done".println();
+

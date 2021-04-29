@@ -1,0 +1,402 @@
+import "metric_functions.eol";
+import "metric_functions_fuzzy.eol";
+//import "thresholds_eSsopper.eol";
+import "thresholds_trainticket.eol";
+
+//libraries
+import "library/artifact.eol";
+import "library/association.eol";
+//import "library/class.eol";
+import "library/classifier.eol";
+import "library/component.eol";
+import "library/element.eol";
+import "library/interaction.eol";
+import "library/interactionFragment.eol";
+import "library/interactionOperand.eol";
+import "library/combinedFragment.eol";
+import "library/interface.eol";
+import "library/lifeline.eol";
+import "library/manifestation.eol";
+import "library/message.eol";
+import "library/node.eol";
+import "library/operation.eol";
+import "library/package.eol";
+
+//HELPER
+import "library/HELPER.eol";
+
+pre{
+	//showThresholds();
+}
+
+
+/*********************************************************************************************
+ *																							 *
+ *	 								Pipe and Filter 										 *
+ *							Antipattern Detection and Validation					 		 *
+ *										reviewed											 *
+ *********************************************************************************************/
+
+context UML!Operation {
+	critique PaF {
+		check: 
+			self.getOwner().isTypeOf(Component) and
+			self.F_probExec_fuzzy() <> 0 and 
+			(self.F_resDemand_fuzzy() *	(self.F_T_fuzzy() + self.F_maxHwUtil_fuzzy() )) < 0.95 //.println("PaF <" + self.name +"> --> ") < 0.95 
+		message : "PaF <Operation> " + self.name
+		/*fix {
+			title : "Move it to a New Component deployed to a New Node"
+			do {
+				log("--------------");
+				log("pattern PaF");
+				log("moveOpNCNN on");
+				log("self --> "+self.getName());
+				self.moveToNewOwnerDeployedOnNewNode(); 
+				log("--------------");
+				log("");
+			}
+		}
+		fix{
+			title : "Move it to a New Component deployed to the Less Used neighbour Node"
+			do{
+				self.moveToNewOwnerDeployedOnNearLessUsedNode();
+			}
+		}
+		fix{
+			title : "Redeploy its Component to the Less Used neighbour Node"
+			do{
+				self.redeployOnNearLessUsedNode();
+			}
+		}
+		fix{
+			title : "Change its Component to the one with the Lowest Demand"
+			do{
+				log("--------------");
+				log("pattern PaF");
+				log("moveOpLC on");
+				log("self --> "+self.getName());
+				self.moveToLessCriticalOwner();
+				log("--------------");
+				log("");
+			}
+		}
+		fix{
+			title : "Redeploy its Component to New Node"
+			do{
+				log("--------------");
+				log("pattern PaF");
+				log("moveCompNN on");
+				log("self --> "+self.getName());
+				self.moveToNewNode();
+				log("--------------");
+				log("");
+			}
+		}
+		fix{
+			title: "Decomposition"
+			do{
+				self.decomposition();
+			}
+		}*/
+	}
+}
+
+
+/*********************************************************************************************
+ *																							 *
+ *	 							Concurrent Processing Systems 								 *
+ *							Antipattern Detection and Validation			     			 *
+ *									 reviewwed												 *
+ *********************************************************************************************/
+ 
+ 
+/*********************************************************************************************
+ *                                      WARNING												 *
+ *							MAX HW UTIL is in the first position							 *
+ *					CPU max and min are in second and third position						 *	
+ *					DISK max and min are in fourth and fifth position						 *
+ *********************************************************************************************/
+ 
+context Node {
+	critique CPS {
+		check: 
+			( self.F_maxQL_fuzzy() * self.F_maxHwUtil_fuzzy() ) < 0.95 //.println("CPS <"+self.name+"> --> ") < 0.95
+		message : "CPS <" + self.type.name + "> " + self.name
+		/*fix {
+			title : "Move it to a new Component deployed to a new Node"
+			
+			do {
+				self.moveToNewComponentDeployedOnNewNode(); 
+			}
+		}
+		fix{
+			title : "Move it to a new Component deployed to the less used neighbour Node"
+			do{
+				self.moveToNewComponentDeployedOnNearLessUsedNode();
+			}
+		}
+		fix{
+			title : "Redeploy its owning Component "+self.name+" to the less used neighbour Node"
+			do{
+				self.redeployOnNearLessUsedNode();
+			}
+		}
+		fix{
+			title : "Change its owning Component from "+self.name+" to the one with the lowest demand"
+			do{
+				self.moveToLessCriticalComponent();
+			}
+		}*/
+	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 								Extensive Processing  									 *
+ *							Antipattern Detection and Validation							 *
+ *										reviewed											 *
+ *********************************************************************************************/
+
+context UML!Component {
+ 	critique ExtensiveProcessingAP{
+ 		check:
+ 			(self.F_resDemand_fuzzy() * 
+ 			( self.F_maxHwUtil_fuzzy() + self.F_RT_fuzzy() ) < 0.95 //.println("EP <"+self.name+"> --> ") < 0.95
+ 					and self.F_probExec_fuzzy() <> 0 )
+ 		message : "EP <" + self.type.name + "> " + self.name
+ 		/*fix {
+			title : "Move it to a new Component deployed to a new Node"
+			
+			do {
+				self.moveToNewComponentDeployedOnNewNode(); 
+			}
+		}
+		fix{
+			title : "Move it to a new Component deployed to the less used neighbour Node"
+			do{
+				self.moveToNewComponentDeployedOnNearLessUsedNode();
+			}
+		}
+		fix{
+			title : "Redeploy its owning Component "+self.name+" to the less used neighbour Node"
+			do{
+				self.redeployOnNearLessUsedNode();
+			}
+		}
+		fix{
+			title : "Change its owning Component from "+self.name+" to the one with the lowest demand"
+			do{
+				self.moveToLessCriticalComponent();
+			}
+		}*/
+ 	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *								Blob Controller & Container									 *
+ *							Antipattern Detection and Validation							 *
+ *										reviewed 											 *
+ *********************************************************************************************/
+
+context UML!Component {
+	critique Blob_DataContainer{
+		check:
+			(self.F_numSupplierConnects_fuzzy() * self.F_numMsgsIn_fuzzy() * 
+				(self.F_maxHwUtil_fuzzy() + self.F_maxNetUtil_fuzzy()) ) < 0.95 //.println("Blob-container <"+self.name+"> --> ") < 0.95
+			
+		message : "Blob Container <" + self.type.name + "> " + self.getName()
+		/*fix {
+			title : "Move its critical operation to a New Component deployed to a New Node"
+			
+			do {
+				self.moveToNewComponentDeployedOnNewNode(); 
+			}
+		}
+		fix{
+			title : "Move its critical operation to a New Component deployed to the Less Used neighbour Node"
+			do{
+				self.moveToNewComponentDeployedOnNearLessUsedNode();
+			}
+		}
+		fix{
+			title : "Redeploy it to the Less Used Neighbour Node"
+			do{
+				log("--------------");
+				log("pattern Blob");
+				log("moveCompLN on");
+				log("self --> "+self.getName());
+				self.redeployOnNearLessUsedNode();
+				log("--------------");
+				log("");
+			}
+		}
+		fix{
+			title : "Move its critial operation to the Less used Component"
+			do{
+				self.moveToLessCriticalComponent();
+			}
+		}
+		fix{
+			title : "Deploy it to New Node"
+			do{
+				log("--------------");
+				log("pattern Blob");
+				log("moveCompNN on");
+				log("self --> "+self.getName());
+				self.deployOnNewNode();
+				log("--------------");
+				log("");
+			}
+		}
+		fix {
+			title: "Reduce Supplier Connects of "+ self.getName()
+			do{
+				log("--------------");
+				log("pattern Blob");
+				log("reduceUsaged on");
+				log("self --> "+self.getName());
+				self.reduceNumberOfSupplierConnects(th_maxSupplierConnects());
+			}
+		}
+		
+		fix {
+			title: "Reduce its Supplier Connects"
+			do {
+				log("--------------");
+				log("pattern Blob");
+				log("reduceProvided on");
+				log("self --> "+self.getName());
+				self.reduceNumberOfSupplierConnects(th_maxSupplierConnects());
+				log("--------------");
+				log("");
+			}
+		}*/
+	}
+}
+
+
+context Component {
+	critique Blob_DataController {
+		check:
+			( self.F_numClientConnects_fuzzy() * self.F_numMsgsOut_fuzzy() * 
+				(self.F_maxHwUtil_fuzzy() + self.F_maxNetUtil_fuzzy()) ) < 0.95 //.println("Blob-ctroller <"+self.name+"> --> ") < 0.95
+				
+		message : "Blob Container <" + self.type.name + "> " + self.getName()
+		/*fix {
+			title : "Move its Critical Operation to a New Component deployed to a New Node"
+			
+			do {
+				self.moveToNewComponentDeployedOnNewNode(); 
+			}
+		}
+		fix{
+			title : "Move its Critical Operation to a New Component deployed to the Less used Neighbour Node"
+			do{
+				self.moveToNewComponentDeployedOnNearLessUsedNode();
+			}
+		}
+		fix{
+			title : "Redeploy its Critical Component to the Less used Neighbour Node"
+			do{
+				self.redeployOnNearLessUsedNode();
+			}
+		}
+		fix{
+			title : "Move its Critical Operation  to the Component with the Lowest Demand"
+			do{
+				self.moveToLessCriticalComponent();
+			}
+		}
+		fix{
+			title : "Deploy its Critical Component to a New Node"
+			do{
+				self.deployOnNewNode();
+			}
+		}
+		fix {
+			title: "Reduce Client Connects of "+ self.getName()
+			do{
+				self.reduceNumberOfClientConnects(th_maxClientConnects());
+			}
+		}*/
+	}
+}
+
+
+/*********************************************************************************************
+ *																							 *
+ *	 								Empty Semi Truck										 *
+ *							Antipattern Detection and Validation							 *
+ *										reviewed											 *
+ *********************************************************************************************/
+ 
+
+context UML!Component {
+ 	critique EmptySemiTruck{
+ 		check:
+ 			(self.F_numRemMsgs_fuzzy() * 
+ 				(self.F_maxNetUtil_fuzzy() + self.F_numRemInst_fuzzy())) < 0.95 //.println("EST <"+self.name+"> --> ") < 0.95
+ 		
+ 		message : "EST <" + self.type.name + "> " + self.name
+ 		/*fix {
+			title : "Apply Session Facade Pattern"
+			do {
+				self.applySessionFacade();
+			}
+		}*/
+ 	}
+}
+
+
+/*********************************************************************************************
+ *																							 *
+ *	 								Tower of Babel											 *
+ *							Antipattern Detection and Validation							 *
+ *									reviewed												 *
+ *********************************************************************************************
+ 
+ context Component {
+ 	critique TowerOfBabel{
+ 		check{
+ 			if(self.F_numExF(th_maxExF()) and self.F_maxHwUtil(th_maxHwUtil()))
+ 				return false;
+ 			return true;
+ 		}
+ 		message : "ToB <" + self.type.name + "> " + self.name
+ 		fix {
+			title : "Apply the most used format"
+			do {
+				self.applyStandardFormat();
+			}
+		}
+		fix{
+			title : "Redeploy its owning Component "+self.name+" to the less used neighbour Node"
+			do{
+				self.redeployOnNearLessUsedNode();
+			}
+		}
+ 	}
+}
+
+/*********************************************************************************************
+ *																							 *
+ *	 						    Circuitous  Treasure Hunt									 *
+ *							Antipattern Detection and Validation							 *
+ *																							 *
+ *********************************************************************************************/
+ 
+/*********************************************************************************************
+ *																							 *
+ *	 						    		One Line Bridge										 *
+ *							Antipattern Detection and Validation							 *
+ *																							 *
+ *********************************************************************************************/
+ 
+/*********************************************************************************************
+ *																							 *
+ *					    		Excessive Dynamic Allocation								 *
+ *							Antipattern Detection and Validation							 *
+ *																							 *
+ *********************************************************************************************/
+ 

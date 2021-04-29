@@ -1,0 +1,47 @@
+//Deploy a Component to a New Node
+
+//libraries
+import "../evl/library/artifact.eol";
+import "../evl/library/association.eol";
+//import "library/class.eol";
+import "../evl/library/classifier.eol";
+import "../evl/library/component.eol";
+import "../evl/library/element.eol";
+import "../evl/library/interaction.eol";
+import "../evl/library/interactionFragment.eol";
+import "../evl/library/interactionOperand.eol";
+import "../evl/library/combinedFragment.eol";
+import "../evl/library/interface.eol";
+import "../evl/library/lifeline.eol";
+import "../evl/library/manifestation.eol";
+import "../evl/library/message.eol";
+import "../evl/library/node.eol";
+import "../evl/library/operation.eol";
+import "../evl/library/package.eol";
+//HELPER
+import "../evl/library/HELPER.eol";
+
+var target  = Node.all->selectOne(n | n.getName() == targetNodeName);
+
+if(target.isUndefined())
+	throw "[ERROR]: Node" + targetNodeName + "is undefined";
+
+var packageContainer : Package = target.getNearestPackage();
+
+var newNode = new Node;
+newNode.setName(clonedNodeName);
+Node.all->first().getNearestPackage().getPackagedElements().add(newNode);
+
+//("clone node --> " + targetNodeName + " with --> " + newNode.getName()).println();
+
+//self.clone(target);
+
+var listOfLinkedNode = target.getDirectlyLinkedNode();		
+
+newNode.cloneAppliedStereotypesFrom(target); //clono gli stereotipi del nodo sorgente
+
+newNode.reuseDeployedArtifactFrom(target); //clono gli artefatti del nodo sorgente
+
+newNode.cloneLink(listOfLinkedNode, packageContainer);
+
+//"done".println();

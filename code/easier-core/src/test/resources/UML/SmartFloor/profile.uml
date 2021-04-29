@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Profile xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_F3cUkPSTEeiBAPeDL_fsLQ" name="SmartFloor" metaclassReference="_eghjIPSTEeiBAPeDL_fsLQ _gB7rgPSTEeiBAPeDL_fsLQ _hRkucPSTEeiBAPeDL_fsLQ _iVfCgPSTEeiBAPeDL_fsLQ">
+  <eAnnotations xmi:id="_upwoIAHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <contents xmi:type="ecore:EPackage" xmi:id="_upwoIQHnEemSjJWeGnP7LA" name="SmartFloor" nsURI="http:///schemas/SmartFloor/_upqhgAHnEemSjJWeGnP7LA/0" nsPrefix="SmartFloor">
+      <eAnnotations xmi:id="_upx2QAHnEemSjJWeGnP7LA" source="UMLDesignerProfileVersion">
+        <details xmi:id="_upx2QQHnEemSjJWeGnP7LA" key="Version" value="0.0.4"/>
+        <details xmi:id="_upx2QgHnEemSjJWeGnP7LA" key="Date" value="2018-12-17"/>
+        <details xmi:id="_upx2QwHnEemSjJWeGnP7LA" key="Author" value="Maledeto"/>
+        <details xmi:id="_upx2RAHnEemSjJWeGnP7LA" key="Copyright" value=""/>
+        <details xmi:id="_upx2RQHnEemSjJWeGnP7LA" key="Comment" value=""/>
+      </eAnnotations>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoIgHnEemSjJWeGnP7LA" name="NFCReader">
+        <eAnnotations xmi:id="_upwoIwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_SVphsPSTEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoJAHnEemSjJWeGnP7LA" name="base_Component" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Component"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoJgHnEemSjJWeGnP7LA" name="base_Artifact" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Artifact"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoKAHnEemSjJWeGnP7LA" name="base_Node" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Node"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoKgHnEemSjJWeGnP7LA" name="Guardian">
+        <eAnnotations xmi:id="_upwoKwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_o8DG0PSTEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoLAHnEemSjJWeGnP7LA" name="base_Actor" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Actor"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwoLgHnEemSjJWeGnP7LA" name="name" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwoMAHnEemSjJWeGnP7LA" name="badge_number" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//Integer"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoMgHnEemSjJWeGnP7LA" name="UserApp">
+        <eAnnotations xmi:id="_upwoMwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_AxpNgPSVEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoNAHnEemSjJWeGnP7LA" name="base_Artifact" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Artifact"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoNgHnEemSjJWeGnP7LA" name="base_Component" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Component"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoOAHnEemSjJWeGnP7LA" name="Lan">
+        <eAnnotations xmi:id="_upwoOQHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_G6nW4PSVEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoOgHnEemSjJWeGnP7LA" name="base_Node" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Node"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwoPAHnEemSjJWeGnP7LA" name="IP_address" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoPgHnEemSjJWeGnP7LA" name="Floor">
+        <eAnnotations xmi:id="_upwoPwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_OxzVkPSVEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoQAHnEemSjJWeGnP7LA" name="base_Node" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Node"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoQgHnEemSjJWeGnP7LA" name="BuildingControlUnit">
+        <eAnnotations xmi:id="_upwoQwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_hsy_8PSVEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwoRAHnEemSjJWeGnP7LA" name="ID" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//Integer"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwoRgHnEemSjJWeGnP7LA" name="name" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoSAHnEemSjJWeGnP7LA" name="base_Node" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Node"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoSgHnEemSjJWeGnP7LA" name="AreaControlUnit">
+        <eAnnotations xmi:id="_upwoSwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_V_RzcPSWEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoTAHnEemSjJWeGnP7LA" name="base_Node" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Node"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwoTgHnEemSjJWeGnP7LA" name="ID" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//Integer"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwoUAHnEemSjJWeGnP7LA" name="name" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoUgHnEemSjJWeGnP7LA" name="SmartTile">
+        <eAnnotations xmi:id="_upwoUwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_DKa7YPSYEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwoVAHnEemSjJWeGnP7LA" name="ID" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//Integer"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoVgHnEemSjJWeGnP7LA" name="base_Actor" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Actor"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoWAHnEemSjJWeGnP7LA" name="base_Node" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Node"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoWgHnEemSjJWeGnP7LA" name="base_Artifact" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Artifact"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoXAHnEemSjJWeGnP7LA" name="base_Component" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Component"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoXgHnEemSjJWeGnP7LA" name="AreaController">
+        <eAnnotations xmi:id="_upwoXwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_W67RcPSYEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoYAHnEemSjJWeGnP7LA" name="base_Artifact" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Artifact"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoYgHnEemSjJWeGnP7LA" name="base_Component" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Component"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoZAHnEemSjJWeGnP7LA" name="BuildingController">
+        <eAnnotations xmi:id="_upwoZQHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_hzZP0PSYEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoZgHnEemSjJWeGnP7LA" name="base_Artifact" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Artifact"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoaAHnEemSjJWeGnP7LA" name="base_Component" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Component"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoagHnEemSjJWeGnP7LA" name="SystemManager">
+        <eAnnotations xmi:id="_upwoawHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_okvn0PSYEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwobAHnEemSjJWeGnP7LA" name="base_Artifact" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Artifact"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwobgHnEemSjJWeGnP7LA" name="base_Component" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Component"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwocAHnEemSjJWeGnP7LA" name="IP_address" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwocgHnEemSjJWeGnP7LA" name="DataServer">
+        <eAnnotations xmi:id="_upwocwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_xzeoQPSYEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwodAHnEemSjJWeGnP7LA" name="base_Node" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Node"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwodgHnEemSjJWeGnP7LA" name="base_Artifact" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Artifact"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoeAHnEemSjJWeGnP7LA" name="base_Component" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Component"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwoegHnEemSjJWeGnP7LA" name="IP_address" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
+        </eStructuralFeatures>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_upwofAHnEemSjJWeGnP7LA" name="credentials" ordered="false" lowerBound="1" upperBound="-1">
+          <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwofgHnEemSjJWeGnP7LA" name="Alarm">
+        <eAnnotations xmi:id="_upwofwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_t7jkYPSsEeiBAPeDL_fsLQ"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwogAHnEemSjJWeGnP7LA" name="base_Node" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Node"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwoggHnEemSjJWeGnP7LA" name="Area">
+        <eAnnotations xmi:id="_upwogwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_un0vIPcKEeiJo4W8n1XLhw"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwohAHnEemSjJWeGnP7LA" name="base_Node" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Node"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="_upwohgHnEemSjJWeGnP7LA" name="Server">
+        <eAnnotations xmi:id="_upwohwHnEemSjJWeGnP7LA" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_tkHLgAHjEemSjJWeGnP7LA"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_upwoiAHnEemSjJWeGnP7LA" name="base_Node" ordered="false" lowerBound="1">
+          <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//Node"/>
+        </eStructuralFeatures>
+      </eClassifiers>
+    </contents>
+  </eAnnotations>
+  <elementImport xmi:id="_eghjIPSTEeiBAPeDL_fsLQ">
+    <importedElement xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Actor"/>
+  </elementImport>
+  <elementImport xmi:id="_gB7rgPSTEeiBAPeDL_fsLQ">
+    <importedElement xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Component"/>
+  </elementImport>
+  <elementImport xmi:id="_hRkucPSTEeiBAPeDL_fsLQ">
+    <importedElement xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+  </elementImport>
+  <elementImport xmi:id="_iVfCgPSTEeiBAPeDL_fsLQ">
+    <importedElement xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Artifact"/>
+  </elementImport>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_SVphsPSTEeiBAPeDL_fsLQ" name="NFCReader">
+    <ownedAttribute xmi:id="_kztYcPSTEeiBAPeDL_fsLQ" name="base_Component" association="_kztYcfSTEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Component"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_lXnWwPSTEeiBAPeDL_fsLQ" name="base_Artifact" association="_lXnWwfSTEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Artifact"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_mQpQgPSTEeiBAPeDL_fsLQ" name="base_Node" association="_mQp3kPSTEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_kztYcfSTEeiBAPeDL_fsLQ" memberEnd="_kztYcvSTEeiBAPeDL_fsLQ _kztYcPSTEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_kztYcvSTEeiBAPeDL_fsLQ" name="extension_NFCReader" type="_SVphsPSTEeiBAPeDL_fsLQ" association="_kztYcfSTEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_lXnWwfSTEeiBAPeDL_fsLQ" name="" memberEnd="_lXnWwvSTEeiBAPeDL_fsLQ _lXnWwPSTEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_lXnWwvSTEeiBAPeDL_fsLQ" name="extension_NFCReader" type="_SVphsPSTEeiBAPeDL_fsLQ" association="_lXnWwfSTEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_mQp3kPSTEeiBAPeDL_fsLQ" name="" memberEnd="_mQp3kfSTEeiBAPeDL_fsLQ _mQpQgPSTEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_mQp3kfSTEeiBAPeDL_fsLQ" name="extension_NFCReader" type="_SVphsPSTEeiBAPeDL_fsLQ" association="_mQp3kPSTEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_o8DG0PSTEeiBAPeDL_fsLQ" name="Guardian">
+    <ownedAttribute xmi:id="_qdgSgPSTEeiBAPeDL_fsLQ" name="base_Actor" association="_qdg5kPSTEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Actor"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_rVcnIPSTEeiBAPeDL_fsLQ" name="name">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_0OqDgPSTEeiBAPeDL_fsLQ" name="badge_number">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_0OxYQPSTEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_0OxYQfSTEeiBAPeDL_fsLQ" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_qdg5kPSTEeiBAPeDL_fsLQ" name="" memberEnd="_qdg5kfSTEeiBAPeDL_fsLQ _qdgSgPSTEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_qdg5kfSTEeiBAPeDL_fsLQ" name="extension_Guardian" type="_o8DG0PSTEeiBAPeDL_fsLQ" association="_qdg5kPSTEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_AxpNgPSVEeiBAPeDL_fsLQ" name="UserApp">
+    <ownedAttribute xmi:id="_CpeR0PSVEeiBAPeDL_fsLQ" name="base_Artifact" association="_CpeR0fSVEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Artifact"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_DOjU0PSVEeiBAPeDL_fsLQ" name="base_Component" association="_DOj74PSVEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Component"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_CpeR0fSVEeiBAPeDL_fsLQ" memberEnd="_CpeR0vSVEeiBAPeDL_fsLQ _CpeR0PSVEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_CpeR0vSVEeiBAPeDL_fsLQ" name="extension_UserApp" type="_AxpNgPSVEeiBAPeDL_fsLQ" association="_CpeR0fSVEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_DOj74PSVEeiBAPeDL_fsLQ" memberEnd="_DOj74fSVEeiBAPeDL_fsLQ _DOjU0PSVEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_DOj74fSVEeiBAPeDL_fsLQ" name="extension_UserApp" type="_AxpNgPSVEeiBAPeDL_fsLQ" association="_DOj74PSVEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_G6nW4PSVEeiBAPeDL_fsLQ" name="Lan">
+    <ownedAttribute xmi:id="_H7kdkPSVEeiBAPeDL_fsLQ" name="base_Node" association="_H7kdkfSVEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_I-QCkPSVEeiBAPeDL_fsLQ" name="IP_address">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_I-eFAPSVEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_I-eFAfSVEeiBAPeDL_fsLQ" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_H7kdkfSVEeiBAPeDL_fsLQ" memberEnd="_H7kdkvSVEeiBAPeDL_fsLQ _H7kdkPSVEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_H7kdkvSVEeiBAPeDL_fsLQ" name="extension_Lan" type="_G6nW4PSVEeiBAPeDL_fsLQ" association="_H7kdkfSVEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_OxzVkPSVEeiBAPeDL_fsLQ" name="Floor">
+    <ownedAttribute xmi:id="_P_5gYPSVEeiBAPeDL_fsLQ" name="base_Node" association="_P_6HcPSVEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_P_6HcPSVEeiBAPeDL_fsLQ" memberEnd="_P_6HcfSVEeiBAPeDL_fsLQ _P_5gYPSVEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_P_6HcfSVEeiBAPeDL_fsLQ" name="extension_Floor" type="_OxzVkPSVEeiBAPeDL_fsLQ" association="_P_6HcPSVEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_hsy_8PSVEeiBAPeDL_fsLQ" name="BuildingControlUnit">
+    <ownedAttribute xmi:id="_BEJdUPSWEeiBAPeDL_fsLQ" name="ID">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BFBnEPSWEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BFBnEfSWEeiBAPeDL_fsLQ" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_MCASAPSWEeiBAPeDL_fsLQ" name="name">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_MCI04PSWEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_MCJb8PSWEeiBAPeDL_fsLQ" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_UeJicPSXEeiBAPeDL_fsLQ" name="base_Node" association="_UeJicfSXEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_V_RzcPSWEeiBAPeDL_fsLQ" name="AreaControlUnit">
+    <ownedAttribute xmi:id="_VYPzMPSXEeiBAPeDL_fsLQ" name="base_Node" association="_VYPzMfSXEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_n1GwEPSXEeiBAPeDL_fsLQ" name="ID">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_n1NdwPSXEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_n1NdwfSXEeiBAPeDL_fsLQ" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_umdvIPSXEeiBAPeDL_fsLQ" name="name">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_umkc0PSXEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_umkc0fSXEeiBAPeDL_fsLQ" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_UeJicfSXEeiBAPeDL_fsLQ" memberEnd="_UeJicvSXEeiBAPeDL_fsLQ _UeJicPSXEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_UeJicvSXEeiBAPeDL_fsLQ" name="extension_BuildingControlUnit" type="_hsy_8PSVEeiBAPeDL_fsLQ" association="_UeJicfSXEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_VYPzMfSXEeiBAPeDL_fsLQ" name="" memberEnd="_VYPzMvSXEeiBAPeDL_fsLQ _VYPzMPSXEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_VYPzMvSXEeiBAPeDL_fsLQ" name="extension_AreaControlUnit" type="_V_RzcPSWEeiBAPeDL_fsLQ" association="_VYPzMfSXEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_DKa7YPSYEeiBAPeDL_fsLQ" name="SmartTile">
+    <ownedAttribute xmi:id="_FsvuMPSYEeiBAPeDL_fsLQ" name="ID">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Fs2b4PSYEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Fs2b4fSYEeiBAPeDL_fsLQ" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_QaJsEPSYEeiBAPeDL_fsLQ" name="base_Actor" association="_QaJsEfSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Actor"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_RaJwgPSYEeiBAPeDL_fsLQ" name="base_Node" association="_RaJwgfSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_Tk7mAPSYEeiBAPeDL_fsLQ" name="base_Artifact" association="_Tk7mAfSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Artifact"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_U_dqUPSYEeiBAPeDL_fsLQ" name="base_Component" association="_U_dqUfSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Component"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_QaJsEfSYEeiBAPeDL_fsLQ" memberEnd="_QaJsEvSYEeiBAPeDL_fsLQ _QaJsEPSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_QaJsEvSYEeiBAPeDL_fsLQ" name="extension_SmartTile" type="_DKa7YPSYEeiBAPeDL_fsLQ" association="_QaJsEfSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_RaJwgfSYEeiBAPeDL_fsLQ" memberEnd="_RaJwgvSYEeiBAPeDL_fsLQ _RaJwgPSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_RaJwgvSYEeiBAPeDL_fsLQ" name="extension_SmartTile" type="_DKa7YPSYEeiBAPeDL_fsLQ" association="_RaJwgfSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_Tk7mAfSYEeiBAPeDL_fsLQ" memberEnd="_Tk7mAvSYEeiBAPeDL_fsLQ _Tk7mAPSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_Tk7mAvSYEeiBAPeDL_fsLQ" name="extension_SmartTile" type="_DKa7YPSYEeiBAPeDL_fsLQ" association="_Tk7mAfSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_U_dqUfSYEeiBAPeDL_fsLQ" memberEnd="_U_dqUvSYEeiBAPeDL_fsLQ _U_dqUPSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_U_dqUvSYEeiBAPeDL_fsLQ" name="extension_SmartTile" type="_DKa7YPSYEeiBAPeDL_fsLQ" association="_U_dqUfSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_W67RcPSYEeiBAPeDL_fsLQ" name="AreaController">
+    <ownedAttribute xmi:id="_Y-aMIPSYEeiBAPeDL_fsLQ" name="base_Artifact" association="_Y-aMIfSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Artifact"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_ZuaFsPSYEeiBAPeDL_fsLQ" name="base_Component" association="_ZuaFsfSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Component"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_Y-aMIfSYEeiBAPeDL_fsLQ" name="" memberEnd="_Y-aMIvSYEeiBAPeDL_fsLQ _Y-aMIPSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_Y-aMIvSYEeiBAPeDL_fsLQ" name="extension_AreaController" type="_W67RcPSYEeiBAPeDL_fsLQ" association="_Y-aMIfSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_ZuaFsfSYEeiBAPeDL_fsLQ" memberEnd="_ZuaFsvSYEeiBAPeDL_fsLQ _ZuaFsPSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_ZuaFsvSYEeiBAPeDL_fsLQ" name="extension_AreaController" type="_W67RcPSYEeiBAPeDL_fsLQ" association="_ZuaFsfSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_hzZP0PSYEeiBAPeDL_fsLQ" name="BuildingController">
+    <ownedAttribute xmi:id="_ljSB8PSYEeiBAPeDL_fsLQ" name="base_Artifact" association="_ljSB8fSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Artifact"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_nEU98PSYEeiBAPeDL_fsLQ" name="base_Component" association="_nEU98fSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Component"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_ljSB8fSYEeiBAPeDL_fsLQ" memberEnd="_ljSB8vSYEeiBAPeDL_fsLQ _ljSB8PSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_ljSB8vSYEeiBAPeDL_fsLQ" name="extension_BuildingController" type="_hzZP0PSYEeiBAPeDL_fsLQ" association="_ljSB8fSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_nEU98fSYEeiBAPeDL_fsLQ" memberEnd="_nEU98vSYEeiBAPeDL_fsLQ _nEU98PSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_nEU98vSYEeiBAPeDL_fsLQ" name="extension_BuildingController" type="_hzZP0PSYEeiBAPeDL_fsLQ" association="_nEU98fSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_okvn0PSYEeiBAPeDL_fsLQ" name="SystemManager">
+    <ownedAttribute xmi:id="_rxOK4PSYEeiBAPeDL_fsLQ" name="base_Artifact" association="_rxOx8PSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Artifact"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_tZBPIPSYEeiBAPeDL_fsLQ" name="base_Component" association="_tZBPIfSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Component"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_rxOx8PSYEeiBAPeDL_fsLQ" memberEnd="_rxOx8fSYEeiBAPeDL_fsLQ _rxOK4PSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_rxOx8fSYEeiBAPeDL_fsLQ" name="extension_SystemManager" type="_okvn0PSYEeiBAPeDL_fsLQ" association="_rxOx8PSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_tZBPIfSYEeiBAPeDL_fsLQ" memberEnd="_tZBPIvSYEeiBAPeDL_fsLQ _tZBPIPSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_tZBPIvSYEeiBAPeDL_fsLQ" name="extension_SystemManager" type="_okvn0PSYEeiBAPeDL_fsLQ" association="_tZBPIfSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_xzeoQPSYEeiBAPeDL_fsLQ" name="DataServer">
+    <ownedAttribute xmi:id="_0PEg8PSYEeiBAPeDL_fsLQ" name="base_Node" association="_0PEg8fSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_09AlAPSYEeiBAPeDL_fsLQ" name="base_Artifact" association="_09AlAfSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Artifact"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_1iposPSYEeiBAPeDL_fsLQ" name="base_Component" association="_1iposfSYEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Component"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_4GfecPSYEeiBAPeDL_fsLQ" name="IP_address">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4GmMIPSYEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_4GmMIfSYEeiBAPeDL_fsLQ" value="1"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_6fiZcPSYEeiBAPeDL_fsLQ" name="credentials">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_6fsKcPSYEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_6fsKcfSYEeiBAPeDL_fsLQ" value="*"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_0PEg8fSYEeiBAPeDL_fsLQ" memberEnd="_0PEg8vSYEeiBAPeDL_fsLQ _0PEg8PSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_0PEg8vSYEeiBAPeDL_fsLQ" name="extension_DataServer" type="_xzeoQPSYEeiBAPeDL_fsLQ" association="_0PEg8fSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_09AlAfSYEeiBAPeDL_fsLQ" memberEnd="_09AlAvSYEeiBAPeDL_fsLQ _09AlAPSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_09AlAvSYEeiBAPeDL_fsLQ" name="extension_DataServer" type="_xzeoQPSYEeiBAPeDL_fsLQ" association="_09AlAfSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_1iposfSYEeiBAPeDL_fsLQ" memberEnd="_1iposvSYEeiBAPeDL_fsLQ _1iposPSYEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_1iposvSYEeiBAPeDL_fsLQ" name="extension_DataServer" type="_xzeoQPSYEeiBAPeDL_fsLQ" association="_1iposfSYEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_xcCTcPSqEeiBAPeDL_fsLQ"/>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_t7jkYPSsEeiBAPeDL_fsLQ" name="Alarm">
+    <ownedAttribute xmi:id="_FzUDsPStEeiBAPeDL_fsLQ" name="base_Node" association="_FzUDsfStEeiBAPeDL_fsLQ">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_FzUDsfStEeiBAPeDL_fsLQ" memberEnd="_FzUDsvStEeiBAPeDL_fsLQ _FzUDsPStEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_FzUDsvStEeiBAPeDL_fsLQ" name="extension_Alarm" type="_t7jkYPSsEeiBAPeDL_fsLQ" association="_FzUDsfStEeiBAPeDL_fsLQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_f6zJ8PStEeiBAPeDL_fsLQ" name="isManaged" memberEnd="_f6zJ8fStEeiBAPeDL_fsLQ _f6zJ9PStEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:id="_f6zJ8fStEeiBAPeDL_fsLQ" name="SystemManagers" type="_okvn0PSYEeiBAPeDL_fsLQ" association="_f6zJ8PStEeiBAPeDL_fsLQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_f6zJ8vStEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_f6zJ8_StEeiBAPeDL_fsLQ" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_f6zJ9PStEeiBAPeDL_fsLQ" name="BuildingControllers" type="_hzZP0PSYEeiBAPeDL_fsLQ" association="_f6zJ8PStEeiBAPeDL_fsLQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_f6zJ9fStEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_f6zJ9vStEeiBAPeDL_fsLQ" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_semBsPStEeiBAPeDL_fsLQ" name="isControlled" memberEnd="_semBsfStEeiBAPeDL_fsLQ _semBtPStEeiBAPeDL_fsLQ">
+    <ownedEnd xmi:id="_semBsfStEeiBAPeDL_fsLQ" name="BuildingControllers" type="_hzZP0PSYEeiBAPeDL_fsLQ" association="_semBsPStEeiBAPeDL_fsLQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_semBsvStEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_semBs_StEeiBAPeDL_fsLQ" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_semBtPStEeiBAPeDL_fsLQ" name="AreaControllers" type="_W67RcPSYEeiBAPeDL_fsLQ" association="_semBsPStEeiBAPeDL_fsLQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_semBtfStEeiBAPeDL_fsLQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_semBtvStEeiBAPeDL_fsLQ" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_un0vIPcKEeiJo4W8n1XLhw" name="Area">
+    <ownedAttribute xmi:id="_wxIlAPcKEeiJo4W8n1XLhw" name="base_Node" association="_wxJMEPcKEeiJo4W8n1XLhw">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_wxJMEPcKEeiJo4W8n1XLhw" memberEnd="_wxJMEfcKEeiJo4W8n1XLhw _wxIlAPcKEeiJo4W8n1XLhw">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_wxJMEfcKEeiJo4W8n1XLhw" name="extension_Area" type="_un0vIPcKEeiJo4W8n1XLhw" association="_wxJMEPcKEeiJo4W8n1XLhw"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Stereotype" xmi:id="_tkHLgAHjEemSjJWeGnP7LA" name="Server">
+    <ownedAttribute xmi:id="_wfGV8AHjEemSjJWeGnP7LA" name="base_Node" association="_wfG9AAHjEemSjJWeGnP7LA">
+      <type xmi:type="uml:Class" href="pathmap://UML_METAMODELS/UML.metamodel.uml#Node"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:id="_HWNXIAIREemcErPxzxItLw" name="IP_address">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_HWYWQAIREemcErPxzxItLw" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_HWYWQQIREemcErPxzxItLw" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Extension" xmi:id="_wfG9AAHjEemSjJWeGnP7LA" memberEnd="_wfG9AQHjEemSjJWeGnP7LA _wfGV8AHjEemSjJWeGnP7LA">
+    <ownedEnd xmi:type="uml:ExtensionEnd" xmi:id="_wfG9AQHjEemSjJWeGnP7LA" name="extension_Server" type="_tkHLgAHjEemSjJWeGnP7LA" association="_wfG9AAHjEemSjJWeGnP7LA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_BXxfQAIQEemcErPxzxItLw" name="areMonitored" visibility="public" memberEnd="_BXxfQQIQEemcErPxzxItLw _BXxfRAIQEemcErPxzxItLw">
+    <ownedEnd xmi:id="_BXxfQQIQEemcErPxzxItLw" name="AreaControllers" type="_W67RcPSYEeiBAPeDL_fsLQ" association="_BXxfQAIQEemcErPxzxItLw">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BXxfQgIQEemcErPxzxItLw"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BXxfQwIQEemcErPxzxItLw" value="*"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_BXxfRAIQEemcErPxzxItLw" name="SmartTiles" type="_DKa7YPSYEeiBAPeDL_fsLQ" association="_BXxfQAIQEemcErPxzxItLw">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BXxfRQIQEemcErPxzxItLw"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BXxfRgIQEemcErPxzxItLw" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+</uml:Profile>

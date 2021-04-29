@@ -1,0 +1,283 @@
+/**
+ * Converts an element to the native Java BigInteger type
+ * @return a java.math.BigInteger
+ */
+operation Any asBigInteger(): Native("java.math.BigInteger")
+{
+	// Converts an element to the java native type BigInteger
+	return new Native("java.math.BigInteger")(self);
+}
+
+/**
+ * Checks the existance of a call destination
+ */
+operation callsCorrectness()
+{
+	for(call in LQN!MakingCallType)
+	{
+		if(not LQN!EntryType.all().name.includes(call.dest))
+			throw "Error: call " + call.dest + " to an undefined entry";
+	}
+}
+
+
+/*
+ * Operations on UML!NamedElement; 
+ */
+
+
+/** 
+ * Checks if a Stereotype is applied to a UML!NamedElement 
+ * @param name the name of the Stereotype
+ * @return a boolean stating if a Stereotype is applied or not
+ */
+operation UML!NamedElement checkStereotypeApplication(name: String): Boolean
+{	
+	return self.getAppliedStereotypes().exists(i|i.name = name);
+}
+
+/** 
+ * Gets the object representing the Stereotype if it is applied to NamedElement
+ * @param name the name of the Stereotype
+ * @return the object representing the Stereotype
+ */
+operation UML!NamedElement checkAndGetStereotype(name: String): UML!Stereotype
+{
+	if(self.checkStereotypeApplication(name))
+		return self.getAppliedStereotypes().selectOne(i|i.name = name);
+	return null;
+}
+
+/**
+ * Retrieves the artifacts representing an element
+ * @return a collection comprising the set of artifacts
+ */
+operation UML!NamedElement getArtifacts(): Collection
+{
+	var artifacts = UML!Artifact.all();
+	var output = new Sequence();
+	
+	for(artifact in artifacts)
+	{
+		var manifestation = artifact.manifestation;
+		manifestation = manifestation.select(i | i.supplier.first = self);
+		
+		if(manifestation.notEmpty)
+			output.add(artifact);
+	}	
+		
+	return output;	
+}
+
+/**
+ * Checks if it exists a behavioral description involving self
+ * @param element: UML!Component under investigation
+ * @return a boolean
+ */
+operation UML!NamedElement isInteracting(): Boolean
+{	
+	// Gets all the lifelines involving 'element'
+	var lifelines = self.getLifelines();
+	var interacting = lifelines.select(i | i.isInteracting());
+	
+	var artifacts = self.getArtifacts().flatten;
+	var deployments = artifacts.collect(i | i.getDeployments()).flatten;
+		
+	return interacting.notEmpty();
+}
+
+/**
+ * Gets all the lifelines representing the behavior of self
+ * @return a Collection of Lifelines 
+ */
+operation UML!NamedElement getLifelines(): Collection
+{
+	// All the lifelines of the Model
+	var lifelines = UML!Lifeline.all();
+	// Get all the lifelines involving "element"
+	return lifelines.select(i | i.represents.type = self);
+}
+
+
+/*
+ * Operations on UML!Node; 
+ */
+
+
+/**
+ * Collects all the nodes on which self is deployed
+ * @return a collection of nodes
+ */
+operation UML!Component getNodes() : Sequence
+{
+	var artifacts = self.getArtifacts();	
+	
+	var deployments = artifacts.collect(i | i.getDeployments()).flatten;
+	deployments = deployments.collect(i | i.client).flatten;
+	
+	return deployments;
+}
+
+/**
+ * Checks if a component has as a unique deployment the Node self
+ * @return a boolean 
+ */
+operation UML!Node exclusiveDeployment(component: UML!Component) : Boolean
+{
+	var artifacts = component.getArtifacts();	
+	var deployments = artifacts.collect(i | i.getDeployments()).flatten;
+	deployments = deployments.collect(i | i.client).flatten;
+	
+	if(deployments.size() = 1)
+		return true;
+			
+	return false;
+}	 
+
+/**
+ * Gets the speedFactor of a Node
+ */
+operation UML!Node getSpeedFactor()
+{
+	var stereotype = self.checkAndGetStereotype("GaExecHost");
+	return self.getValue(stereotype, "speedFactor");
+}
+
+/**
+ * Retrieves the manifestation of the artifact deployed on a Node
+ * @return the object representing the deployed component or null
+ */
+operation UML!Node getDeployed(): Collection
+{
+	// If the deployment dependency does not exists, then the deployed element is 
+	if(self.deployment.isEmpty())
+		return new Sequence();
+				
+	// This variable represents the 'deployment' association between a Node and an Artifact
+	var deployment = self.deployment;
+	// It is the object of the artifact deployed on self (Node)
+	var artifacts = deployment.collect(i | i.getSuppliers()).flatten;
+	
+	var manifestation = artifacts.manifestation.flatten;
+	return manifestation.collect(i | i.getSuppliers()).flatten;	
+}
+
+operation UML!Node getNodeArtifacts(): Collection
+{
+	// If the deployment dependency does not exists, then the deployed element is 
+	if(self.deployment.isEmpty())
+		return new Sequence();
+				
+	// This variable represents the 'deployment' association between a Node and an Artifact
+	var deployment = self.deployment;
+	// It is the object of the artifact deployed on self (Node)
+	var artifacts = deployment.collect(i | i.getSuppliers()).flatten;
+	
+	return artifacts;
+}
+
+
+
+/*
+ * Operations on UML!Artifact; 
+ */
+
+
+operation UML!Artifact getDeployments() : Sequence
+{
+	return UML!Deployment.all().select(i | i.supplier.first = self).flatten;
+}
+
+
+
+/*
+ * Operations on UML!Lifeline; 
+ */
+
+
+operation UML!Lifeline isInteracting(): Boolean
+{
+	return self.coveredBy.notEmpty();
+}
+/**
+ * Returns the elements, inside a lifeline, having 'type' as type
+ * @returns a OrderedSet of elements with type 'type'
+ */
+operation UML!Lifeline getElements(type: String): OrderedSet	
+{
+	var elements = self.coveredBy.asOrderedSet();
+	return elements.select(i | i.eClass.name == type);
+}
+
+
+
+/*
+ * Operations on UML!Component; 
+ */
+
+
+/**
+ * Gets all the actors sending a message to 'self'. 
+ * It returns all those lifelines that are sources. 
+ * This means that they don't have a incoming message.
+ * @return a collection of UML!Lifelines
+ */
+operation UML!Component getSources(): Collection
+{
+
+	var lifelines = self.getLifelines();
+	
+	// Gets the BehaviorExecutionSpecification for each lifeline involving 'self'
+	var beses = lifelines.collect(i | i.getElements("BehaviorExecutionSpecification")).flatten;
+	
+	beses = beses.select(i | i.isWellFormed());	
+	
+	// Retrieves the lifelines that sending a message to 'self'
+	var sources = beses.collect(i | i.start.message.sendEvent.covered).flatten;
+	
+	sources = sources.represents.collect(i | i.getType());
+	
+	// Selects those lifelines representing an Actor
+	return sources.select(i | i.isTypeOf(Actor));	
+}
+
+
+
+/*
+ * Operations on UML!BehaviorExecutionSpecification; 
+ */
+
+
+/**
+ * Checks if the BehaviorExecutionSpecification is well specified.
+ * This means that is has a MessageOccurrenceSpecifiation for both the 
+ * start event and the finish event
+ * @return a boolean stating if the property is verified or not
+ */
+operation UML!BehaviorExecutionSpecification isWellFormed() : Boolean
+{
+
+	if(self.start.isTypeOf(MessageOccurrenceSpecification) and 
+		self.finish.isTypeOf(MessageOccurrenceSpecification))
+		return true;
+		
+	return false;
+}
+
+/**
+ * Builds an ordered data structure cointaining the MessageOccurenceSpecification
+ * of 'self' (BES) 
+ * @return a collection of MessageOccurenceSpecification
+ */
+operation UML!BehaviorExecutionSpecification getMessages(): Collection
+{	
+	var lifeline = self.covered.first;
+	var elements = lifeline.getElements("MessageOccurrenceSpecification");
+	elements = modelMessages.select(i | elements.includes(i));
+	
+	var start = elements.indexOf(self.start);
+	var end = elements.indexOf(self.finish);
+	
+	return modelMessages.select(i | elements.indexOf(i) >= start 
+		and elements.indexOf(i) <= end);
+}

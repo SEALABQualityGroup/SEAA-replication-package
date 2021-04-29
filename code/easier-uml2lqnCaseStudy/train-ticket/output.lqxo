@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<!-- $Id$ -->
+<!-- lqns -pragma= cycles=yes -->
+<lqn-model name="/home/peo/git/sealab/easier/easier-uml2lqnCaseStudy/train-ticket/output" description="lqns 5.17 solution for model from: /home/peo/git/sealab/easier/easier-uml2lqnCaseStudy/train-ticket/output.xml." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/usr/local/share/lqns/lqn.xsd">
+   <solver-params comment="0" conv_val="1e-05" it_limit="50" underrelax_coeff="0.9" print_int="10">
+      <pragma param="cycles" value="yes"/>
+      <result-general solver-info="lqns 5.17" valid="YES" conv-val="0" iterations="2" platform-info="shalby Linux 5.8.0-44-generic" user-cpu-time=" 0:00:00.001" system-cpu-time=" 0:00:00.000" elapsed-time=" 0:00:00.001">
+         <mva-info submodels="3" core="6" step="75" step-squared="1313" wait="79120" wait-squared="3.93047e+09" faults="0"/>
+      </result-general>
+   </solver-params>
+   <processor name="container-rebook" scheduling="fcfs">
+      <result-processor utilization="0.108688"/>
+      <task name="Rebook" scheduling="fcfs">
+         <result-task throughput="0.335458" utilization="0.217377" phase1-utilization="0.217377" proc-utilization="0.108688"/>
+         <entry name="rebook_bes" type="PH1PH2">
+            <result-entry utilization="0.217377" throughput="0.335458" squared-coeff-variation="1.5" proc-utilization="0.108688" throughput-bound="1.54321"/>
+            <entry-phase-activities>
+               <activity name="getbyid_message" phase="1" host-demand-mean="0.324">
+                  <result-activity proc-waiting="0" service-time="0.648" utilization="0.217377" service-time-variance="0.629856"/>
+                  <synch-call dest="getbyid_bes" calls-mean="1">
+                     <result-call waiting="0"/>
+                  </synch-call>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+      </task>
+   </processor>
+   <processor name="container-order-other" scheduling="fcfs">
+      <result-processor utilization="0.108688"/>
+      <task name="Order-other" scheduling="fcfs">
+         <result-task throughput="0.335458" utilization="0.108688" phase1-utilization="0.108688" proc-utilization="0.108688"/>
+         <entry name="getbyid_bes" type="PH1PH2">
+            <result-entry utilization="0.108688" throughput="0.335458" squared-coeff-variation="1" proc-utilization="0.108688" throughput-bound="3.08642"/>
+            <entry-phase-activities>
+               <activity name="getbyid_message" phase="1" host-demand-mean="0.324">
+                  <result-activity proc-waiting="0" service-time="0.324" utilization="0.108688" service-time-variance="0.104976"/>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+      </task>
+   </processor>
+   <processor name="container-sso" scheduling="fcfs">
+      <result-processor utilization="0.423024"/>
+      <task name="Sso" scheduling="fcfs">
+         <result-task throughput="0.693481" utilization="0.423024" phase1-utilization="0.423024" proc-utilization="0.423024"/>
+         <entry name="findall_bes" type="PH1PH2">
+            <result-entry utilization="0.119626" throughput="0.346741" squared-coeff-variation="1" proc-utilization="0.119626" throughput-bound="2.89855"/>
+            <entry-phase-activities>
+               <activity name="findall_message" phase="1" host-demand-mean="0.345">
+                  <result-activity proc-waiting="0" service-time="0.345" utilization="0.119626" service-time-variance="0.119025"/>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+         <entry name="modify_bes" type="PH1PH2">
+            <result-entry utilization="0.303398" throughput="0.346741" squared-coeff-variation="1" proc-utilization="0.303398" throughput-bound="1.14286"/>
+            <entry-phase-activities>
+               <activity name="modify_message" phase="1" host-demand-mean="0.875">
+                  <result-activity proc-waiting="0" service-time="0.875" utilization="0.303398" service-time-variance="0.765625"/>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+      </task>
+   </processor>
+   <processor name="container-login" scheduling="fcfs">
+      <result-processor utilization="0.479034"/>
+      <task name="Login" scheduling="fcfs">
+         <result-task throughput="0.335458" utilization="0.419322" phase1-utilization="0.419322" proc-utilization="0.115733"/>
+         <entry name="bes_login" type="PH1PH2">
+            <result-entry utilization="0.419322" throughput="0.335458" squared-coeff-variation="1.15632" proc-utilization="0.115733" throughput-bound="0.8"/>
+            <entry-phase-activities>
+               <activity name="verify_message" phase="1" host-demand-mean="0.345">
+                  <result-activity proc-waiting="0" service-time="1.25" utilization="0.419322" service-time-variance="1.80675"/>
+                  <synch-call dest="generate_bes" calls-mean="1">
+                     <result-call waiting="0"/>
+                  </synch-call>
+                  <synch-call dest="verify_bes" calls-mean="1">
+                     <result-call waiting="0"/>
+                  </synch-call>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+      </task>
+      <task name="User" scheduling="ref">
+         <result-task throughput="0.670916" utilization="1" phase1-utilization="1" proc-utilization="0.363301"/>
+         <entry name="user_rebook_bes" type="PH1PH2">
+            <result-entry utilization="0.539416" throughput="0.335458" squared-coeff-variation="1.40599" proc-utilization="0.32204" throughput-bound="0.621891"/>
+            <entry-phase-activities>
+               <activity name="rebook_message" phase="1" host-demand-mean="0.96">
+                  <result-activity proc-waiting="0" service-time="1.608" utilization="0.539416" service-time-variance="3.63542"/>
+                  <synch-call dest="rebook_bes" calls-mean="1">
+                     <result-call waiting="0"/>
+                  </synch-call>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+         <entry name="user_login-message_bes" type="PH1PH2">
+            <result-entry utilization="0.460584" throughput="0.335458" squared-coeff-variation="2.78728" proc-utilization="0.0412613" throughput-bound="0.728332"/>
+            <entry-phase-activities>
+               <activity name="login_message" phase="1" host-demand-mean="0.123">
+                  <result-activity proc-waiting="0" service-time="1.373" utilization="0.460584" service-time-variance="5.25438"/>
+                  <synch-call dest="bes_login" calls-mean="1">
+                     <result-call waiting="0"/>
+                  </synch-call>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+      </task>
+   </processor>
+   <processor name="container-admin-user" scheduling="fcfs">
+      <result-processor utilization="0.576976"/>
+      <task name="Admin-user" scheduling="fcfs">
+         <result-task throughput="0.346741" utilization="0.273578" phase1-utilization="0.273578" proc-utilization="0.273578"/>
+         <entry name="updateuser_bes" type="PH1PH2">
+            <result-entry utilization="0.273578" throughput="0.346741" squared-coeff-variation="1" proc-utilization="0.273578" throughput-bound="1.26743"/>
+            <entry-phase-activities>
+               <activity name="updateuser_message" phase="1" host-demand-mean="0.789">
+                  <result-activity proc-waiting="0" service-time="0.789" utilization="0.273578" service-time-variance="0.622521"/>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+      </task>
+      <task name="Admin" scheduling="ref">
+         <result-task throughput="0.346741" utilization="1" phase1-utilization="1" proc-utilization="0.303398"/>
+         <entry name="admin_update_user_bes" type="PH1PH2">
+            <result-entry utilization="1" throughput="0.346741" squared-coeff-variation="0.812496" proc-utilization="0.303398" throughput-bound="0.346741"/>
+            <entry-phase-activities>
+               <activity name="modify_message" phase="1" host-demand-mean="0.875">
+                  <result-activity proc-waiting="0" service-time="2.884" utilization="1" service-time-variance="6.7579"/>
+                  <synch-call dest="updateuser_bes" calls-mean="1">
+                     <result-call waiting="0"/>
+                  </synch-call>
+                  <synch-call dest="findall_bes" calls-mean="1">
+                     <result-call waiting="0"/>
+                  </synch-call>
+                  <synch-call dest="modify_bes" calls-mean="1">
+                     <result-call waiting="0"/>
+                  </synch-call>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+      </task>
+   </processor>
+   <processor name="container-verification" scheduling="fcfs">
+      <result-processor utilization="0.303589"/>
+      <task name="Verification" scheduling="fcfs">
+         <result-task throughput="0.670916" utilization="0.303589" phase1-utilization="0.303589" proc-utilization="0.303589"/>
+         <entry name="generate_bes" type="PH1PH2">
+            <result-entry utilization="0.187856" throughput="0.335458" squared-coeff-variation="1" proc-utilization="0.187856" throughput-bound="1.78571"/>
+            <entry-phase-activities>
+               <activity name="generate_message" phase="1" host-demand-mean="0.56">
+                  <result-activity proc-waiting="0" service-time="0.56" utilization="0.187856" service-time-variance="0.3136"/>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+         <entry name="verify_bes" type="PH1PH2">
+            <result-entry utilization="0.115733" throughput="0.335458" squared-coeff-variation="1" proc-utilization="0.115733" throughput-bound="2.89855"/>
+            <entry-phase-activities>
+               <activity name="verify_message" phase="1" host-demand-mean="0.345">
+                  <result-activity proc-waiting="0" service-time="0.345" utilization="0.115733" service-time-variance="0.119025"/>
+               </activity>
+            </entry-phase-activities>
+         </entry>
+      </task>
+   </processor>
+</lqn-model>
